@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">MobileProject</string>
+
+    <!-- Strings related to LoginActivity -->
+    <string name="login_title">Login / Register</string>
+    <string name="login_login">Login</string>
+    <string name="login_username">Username</string>
+    <string name="login_password">Password</string>
+    <string name="login_usernamehint">E.g. PurplePeopleEater</string>
+    <string name="login_passwordhint">password</string>
+    <string name="login_register">Register</string>
+
 </resources>
