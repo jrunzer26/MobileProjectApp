@@ -1,13 +1,27 @@
 <resources>
     <string name="app_name">MobileProject</string>
 
+    <!-- Server -->
+    <string name="server">http://159.203.42.84:3000/</string>
+
     <!-- Strings related to LoginActivity -->
-    <string name="login_title">Login / Register</string>
+    <string name="login_title">Login</string>
     <string name="login_login">Login</string>
     <string name="login_username">Username</string>
     <string name="login_password">Password</string>
-    <string name="login_usernamehint">E.g. PurplePeopleEater</string>
+    <string name="login_usernamehint">E.g. Xx_NoScope_xX</string>
     <string name="login_passwordhint">password</string>
     <string name="login_register">Register</string>
+
+    <!-- Strings related to RegisterActivity -->
+    <string name="register_title">Register</string>
+    <string name="register_usernametaken">The username already exists</string>
+    <string name="register_passowrdnotsame">The two passwords provided are not the same.</string>
+    <string name="register_passwordshort">Your password must be 5-16 characters long</string>
+    <string name="register_usernameshort">Your username must be 8-16 characters long</string>
+    <string name="register_password">Password: 8-16 characters long</string>
+    <string name="register_username">Username: 5-16 characters long</string>
+    <string name="register_retypepassword">Retype Password</string>
+
 
 </resources>
