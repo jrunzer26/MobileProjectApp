@@ -25,19 +25,20 @@ public class ServerControl extends AsyncTask<String, Void, String> {
     /**
      *
      * @param params url, method, body
-     * @return
+     * @return response - the json string server response
      */
     protected String doInBackground(String... params) {
         String content = "";
         try {
             URL url = new URL(params[0]);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            System.out.println(params[1]);
             if (params[1].equals(GET)) {
+                // get the content from the server
                 InputStream in = connection.getInputStream();
                 content = readStringInput(in);
                 in.close();
             } else {
+                // post content to the server
                 connection.setDoOutput(true);
                 connection.setRequestMethod("POST");
                 connection.setRequestProperty("Content-Type", "application/json;charset=utf-8");
@@ -48,11 +49,13 @@ public class ServerControl extends AsyncTask<String, Void, String> {
                 out.flush();
                 out.close();
                 InputStream in;
-                if (connection.getResponseCode() == 400) {
+                // get the stream of data from the result of the post.
+                if (connection.getResponseCode() == 400 || connection.getResponseCode() == 409) {
                     in = new BufferedInputStream(connection.getErrorStream());
                 } else {
                     in = new BufferedInputStream(connection.getInputStream());
                 }
+                // read the json response
                 content = readStringInput(in);
                 in.close();
             }
@@ -63,6 +66,13 @@ public class ServerControl extends AsyncTask<String, Void, String> {
         }
         return content;
     }
+
+    /**
+     * Reads the input from an input stream.
+     * @param in the input stream to read from
+     * @return the content from the stream
+     * @throws IOException
+     */
     private String readStringInput(InputStream in) throws IOException {
         int i;
         String result = "";
@@ -72,8 +82,11 @@ public class ServerControl extends AsyncTask<String, Void, String> {
         return result;
     }
 
+    /**
+     * Use the callback to send data to the other activity.
+     * @param result the json result
+     */
     protected void onPostExecute(String result) {
-        System.out.println("Result: " + result);
         asyncResponse.processResult(result);
     }
 }
