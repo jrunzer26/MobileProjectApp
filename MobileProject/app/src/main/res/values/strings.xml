@@ -25,4 +25,9 @@
     <string name="register_retypepassword">Retype Password</string>
 
 
+    <!-- Strings related to GameActivity -->
+    <string name="title_activity_game_activity">Game</string>
+    <string name="game_logoutbutton">Logout</string>
+
+
 </resources>

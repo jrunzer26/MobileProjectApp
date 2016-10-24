@@ -15,4 +15,8 @@
     <!-- Dimensions related to RegisterActivity -->
     <dimen name="textsize_register_usernamepassword">20sp</dimen>
     <dimen name="margin_register_belowButtons">8dp</dimen>
+
+    <!-- Dimensions related to GameActivity -->
+    <dimen name="height_game_latlngdisplay">50dp</dimen>
 </resources>
+

@@ -110,7 +110,7 @@ public class LoginActivity extends AppCompatActivity implements AsyncResponse{
                 editor.putString(PASSWORD, password);
                 editor.commit();
                 // start the game activity
-                Intent intent = new Intent (this, GameStubActivity.class);
+                Intent intent = new Intent (this, GameActivity.class);
                 startActivity(intent);
             }
 
