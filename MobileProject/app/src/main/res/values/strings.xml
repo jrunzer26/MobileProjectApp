@@ -28,9 +28,6 @@
     <!-- Strings related to GameActivity -->
     <string name="title_activity_game_activity">Game</string>
     <string name="game_logoutbutton">Logout</string>
-    <string name="game_lat">Latitude</string>
-    <string name="game_lng">Longitude</string>
-    <string name="game_northeast">NorthEast</string>
-    <string name="game_southwest">SouthWest</string>
+
 
 </resources>
