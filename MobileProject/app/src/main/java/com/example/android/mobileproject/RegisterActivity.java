@@ -41,6 +41,7 @@ public class RegisterActivity extends AppCompatActivity implements AsyncResponse
      */
     public void register(View view) {
         Util.hideKeyboard(view, this);
+        hideWarning();
         username = ((EditText) findViewById(R.id.edittext_register_username)).getText().toString();
         password = ((EditText) findViewById(R.id.edittext_register_password)).getText().toString();
         String password2 = ((EditText) findViewById(R.id.edittext_register_password2)).getText().toString();
@@ -55,6 +56,7 @@ public class RegisterActivity extends AppCompatActivity implements AsyncResponse
         } else if (password.length() < 8 || password.length() > 16) {
             warning = getString(R.string.register_passwordshort);
         }
+        System.out.println("warning: "+warning);
         // if there are no warnings, register the user
         if (warning.equals("")){
             System.out.println("server control");
@@ -89,6 +91,10 @@ public class RegisterActivity extends AppCompatActivity implements AsyncResponse
         if (result.equals("OK"))
             finish();
         else
-            ((TextView) findViewById(R.id.textview_register_warning)).setText(result);
+            ((TextView) findViewById(R.id.textview_register_warning)).setText(Util.getErr(result));
+    }
+
+    private void hideWarning() {
+        ((TextView) findViewById(R.id.textview_register_warning)).setText("");
     }
 }

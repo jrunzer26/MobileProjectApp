@@ -12,6 +12,7 @@
     <string name="login_usernamehint">E.g. Xx_NoScope_xX</string>
     <string name="login_passwordhint">password</string>
     <string name="login_register">Register</string>
+    <string name="login_nocredentials">Please enter a username and password</string>
 
     <!-- Strings related to RegisterActivity -->
     <string name="register_title">Register</string>

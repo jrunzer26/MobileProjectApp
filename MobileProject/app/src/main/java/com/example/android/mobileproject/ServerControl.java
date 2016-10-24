@@ -1,6 +1,10 @@
 package com.example.android.mobileproject;
 
 import android.os.AsyncTask;
+import android.util.Base64;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -24,7 +28,7 @@ public class ServerControl extends AsyncTask<String, Void, String> {
     }
     /**
      *
-     * @param params url, method, body
+     * @param params url, method, body, auth
      * @return response - the json string server response
      */
     protected String doInBackground(String... params) {
@@ -32,6 +36,17 @@ public class ServerControl extends AsyncTask<String, Void, String> {
         try {
             URL url = new URL(params[0]);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            if (params.length > 3) {
+                try {
+                    JSONObject jsonObject = new JSONObject(params[3]);
+                    final String convert = jsonObject.get("username")+":"+jsonObject.get("password");
+                    System.out.println(convert);
+                    connection.setRequestProperty("Authorization", "Basic " +
+                            Base64.encodeToString(convert.getBytes(), Base64.NO_WRAP));
+                } catch (JSONException e) {
+                    return "JSON ERROR";
+                }
+            }
             if (params[1].equals(GET)) {
                 // get the content from the server
                 InputStream in = connection.getInputStream();
@@ -50,7 +65,8 @@ public class ServerControl extends AsyncTask<String, Void, String> {
                 out.close();
                 InputStream in;
                 // get the stream of data from the result of the post.
-                if (connection.getResponseCode() == 400 || connection.getResponseCode() == 409) {
+                if (connection.getResponseCode() == 400 || connection.getResponseCode() == 409
+                        || connection.getResponseCode() == 401) {
                     in = new BufferedInputStream(connection.getErrorStream());
                 } else {
                     in = new BufferedInputStream(connection.getInputStream());

@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 public class LoginActivity extends AppCompatActivity implements AsyncResponse{
     public static final String EDITTEXT_USERNAME = "USERNAME";
@@ -38,6 +39,10 @@ public class LoginActivity extends AppCompatActivity implements AsyncResponse{
             password = sharedPreferences.getString(PASSWORD, "");
             serverLogin(username, password);
         }
+        // reset all fields
+        ((EditText) findViewById(R.id.edittext_login_username)).setText("");
+        ((EditText) findViewById(R.id.edittext_login_password)).setText("");
+        ((TextView) findViewById(R.id.textview_login_warning)).setText("");
     }
 
     /**
@@ -49,7 +54,10 @@ public class LoginActivity extends AppCompatActivity implements AsyncResponse{
         // get the username and password from the TextViews
         username = ((EditText) findViewById(R.id.edittext_login_username)).getText().toString();
         password = ((EditText) findViewById(R.id.edittext_login_password)).getText().toString();
-        serverLogin(username, password);
+        if (username.length() >= 1 && password.length() >= 1)
+            serverLogin(username, password);
+        else
+            ((TextView) findViewById(R.id.textview_login_warning)).setText(getString(R.string.login_nocredentials));
     }
 
     /**
@@ -69,7 +77,7 @@ public class LoginActivity extends AppCompatActivity implements AsyncResponse{
         }
         // login to the server
         ServerControl sc = new ServerControl(this);
-        sc.execute(getString(R.string.server) + "login", ServerControl.POST, jsonObject.toString());
+        sc.execute(getString(R.string.server) + "login", ServerControl.POST, jsonObject.toString(), jsonObject.toString());
     }
     /**
      * Switches to the register activity.
@@ -108,7 +116,7 @@ public class LoginActivity extends AppCompatActivity implements AsyncResponse{
 
         } catch (JSONException e) {
             e.printStackTrace();
-            ((TextView) findViewById(R.id.textview_login_warning)).setText(result);
+            ((TextView) findViewById(R.id.textview_login_warning)).setText(Util.getErr(result));
         }
     }
 }
