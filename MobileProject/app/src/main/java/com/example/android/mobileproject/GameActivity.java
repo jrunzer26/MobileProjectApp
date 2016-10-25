@@ -60,7 +60,7 @@ public class GameActivity extends FragmentActivity implements LocationSource, On
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         // set the criteria of the provider
         Criteria criteria = new Criteria();
-        criteria.setAccuracy(Criteria.ACCURACY_HIGH);
+        criteria.setAccuracy(Criteria.ACCURACY_FINE);
         criteria.setAltitudeRequired(false);
         criteria.setPowerRequirement(Criteria.NO_REQUIREMENT);
         criteria.setSpeedRequired(true);
