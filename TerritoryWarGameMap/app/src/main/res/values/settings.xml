@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="initial_style">retro</string>
+    <integer name="initial_zoom">16</integer>
+
+</resources>
