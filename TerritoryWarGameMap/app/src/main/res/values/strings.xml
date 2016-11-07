@@ -1,0 +1,347 @@
+<resources>
+  <string name="app_name">Territory War Game Map</string>
+  <string name="banner_text">Welcome to Territory War Game,\nEnjoy your time and Have fun here</string>
+
+  <!-- Server -->
+  <string name="server">http://159.203.42.84:3000/</string>
+
+  <!-- Strings related to LoginActivity -->
+  <string name="login_title">Login</string>
+  <string name="login_login">Login</string>
+  <string name="login_username">Username</string>
+  <string name="login_password">Password</string>
+  <string name="login_usernamehint">E.g. Xx_NoScope_xX</string>
+  <string name="login_passwordhint">password</string>
+  <string name="login_register">Register</string>
+  <string name="login_nocredentials">Please enter a username and password</string>
+
+  <!-- Strings related to RegisterActivity -->
+  <string name="register_title">Register</string>
+  <string name="register_usernametaken">The username already exists</string>
+  <string name="register_passowrdnotsame">The two passwords provided are not the same.</string>
+  <string name="register_passwordshort">Your password must be 5-16 characters long</string>
+  <string name="register_usernameshort">Your username must be 8-16 characters long</string>
+  <string name="register_password">Password: 8-16 characters long</string>
+  <string name="register_username">Username: 5-16 characters long</string>
+  <string name="register_retypepassword">Retype Password</string>
+
+
+  <!-- Strings related to GameActivity -->
+  <string name="title_activity_game_activity">Game</string>
+  <string name="game_logoutbutton">Logout</string>
+  <!--Button-->
+  <string name="btnGameMenuItem1">Enter Game Now</string>
+  <string name="btnGameMenuItem2">Setting and Help</string>
+  <string name="btnGameMenuItem3">About The Game</string>
+  <string name="btnGameMenuItem4">Exit Game</string>
+
+
+  <string name="title_activity_game_map_ui">Map</string>
+    <string name="style_json">
+        [
+  {
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#ebe3cd"
+      }
+    ]
+  },
+  {
+    "elementType": "labels",
+    "stylers": [
+      {
+        "visibility": "off"
+      }
+    ]
+  },
+  {
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#523735"
+      }
+    ]
+  },
+  {
+    "elementType": "labels.text.stroke",
+    "stylers": [
+      {
+        "color": "#f5f1e6"
+      }
+    ]
+  },
+  {
+    "featureType": "administrative",
+    "elementType": "geometry.stroke",
+    "stylers": [
+      {
+        "color": "#c9b2a6"
+      }
+    ]
+  },
+  {
+    "featureType": "administrative.land_parcel",
+    "stylers": [
+      {
+        "visibility": "off"
+      }
+    ]
+  },
+  {
+    "featureType": "administrative.land_parcel",
+    "elementType": "geometry.stroke",
+    "stylers": [
+      {
+        "color": "#dcd2be"
+      }
+    ]
+  },
+  {
+    "featureType": "administrative.land_parcel",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#ae9e90"
+      }
+    ]
+  },
+  {
+    "featureType": "administrative.neighborhood",
+    "stylers": [
+      {
+        "visibility": "off"
+      }
+    ]
+  },
+  {
+    "featureType": "landscape.natural",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#dfd2ae"
+      }
+    ]
+  },
+  {
+    "featureType": "poi",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#dfd2ae"
+      }
+    ]
+  },
+  {
+    "featureType": "poi",
+    "elementType": "labels.text",
+    "stylers": [
+      {
+        "visibility": "off"
+      }
+    ]
+  },
+  {
+    "featureType": "poi",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#93817c"
+      }
+    ]
+  },
+  {
+    "featureType": "poi.business",
+    "stylers": [
+      {
+        "visibility": "off"
+      }
+    ]
+  },
+  {
+    "featureType": "poi.park",
+    "elementType": "geometry.fill",
+    "stylers": [
+      {
+        "color": "#a5b076"
+      }
+    ]
+  },
+  {
+    "featureType": "poi.park",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#447530"
+      }
+    ]
+  },
+  {
+    "featureType": "road",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#f5f1e6"
+      }
+    ]
+  },
+  {
+    "featureType": "road",
+    "elementType": "labels.icon",
+    "stylers": [
+      {
+        "visibility": "off"
+      }
+    ]
+  },
+  {
+    "featureType": "road.arterial",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#fdfcf8"
+      }
+    ]
+  },
+  {
+    "featureType": "road.arterial",
+    "elementType": "labels",
+    "stylers": [
+      {
+        "visibility": "off"
+      }
+    ]
+  },
+  {
+    "featureType": "road.highway",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#f8c967"
+      }
+    ]
+  },
+  {
+    "featureType": "road.highway",
+    "elementType": "geometry.stroke",
+    "stylers": [
+      {
+        "color": "#e9bc62"
+      }
+    ]
+  },
+  {
+    "featureType": "road.highway",
+    "elementType": "labels",
+    "stylers": [
+      {
+        "visibility": "off"
+      }
+    ]
+  },
+  {
+    "featureType": "road.highway.controlled_access",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#e98d58"
+      }
+    ]
+  },
+  {
+    "featureType": "road.highway.controlled_access",
+    "elementType": "geometry.stroke",
+    "stylers": [
+      {
+        "color": "#db8555"
+      }
+    ]
+  },
+  {
+    "featureType": "road.local",
+    "stylers": [
+      {
+        "visibility": "off"
+      }
+    ]
+  },
+  {
+    "featureType": "road.local",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#806b63"
+      }
+    ]
+  },
+  {
+    "featureType": "transit",
+    "stylers": [
+      {
+        "visibility": "off"
+      }
+    ]
+  },
+  {
+    "featureType": "transit.line",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#dfd2ae"
+      }
+    ]
+  },
+  {
+    "featureType": "transit.line",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#8f7d77"
+      }
+    ]
+  },
+  {
+    "featureType": "transit.line",
+    "elementType": "labels.text.stroke",
+    "stylers": [
+      {
+        "color": "#ebe3cd"
+      }
+    ]
+  },
+  {
+    "featureType": "transit.station",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#dfd2ae"
+      }
+    ]
+  },
+  {
+    "featureType": "water",
+    "elementType": "geometry.fill",
+    "stylers": [
+      {
+        "color": "#b9d3c2"
+      }
+    ]
+  },
+  {
+    "featureType": "water",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#92998d"
+      }
+    ]
+  }
+]
+    </string>
+
+  <!--    Permissions    -->
+  <string name="permission_rationale_location">Access to the location service is required to demonstrate the \'my location\' feature, which shows your current location on the map.</string>
+  <string name="location_permission_denied">This sample requires location permission to enable the \'my location\' layer. Please try again and grant access to use the location.\nIf the permission has been permanently denied, it can be enabled from the System Settings &gt; Apps &gt; \'Google Maps API Demos\'.</string>
+  <string name="permission_required_toast">Location permission is required for this demo.</string>
+
+</resources>
