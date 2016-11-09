@@ -5,6 +5,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Criteria;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -21,8 +22,6 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import android.location.LocationListener;
-
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -97,6 +96,8 @@ public class GameMapUI extends FragmentActivity implements
     private OnLocationChangedListener listener;
 
     private HashMap<TileID, Tile> tiles;
+
+    // a new comment
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
