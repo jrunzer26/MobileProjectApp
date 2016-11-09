@@ -21,8 +21,8 @@ public class LoginActivity extends AppCompatActivity implements AsyncResponse {
     public static final String SHAREDPREF_USERINFO = "USERINFO";
     public static final String USERNAME = "USERNAME";
     public static final String PASSWORD = "PASSWORD";
-    private String username;
-    private String password;
+    public static String username;
+    public static String password;
     private String login_mode;
 
     @Override

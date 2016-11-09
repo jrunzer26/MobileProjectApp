@@ -1,9 +1,14 @@
 package com.mobileproject.game;
 
 import android.Manifest;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.location.Criteria;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
@@ -15,15 +20,19 @@ import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationListener;
+//import com.google.android.gms.location.LocationListener;
+import android.location.LocationListener;
+
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.LocationSource;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
@@ -33,9 +42,13 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -70,41 +83,46 @@ class LatLngLines {
 }
 
 class ColorSet {
-    public int green, red, blue, gray;
+    public int green, red, blue, gray, orange;
 
     ColorSet() {
         green = Color.argb(100, 0, 255, 0);
         red = Color.argb(100, 255, 0, 0);
         blue = Color.argb(100, 0, 0, 255);
         gray = Color.argb(100, 100, 100, 100);
+        orange = Color.argb(100, 255, 165, 0);
     }
 }
 
-class LocationID{
+class LocationID {
 
-    private int LatID,LngID;
+    private int LatID, LngID;
 
-    public LocationID(){
+    public LocationID() {
         LatID = 0;
         LngID = 0;
     }
-    public LocationID(int LatID, int LngID){
-        this.LatID = LatID;
-        this.LngID = LngID;
-    }
-    public int getLatID(){
-        return LatID;
-    }
-    public int getLngID(){
-        return LngID;
-    }
-    private void setID(int LatID, int LngID){
+
+    public LocationID(int LatID, int LngID) {
         this.LatID = LatID;
         this.LngID = LngID;
     }
 
-    public String printID(){
-        return "LatID: "+LatID+" LngID: "+LngID;
+    public int getLatID() {
+        return LatID;
+    }
+
+    public int getLngID() {
+        return LngID;
+    }
+
+    private void setID(int LatID, int LngID) {
+        this.LatID = LatID;
+        this.LngID = LngID;
+    }
+
+    public String printID() {
+        return "LatID: " + LatID + " LngID: " + LngID;
     }
 }
 
@@ -117,10 +135,12 @@ class TilesData {
 public class GameMapUI extends FragmentActivity implements
         GoogleMap.OnMyLocationButtonClickListener,
         OnMapReadyCallback,
+        LocationSource,
         LocationListener,
         ActivityCompat.OnRequestPermissionsResultCallback,
         GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener {
+        GoogleApiClient.OnConnectionFailedListener,
+        AsyncResponse{
 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private static final float MIN_ZOOM_PREF = 17f;
@@ -132,7 +152,8 @@ public class GameMapUI extends FragmentActivity implements
     private boolean mPermissionDenied = false;
     private GoogleMap mMap;
     private Location mLastLocation;
-    private Marker mPositionMarker;;
+    private Marker mPositionMarker;
+    ;
     private LatLng currentLoc;
     private LatLngBounds currentBnd;
     private Utilities utilities;
@@ -145,15 +166,22 @@ public class GameMapUI extends FragmentActivity implements
     private int currentLatID = 24513;
     private int currentLngID = -44031;
 
-    private double bdUnit;
-    private double latTileUnit;
-    private double lngTileUnit;
+    private final double bdUnit = 5; // number of tiles in each direction
+    private final double latTileUnit = 0.0018; // length of a tile
+    private final double lngTileUnit = 0.0018; // width of a tile
 
     private UiSettings settings;
     private ColorSet colors;
 
     private ArrayList<LatLngLines> parallelLines;
     private ArrayList<LatLngLines> veriticalLines;
+
+    private LocationManager locationManager;
+    private String bestProvider;
+    private final int minTime = 20000; // milliseconds
+    private final int minDistance = 3; // meters
+
+    private OnLocationChangedListener listener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -179,9 +207,23 @@ public class GameMapUI extends FragmentActivity implements
 
         // Set map initial location here:
 
-        currentLoc = new LatLng(43.944838, -78.896322); // oshawa - update later
+        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        // set the criteria of the provider
+        Criteria criteria = new Criteria();
+        criteria.setAccuracy(Criteria.ACCURACY_FINE);
+        criteria.setAltitudeRequired(false);
+        criteria.setPowerRequirement(Criteria.NO_REQUIREMENT);
+        criteria.setSpeedRequired(true);
+        criteria.setCostAllowed(true);
+        // find the best location manager that meets the criteria
+        bestProvider = locationManager.getBestProvider(criteria, true);
 
-        show(LocationToID(currentLoc).printID());
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
+            return;
+        }
+        // add the location manager
+        locationManager.requestLocationUpdates(bestProvider, minTime, minDistance, this);
 
         initializeMap();
 
@@ -190,20 +232,26 @@ public class GameMapUI extends FragmentActivity implements
 
     public void initializeMap() {
 
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
+
+            return;
+        }
+
+        double lat = locationManager.getLastKnownLocation(bestProvider).getLatitude();
+        double lng = locationManager.getLastKnownLocation(bestProvider).getLongitude();
+
+        LocationID id = LocationToID(new LatLng(lat, lng));
+        currentLatID = id.getLatID();
+        currentLngID = id.getLngID();
+
+        System.out.println("lat, lng: " + lat + "," + lng + " current location id: " + id.printID() + "\nset location id: 24413, -43831");
+        System.out.println();
+
         colors = new ColorSet();
 
         parallelLines = new ArrayList<LatLngLines>();
         veriticalLines = new ArrayList<LatLngLines>();
-
-        bdUnit = 200;// IDUnit
-        latTileUnit = 0.0018;// 180/100000
-        lngTileUnit = latTileUnit;
-
-        //show("Last Location: " + mLastLocation.toString());
-
-        currentLatID = 24413;
-        currentLngID = -43831;
-
 
         NorthBoundLat = (currentLatID + bdUnit) * latTileUnit;
         SouthBoundLat = (currentLatID - bdUnit) * latTileUnit;
@@ -229,19 +277,9 @@ public class GameMapUI extends FragmentActivity implements
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
-
         mMap = googleMap;
-
-
-        // Add a marker in Sydney and move the camera
-        LatLng UOIT = currentLoc;
-
-
-        mMap.addMarker(new MarkerOptions().position(UOIT).title("Home Location"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(UOIT, MIN_ZOOM_PREF));
-
         // Set bounds
-        mMap.setLatLngBoundsForCameraTarget(getMapViewBounds());
+        //mMap.setLatLngBoundsForCameraTarget(getMapViewBounds());
 
         // Set the map style here:
         mMap.setMapStyle(createMapStyle("retro"));
@@ -256,6 +294,7 @@ public class GameMapUI extends FragmentActivity implements
         // Drawing the titles: line length in KMs
         DrawPolygonDemo(mMap, new LatLng(currentLatID * latTileUnit - latTileUnit / 2, currentLngID * lngTileUnit - lngTileUnit / 2));
 
+        System.out.println("username" + LoginActivity.username + " password: " + LoginActivity.password);
     }
 
 
@@ -271,6 +310,7 @@ public class GameMapUI extends FragmentActivity implements
         } else if (mMap != null) {
             // Access to the location has been granted to the app.
             mMap.setMyLocationEnabled(true);
+
         }
     }
 
@@ -310,13 +350,17 @@ public class GameMapUI extends FragmentActivity implements
                 new LatLng(center.latitude - halfHeight, center.longitude - halfWidth));
     }
 
-    private void DrawPolygon(GoogleMap map, LatLng loc, double width, double height, int color) {
-        map.addPolygon(new PolygonOptions()
+    private Polygon DrawPolygon(GoogleMap map, LatLng loc, double width, double height, int color) {
+        System.out.println("add tileID: " + loc.toString());
+
+        Polygon polygon = map.addPolygon(new PolygonOptions()
                 .addAll(createRectangle(loc, width / 2, height / 2))
                 .fillColor(color)
                 .strokeWidth(0)
                 .clickable(true)
                 .strokeColor(Color.argb(0, 255, 255, 255)));
+        return polygon;
+
     }
 
 
@@ -393,16 +437,17 @@ public class GameMapUI extends FragmentActivity implements
     public LocationID LocationToID(LatLng loc){
         // TODO: An algorithm convert location data(LatLng) to ID(Int)
 
-        int LatID = (int)(loc.latitude/latTileUnit) - 1;
-        int LngID = (int)(loc.longitude/lngTileUnit) - 1;
-
+        int LatID = (int)(loc.latitude/latTileUnit) + 1;
+        int LngID = (int)(loc.longitude/lngTileUnit) ;
         return new LocationID(LatID,LngID);
     }
 
     public LatLng IdTOLocation(LocationID newID){
-        LatLng loc = new LatLng(0,0);
-        // TODO: An algorithm convert ID(Int) location to data(LatLng)
-        //......
+        double lat = (newID.getLatID() - 1) * latTileUnit + latTileUnit/ 2.0;
+        double lng = (newID.getLngID()) * lngTileUnit + lngTileUnit / 2.0 -lngTileUnit;
+        System.out.println("converted lat: " + lat + " converted lng: " + lng);
+        LatLng loc = new LatLng(lat,lng);
+        // TODO: A better algorithm convert ID(Int) location to data(LatLng)
         return loc;
     }
 
@@ -451,7 +496,48 @@ public class GameMapUI extends FragmentActivity implements
 
     public void DrawPolygonDemo(GoogleMap mMap, LatLng newLoc) {
         // Drawing the titles: line length in KMs
-        DrawPolygon(mMap, newLoc, latTileUnit, lngTileUnit, colors.green);
+        //DrawPolygon(mMap, newLoc, latTileUnit, lngTileUnit, colors.red);
+
+
+        // TODO: 11/8/2016 add polygons to the locaitonID associated with latid and lng id, then clear when painting the polygon on the map 
+        //draw tile user is in
+        LocationID id = LocationToID(shifter(newLoc, 0, 0));
+        TileWebserviceUtility.getResources(id.getLatID(), id.getLngID(), LoginActivity.username, LoginActivity.password, this, getApplicationContext());
+
+        // draw tiles in cross
+        for (int i = 1; i < bdUnit; i++) {
+            id = LocationToID(shifter(newLoc, i * latTileUnit, 0));
+            TileWebserviceUtility.getResources(id.getLatID(), id.getLngID(), LoginActivity.username, LoginActivity.password, this, getApplicationContext());
+            id = LocationToID(shifter(newLoc, (-i) * latTileUnit, 0));
+            TileWebserviceUtility.getResources(id.getLatID(), id.getLngID(), LoginActivity.username, LoginActivity.password, this, getApplicationContext());
+            id = LocationToID(shifter(newLoc, 0, i * lngTileUnit));
+            TileWebserviceUtility.getResources(id.getLatID(), id.getLngID(), LoginActivity.username, LoginActivity.password, this, getApplicationContext());
+            id = LocationToID(shifter(newLoc, 0, (-i) * lngTileUnit));
+            TileWebserviceUtility.getResources(id.getLatID(), id.getLngID(), LoginActivity.username, LoginActivity.password, this, getApplicationContext());
+        }
+        // draw polygons in corners
+        for (int i = 1; i < bdUnit; i++) {
+            for (int j = 1; j < bdUnit; j++) {
+                id = LocationToID(shifter(newLoc, i * latTileUnit, j * lngTileUnit));
+                TileWebserviceUtility.getResources(id.getLatID(), id.getLngID(), LoginActivity.username, LoginActivity.password, this, getApplicationContext());
+                id = LocationToID(shifter(newLoc, i * (-latTileUnit), j * lngTileUnit));
+                TileWebserviceUtility.getResources(id.getLatID(), id.getLngID(), LoginActivity.username, LoginActivity.password, this, getApplicationContext());
+                id = LocationToID(shifter(newLoc, i * (-latTileUnit), j * (-lngTileUnit)));
+                TileWebserviceUtility.getResources(id.getLatID(), id.getLngID(), LoginActivity.username, LoginActivity.password, this, getApplicationContext());
+                id = LocationToID(shifter(newLoc, i * (latTileUnit), j * (-lngTileUnit)));
+                TileWebserviceUtility.getResources(id.getLatID(), id.getLngID(), LoginActivity.username, LoginActivity.password, this, getApplicationContext());
+            }
+        }
+
+        //capture in the users location
+        TileWebserviceUtility.captureTile(currentLatID, currentLngID,LoginActivity.username, LoginActivity.password, this, getApplicationContext());
+        /*
+        LocationID id = LocationToID(newLoc);
+        TileWebserviceUtility.getResources(id.getLatID(), id.getLngID(), LoginActivity.username, LoginActivity.password, this, getApplicationContext());
+        */
+        /*
+        id = LocationToID(shifter(newLoc, 0, lngTileUnit));
+        TileWebserviceUtility.getResources(id.getLatID(), id.getLngID(), LoginActivity.username, LoginActivity.password, this, getApplicationContext());
         DrawPolygon(mMap, shifter(newLoc, 0, lngTileUnit), latTileUnit, lngTileUnit, colors.red);
         DrawPolygon(mMap, shifter(newLoc, latTileUnit, 0), latTileUnit, lngTileUnit, colors.green);
         DrawPolygon(mMap, shifter(newLoc, -latTileUnit, -lngTileUnit), latTileUnit, lngTileUnit, colors.green);
@@ -459,6 +545,7 @@ public class GameMapUI extends FragmentActivity implements
         DrawPolygon(mMap, shifter(newLoc, -latTileUnit, lngTileUnit), latTileUnit, lngTileUnit, colors.blue);
         DrawPolygon(mMap, shifter(newLoc, latTileUnit, -lngTileUnit), latTileUnit, lngTileUnit, colors.gray);
         DrawPolygon(mMap, shifter(newLoc, latTileUnit * 2, lngTileUnit * 2), latTileUnit, lngTileUnit, colors.green);
+        */
     }
 
 
@@ -515,30 +602,27 @@ public class GameMapUI extends FragmentActivity implements
     // Every time when the location changed:
     @Override
     public void onLocationChanged(Location location) {
-        if(location!=null){
-            show("Location Changed: "+location.toString());
-           // mMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude())));
-        } else {
-            return;
+        System.out.println("location changed");
+        // added to ensure that the map is animated
+        if (listener != null) {
+            listener.onLocationChanged(location);
         }
+        mMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude())));
 
-        if (mPositionMarker == null) {
+    }
 
-            mPositionMarker = mMap.addMarker(new MarkerOptions()
-                    .flat(true)
-                    .icon(BitmapDescriptorFactory
-                            .fromResource(R.drawable.soldier_128px))
-                    .anchor(0.5f, 0.5f)
-                    .position(
-                            new LatLng(location.getLatitude(), location
-                                    .getLongitude())));
-        }
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
 
-        animateMarker(mPositionMarker, location); // Helper method for smooth
-        // animation
+    }
 
-        mMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(location
-                .getLatitude(), location.getLongitude())));
+    @Override
+    public void onProviderEnabled(String provider) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
 
     }
 
@@ -573,5 +657,44 @@ public class GameMapUI extends FragmentActivity implements
         });
     }
 
+    @Override
+    public void activate(OnLocationChangedListener onLocationChangedListener) {
+        listener = onLocationChangedListener;
+    }
+
+    @Override
+    public void deactivate() {
+
+    }
+
+    /**
+     * Processes the result from the server
+     * @param result - the json from the server
+     */
+    @Override
+    public void processResult(String result) {
+        System.out.println("Result from server: " + result);
+        Toast.makeText(this, result, Toast.LENGTH_LONG).show();
+        try {
+            JSONObject jsonObject = new JSONObject(result);
+            String tileLatID = jsonObject.getString("tileLatID");
+            String tileLngID = jsonObject.getString("tileLngID");
+            String tileUsername = jsonObject.getString("username");
+            Toast.makeText(this, tileLatID + tileLngID + tileUsername, Toast.LENGTH_LONG).show();
+            LocationID latLng = new LocationID(Integer.parseInt(tileLatID), Integer.parseInt(tileLngID));
+            System.out.println("tile username: " + tileUsername + " username " + LoginActivity.username);
+            if(tileUsername.equals("null"))
+                DrawPolygon(mMap, IdTOLocation(latLng), latTileUnit, lngTileUnit, colors.gray);
+            else if (tileUsername.equalsIgnoreCase(LoginActivity.username)) {
+                DrawPolygon(mMap, IdTOLocation(latLng), latTileUnit, lngTileUnit, colors.green);
+            } else {
+                System.out.println("RED tile username: " + tileUsername + " length: " + tileUsername.length() +  " username " + LoginActivity.username + " length: " + LoginActivity.username.length());
+                DrawPolygon(mMap, IdTOLocation(latLng), latTileUnit, lngTileUnit, colors.red);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+    }
 }
 
