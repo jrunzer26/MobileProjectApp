@@ -43,7 +43,6 @@ public class LoginActivity extends AppCompatActivity implements AsyncResponse {
                 password = sharedPreferences.getString(PASSWORD, "");
                 serverLogin(username, password);
             }
-
         // reset all fields
         ((EditText) findViewById(R.id.edittext_login_username)).setText("");
         ((EditText) findViewById(R.id.edittext_login_password)).setText("");
@@ -119,7 +118,6 @@ public class LoginActivity extends AppCompatActivity implements AsyncResponse {
                 startActivity(intent);
                 finish();
             }
-
         } catch (JSONException e) {
             e.printStackTrace();
             ((TextView) findViewById(R.id.textview_login_warning)).setText(Utilities.getErr(result));

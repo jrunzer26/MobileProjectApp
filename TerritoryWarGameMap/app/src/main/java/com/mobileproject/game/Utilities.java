@@ -19,8 +19,6 @@ import org.json.JSONObject;
 
 public class Utilities {
 
-    public void Utilities(){}
-
     /**
      * Hides the soft keyboard.
      * @param view the current view

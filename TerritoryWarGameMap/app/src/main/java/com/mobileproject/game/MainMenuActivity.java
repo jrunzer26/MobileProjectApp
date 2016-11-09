@@ -20,7 +20,6 @@ public class MainMenuActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
-
         init();
     }
     // Initialization
@@ -32,10 +31,8 @@ public class MainMenuActivity extends AppCompatActivity {
 
     // Listen to certain menu buttons clicking
     public void process(View view){
-
         // Play clicker sound
         buttonClick.start();
-
         switch (view.getId()){
             case R.id.mainGameMenuBtn1:
                 buildMapSystem();
@@ -70,9 +67,7 @@ public class MainMenuActivity extends AppCompatActivity {
      * ***************************/
     private int logoutCurrentUser(){
         SharedPreferences sharedPreferences = getSharedPreferences(SHAREDPREF_USERINFO, Context.MODE_PRIVATE);
-
         sharedPreferences.edit().clear().commit();
-
         intent = new Intent(this,LoginActivity.class);
         startActivity(intent);
         finish();
