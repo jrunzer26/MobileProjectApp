@@ -46,11 +46,8 @@ public class TileWebserviceUtility {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
         ServerControl sc = new ServerControl(callback);
         sc.execute(context.getString(R.string.server) + "tiles/resources",
                 ServerControl.POST, jsonObject.toString(), auth.toString());
     }
-
-
 }
