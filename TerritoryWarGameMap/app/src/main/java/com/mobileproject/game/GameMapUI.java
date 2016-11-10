@@ -98,6 +98,7 @@ public class GameMapUI extends FragmentActivity implements
     private OnLocationChangedListener listener;
 
     private HashMap<TileID, Tile> tiles;
+    private boolean initalizeMap = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -158,14 +159,23 @@ public class GameMapUI extends FragmentActivity implements
         criteria.setCostAllowed(true);
         // find the best location manager that meets the criteria
         bestProvider = locationManager.getBestProvider(criteria, true);
-
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
             return;
         }
         // add the location manager
         locationManager.requestLocationUpdates(bestProvider, minTime, minDistance, this);
+        //the hashmap containing all the tiles
+        tiles = new HashMap<>();
+    }
+
+    private void setupFirstLocation() {
+        initalizeMap = true;
         // the last known latitude and longitude of the user
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
+            return;
+        }
         double lat = locationManager.getLastKnownLocation(bestProvider).getLatitude();
         double lng = locationManager.getLastKnownLocation(bestProvider).getLongitude();
         // make a locationID from that to find the center tile
@@ -185,8 +195,10 @@ public class GameMapUI extends FragmentActivity implements
         SouthBoundLat = (currentLatID - bdUnit) * latTileUnit;
         WestBoundLng = (currentLngID - bdUnit) * lngTileUnit;
         EastBoundLng = (currentLngID + bdUnit) * lngTileUnit;
-        //the hashmap containing all the tiles
-        tiles = new HashMap<>();
+
+        DrawTiles(mMap);
+        // Drawing the titles: line length in KMs
+        DrawPolygonDemo(mMap, new LatLng(currentLatID * latTileUnit - latTileUnit / 2, currentLngID * lngTileUnit - lngTileUnit / 2));
     }
 
     /**
@@ -194,7 +206,7 @@ public class GameMapUI extends FragmentActivity implements
      */
     private void mapSettingInit() {
        UiSettings settings = mMap.getUiSettings();
-        settings.setMyLocationButtonEnabled(false);
+        //settings.setMyLocationButtonEnabled(false);
         settings.setZoomControlsEnabled(false);
     }
 
@@ -218,9 +230,7 @@ public class GameMapUI extends FragmentActivity implements
         // Get current location:
         mMap.setOnMyLocationButtonClickListener(this);
         enableMyLocation();
-        DrawTiles(mMap);
-        // Drawing the titles: line length in KMs
-        DrawPolygonDemo(mMap, new LatLng(currentLatID * latTileUnit - latTileUnit / 2, currentLngID * lngTileUnit - lngTileUnit / 2));
+
     }
 
 
@@ -502,7 +512,7 @@ public class GameMapUI extends FragmentActivity implements
             }
         }
         //capture in the users location
-        TileWebserviceUtility.captureTile(currentLatID, currentLngID,LoginActivity.username, LoginActivity.password, this, getApplicationContext());
+        //TileWebserviceUtility.captureTile(currentLatID, currentLngID,LoginActivity.username, LoginActivity.password, this, getApplicationContext());
     }
 
 
@@ -568,12 +578,28 @@ public class GameMapUI extends FragmentActivity implements
     // Every time when the location changed:
     @Override
     public void onLocationChanged(Location location) {
-        System.out.println("location changed");
         // added to ensure that the map is animated
         if (listener != null) {
             listener.onLocationChanged(location);
         }
-        mMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude())));
+        if (!initalizeMap) {
+            setupFirstLocation();
+        }
+        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+        mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
+        // find the tile id where the user is, then try to capture it
+        LocationID locationID = LocationToID(latLng);
+        if (currentLatID != locationID.getLatID() || currentLngID != locationID.getLngID()) {
+            currentLatID = locationID.getLatID();
+            currentLngID = locationID.getLngID();
+            Tile t;
+            if ((t = tiles.get(new TileID(currentLatID, currentLngID))) != null) {
+                if (t.getUsername() == null) {
+                    // capture the tile if it is unoccupied
+                    TileWebserviceUtility.captureTile(currentLatID, currentLngID, LoginActivity.username, LoginActivity.password, this, getApplicationContext());
+                }
+            }
+        }
 
     }
 
@@ -649,18 +675,16 @@ public class GameMapUI extends FragmentActivity implements
             String tileLatID = jsonObject.getString("tileLatID");
             String tileLngID = jsonObject.getString("tileLngID");
             String tileUsername = jsonObject.getString("username");
-            Toast.makeText(this, tileLatID + tileLngID + tileUsername, Toast.LENGTH_LONG).show();
             LocationID latLng = new LocationID(Integer.parseInt(tileLatID), Integer.parseInt(tileLngID));
             System.out.println("tile username: " + tileUsername + " username " + LoginActivity.username);
             Tile t;
             if(tileUsername.equals("null")) {
-                updateTile(colors.gray, tileLatID, tileLngID);
+                updateTile(colors.gray, tileLatID, tileLngID, null);
             }
             else if (tileUsername.equalsIgnoreCase(LoginActivity.username)) {
-                updateTile(colors.green, tileLatID, tileLngID);
+                updateTile(colors.green, tileLatID, tileLngID, tileUsername);
             } else {
-                System.out.println("RED tile username: " + tileUsername + " length: " + tileUsername.length() +  " username " + LoginActivity.username + " length: " + LoginActivity.username.length());
-                updateTile(colors.red, tileLatID, tileLngID);
+                updateTile(colors.red, tileLatID, tileLngID, tileUsername);
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -673,22 +697,24 @@ public class GameMapUI extends FragmentActivity implements
      * @param colour the colour of the new tile
      * @param tileLatID the latID of the tile
      * @param tileLngID the LngID of the tile
+     * @param username the user of the tile - null if empty
      */
-    private void updateTile(int colour, String tileLatID, String tileLngID) {
+    private void updateTile(int colour, String tileLatID, String tileLngID, String username) {
         Tile t;
         TileID tileID = new TileID(Integer.parseInt(tileLatID), Integer.parseInt(tileLngID));
         LocationID latLng = new LocationID(Integer.parseInt(tileLatID), Integer.parseInt(tileLngID));
         if ((t = tiles.get(tileID)) != null) {
-            //remove the previous tile
+            //remove the previous tile from the map
             t.remove();
             t.setPolygon(drawPolygon(mMap, IdTOLocation(latLng), latTileUnit, lngTileUnit, colour));
         } else {
             t = new Tile(
                     tileID,
-                    null,
+                    username,
                     drawPolygon(mMap, IdTOLocation(latLng), latTileUnit, lngTileUnit, colour));
             tiles.put(tileID, t);
         }
+        System.out.println("Tiles size: " + tiles.size());
     }
 }
 
