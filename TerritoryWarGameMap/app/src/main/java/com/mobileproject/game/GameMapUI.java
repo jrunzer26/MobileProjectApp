@@ -24,6 +24,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 
 import android.location.LocationListener;
 
+import com.google.android.gms.gcm.Task;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -49,6 +50,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+
 
 public class GameMapUI extends FragmentActivity implements
         GoogleMap.OnMyLocationButtonClickListener,
@@ -138,8 +142,8 @@ public class GameMapUI extends FragmentActivity implements
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 return;
             }
-
-            locationManager.requestLocationUpdates(this);
+            if (initalizeMap)
+                locationManager.requestLocationUpdates(bestProvider, minTime, minDistance, this);
         }
     }
 
@@ -198,7 +202,31 @@ public class GameMapUI extends FragmentActivity implements
 
         DrawTiles(mMap);
         // Drawing the titles: line length in KMs
+
         DrawPolygonDemo(mMap, new LatLng(currentLatID * latTileUnit - latTileUnit / 2, currentLngID * lngTileUnit - lngTileUnit / 2));
+        // update the map every 30 seconds
+        //UpdateMapThread taskThread = new UpdateMapThread();
+        //taskThread.run();
+    }
+
+    class UpdateMapThread extends Thread {
+
+        @Override
+        public void run() {
+            new Timer().schedule(new UpdateMapTask(), 120000);
+        }
+    }
+
+    class UpdateMapTask extends TimerTask {
+
+
+        @Override
+        public void run() {
+            DrawPolygonDemo(mMap, new LatLng(currentLatID * latTileUnit - latTileUnit / 2, currentLngID * lngTileUnit - lngTileUnit / 2));
+        }
+    }
+    private void updateEntireMap() {
+
     }
 
     /**
