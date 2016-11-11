@@ -1,22 +1,106 @@
-<fragment xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:map="http://schemas.android.com/apk/res-auto"
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/map"
-    android:name="com.google.android.gms.maps.SupportMapFragment"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:id="@+id/activity_show_grades"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
     tools:context="com.mobileproject.game.GameMapUI">
 
-    <ImageButton
-        android:id="@+id/menuButton"
-        android:layout_width="65dp"
-        android:layout_height="65dp"
-        android:background="@drawable/oval"
-        android:elevation="10dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginBottom="65dp"
-        android:layout_marginEnd="25dp"
-        android:src="@mipmap/ic_menu_icon" />
+    <fragment xmlns:map="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    </fragment>
 
-</fragment>
+    <ImageView
+        android:id="@+id/imgBgg"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/bgg"
+        android:scaleType="centerCrop"
+        android:layout_gravity="center|bottom"/>
+
+    <ImageView
+        android:id="@+id/imgBottom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src="@drawable/bottom"
+        android:scaleType="centerCrop"
+        android:layout_gravity="center|bottom"/>
+
+
+
+    <ImageView
+        android:id="@+id/imgBar"
+        android:layout_width="200dp"
+        android:layout_height="40dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_gravity="top|start"
+        android:scaleType="centerCrop"
+        android:src="@drawable/bar"/>
+
+
+    <ImageButton
+        android:id="@+id/btnBackLocation"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginTop="25dp"
+        android:layout_marginEnd="25dp"
+        android:layout_gravity="top|end"
+        android:onClick="process"
+        android:background="@drawable/location_map"/>
+
+    <ImageView
+        android:id="@+id/imgCommanderFigure"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_gravity="start|bottom"
+        android:src="@drawable/commander"/>
+
+
+    <RelativeLayout
+        android:visibility="gone"
+        android:layout_gravity="center_vertical|center_horizontal"
+        android:background="@drawable/menu_bg"
+        android:layout_width="350dp"
+        android:layout_height="500dp"
+        android:id="@+id/internalMenu">
+        <TextView
+            android:id="@+id/textIMTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="22sp"
+            android:layout_marginTop="20dp"
+            android:gravity="center_horizontal"
+            android:textColor="@color/colorWhite"
+            android:text="Internal Game Menu"/>
+
+        <ImageButton
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:id="@+id/btnIMBack"
+            android:onClick="process"
+            android:background="@drawable/btn_close"
+            android:layout_marginBottom="20dp"
+            android:layout_width="200dp"
+            android:layout_height="50dp" />
+
+    </RelativeLayout>
+
+    <ImageButton
+
+        android:id="@+id/menuIMButton"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:background="@drawable/oval"
+        android:layout_marginBottom="25dp"
+        android:layout_marginEnd="25dp"
+        android:onClick="process"
+        android:layout_gravity="bottom|end"
+        android:src="@drawable/icon_gear" />
+
+
+</FrameLayout>
