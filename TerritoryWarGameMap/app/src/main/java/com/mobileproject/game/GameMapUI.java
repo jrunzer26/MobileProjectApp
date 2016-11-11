@@ -5,7 +5,9 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Criteria;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
@@ -15,15 +17,14 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.view.View;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-
-import android.location.LocationListener;
-
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -100,6 +101,8 @@ public class GameMapUI extends FragmentActivity implements
     private HashMap<TileID, Tile> tiles;
     private boolean initalizeMap = false;
 
+    private MediaPlayer buttonClick;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -125,6 +128,7 @@ public class GameMapUI extends FragmentActivity implements
      * Initializes the google map with tiles and location.
      */
     private void initializeMap() {
+        buttonClick = MediaPlayer.create(getApplicationContext(), R.raw.soho);
         // Set map initial location here:
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         // set the criteria of the provider
@@ -182,8 +186,8 @@ public class GameMapUI extends FragmentActivity implements
      * Changes the UISettings of the Google Map.
      */
     private void mapSettingInit() {
-       UiSettings settings = mMap.getUiSettings();
-        //settings.setMyLocationButtonEnabled(false);
+        UiSettings settings = mMap.getUiSettings();
+        settings.setMyLocationButtonEnabled(false);
         settings.setZoomControlsEnabled(false);
     }
 
@@ -223,7 +227,50 @@ public class GameMapUI extends FragmentActivity implements
         } else if (mMap != null) {
             // Access to the location has been granted to the app.
             mMap.setMyLocationEnabled(true);
+        }
+    }
 
+
+    /**
+     * Make Camera back to current location
+     */
+    private void getMyLocation() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        double lat = locationManager.getLastKnownLocation(bestProvider).getLatitude();
+        double lng = locationManager.getLastKnownLocation(bestProvider).getLongitude();
+
+        LatLng latLng = new LatLng(lat, lng);
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, MIN_ZOOM_PREF);
+        mMap.animateCamera(cameraUpdate);
+    }
+
+
+    /**
+     * Creates a button event handlers set
+     */
+    public void process(View view){
+        // Play clicker sound
+        buttonClick.start();
+        switch (view.getId()){
+            case R.id.menuIMButton:
+                //startActivity(new Intent(this,InternalMenuActivity.class));
+                RelativeLayout layout1 =(RelativeLayout)findViewById(R.id.internalMenu);
+                if(layout1.getVisibility()==View.VISIBLE){
+                    layout1.setVisibility(View.GONE);
+                } else {
+                    layout1.setVisibility(View.VISIBLE);
+                }
+                break;
+            case R.id.btnIMBack:
+                RelativeLayout layout2 =(RelativeLayout)findViewById(R.id.internalMenu);
+                layout2.setVisibility(View.GONE);
+                break;
+            case R.id.btnBackLocation:
+                getMyLocation();
+            default:
+                break;
         }
     }
 

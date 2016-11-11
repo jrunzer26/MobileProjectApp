@@ -9,14 +9,15 @@
     android:background="@color/colorMainMenuBackgroud"
     tools:context="com.mobileproject.game.MainMenuActivity">
 
-    <TextView
-        android:id="@+id/bannerTxt"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="20sp"
-        android:layout_marginTop="10dp"
-        android:textColor="@color/colorBlack"
-        android:text="@string/banner_text" />
+    <ImageView
+        android:id="@+id/imgBanner"
+        android:src="@drawable/banner"
+        android:layout_marginBottom="50dp"
+        android:layout_marginTop="20dp"
+        android:scaleType="centerCrop"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
 
     <Button
         android:id="@+id/mainGameMenuBtn1"
@@ -25,6 +26,7 @@
         android:layout_height="87dp"
         android:textColor="@color/colorBlack"
         android:onClick="process"
+        android:textStyle="bold"
         android:layout_marginTop="@dimen/menu_itmes_margin_gap"
         android:layout_marginLeft="30dp"
         android:layout_marginRight="30dp"
@@ -32,8 +34,8 @@
 
     <Button
         android:id="@+id/mainGameMenuBtn2"
-        android:layout_width="250dp"
-        android:layout_height="87dp"
+        android:layout_width="200dp"
+        android:layout_height="70dp"
         android:textColor="@color/colorBlack"
         android:onClick="process"
         android:layout_marginTop="@dimen/menu_itmes_margin_gap"
@@ -56,8 +58,8 @@
 
     <Button
         android:id="@+id/mainGameMenuBtn4"
-        android:layout_width="250dp"
-        android:layout_height="87dp"
+        android:layout_width="200dp"
+        android:layout_height="70dp"
         android:textColor="@color/colorBlack"
         android:onClick="process"
         android:layout_marginTop="@dimen/menu_itmes_margin_gap"
@@ -68,8 +70,8 @@
 
     <Button
         android:id="@+id/mainGameMenuBtn5"
-        android:layout_width="250dp"
-        android:layout_height="87dp"
+        android:layout_width="200dp"
+        android:layout_height="70dp"
         android:textColor="@color/colorBlack"
         android:onClick="process"
         android:layout_marginTop="@dimen/menu_itmes_margin_gap"
@@ -79,8 +81,8 @@
 
     <Button
         android:id="@+id/mainGameMenuBtn6"
-        android:layout_width="250dp"
-        android:layout_height="87dp"
+        android:layout_width="200dp"
+        android:layout_height="70dp"
         android:textColor="@color/colorBlack"
         android:onClick="process"
         android:layout_marginTop="@dimen/menu_itmes_margin_gap"
