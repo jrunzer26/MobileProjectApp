@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
@@ -42,6 +43,7 @@ import com.google.android.gms.maps.model.PolygonOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -85,9 +87,9 @@ public class GameMapUI extends FragmentActivity implements
     private double WestBoundLng;
     private double EastBoundLng;
 
-    private final double bdUnit = 5; // number of tiles in each direction
-    private final double latTileUnit = 0.0018; // length of a tile
-    private final double lngTileUnit = 0.0018; // width of a tile
+    public static final double bdUnit = 4; // number of tiles in each direction
+    public static final double latTileUnit = 0.0018; // length of a tile
+    public static final double lngTileUnit = 0.0018; // width of a tile
 
     private ColorSet colors;
 
@@ -101,8 +103,9 @@ public class GameMapUI extends FragmentActivity implements
 
     private OnLocationChangedListener listener;
 
-    private HashMap<TileID, Tile> tiles;
+    public HashMap<TileID, Tile> tiles;
     private boolean initalizeMap = false;
+    private boolean threadDone = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -124,6 +127,7 @@ public class GameMapUI extends FragmentActivity implements
         initializeMap();
     }
 
+
     @Override
     protected void onPause() {
         super.onPause();
@@ -137,7 +141,7 @@ public class GameMapUI extends FragmentActivity implements
 
     @Override
     protected void onResume() {
-        super.onPause();
+        super.onResume();
         if (locationManager != null) {
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 return;
@@ -171,6 +175,7 @@ public class GameMapUI extends FragmentActivity implements
         locationManager.requestLocationUpdates(bestProvider, minTime, minDistance, this);
         //the hashmap containing all the tiles
         tiles = new HashMap<>();
+
     }
 
     private void setupFirstLocation() {
@@ -203,31 +208,27 @@ public class GameMapUI extends FragmentActivity implements
         DrawTiles(mMap);
         // Drawing the titles: line length in KMs
 
-        DrawPolygonDemo(mMap, new LatLng(currentLatID * latTileUnit - latTileUnit / 2, currentLngID * lngTileUnit - lngTileUnit / 2));
+        //DrawPolygonDemo(mMap, new LatLng(currentLatID * latTileUnit - latTileUnit / 2, currentLngID * lngTileUnit - lngTileUnit / 2));
         // update the map every 30 seconds
-        //UpdateMapThread taskThread = new UpdateMapThread();
-        //taskThread.run();
+        UpdateMapThread taskThread = new UpdateMapThread();
+        taskThread.start();
     }
 
     class UpdateMapThread extends Thread {
 
         @Override
         public void run() {
-            new Timer().schedule(new UpdateMapTask(), 120000);
+           while(!threadDone) {
+               DrawPolygonDemo(mMap, new LatLng(currentLatID * latTileUnit - latTileUnit / 2, currentLngID * lngTileUnit - lngTileUnit / 2));
+               try {
+                   Thread.sleep(45000);
+               } catch (InterruptedException e) {
+                   e.printStackTrace();
+               }
+           }
         }
     }
 
-    class UpdateMapTask extends TimerTask {
-
-
-        @Override
-        public void run() {
-            DrawPolygonDemo(mMap, new LatLng(currentLatID * latTileUnit - latTileUnit / 2, currentLngID * lngTileUnit - lngTileUnit / 2));
-        }
-    }
-    private void updateEntireMap() {
-
-    }
 
     /**
      * Changes the UISettings of the Google Map.
@@ -259,6 +260,9 @@ public class GameMapUI extends FragmentActivity implements
         mMap.setOnMyLocationButtonClickListener(this);
         enableMyLocation();
 
+        if (locationManager != null) {
+            setupFirstLocation();
+        }
     }
 
 
@@ -309,35 +313,9 @@ public class GameMapUI extends FragmentActivity implements
         return bounds;
     }
 
-    /**
-     * Creates a List of LatLngs that form a rectangle with the given dimensions.
-     */
-    private List<LatLng> createRectangle(LatLng center, double halfWidth, double halfHeight) {
-        return Arrays.asList(new LatLng(center.latitude - halfHeight, center.longitude - halfWidth),
-                new LatLng(center.latitude - halfHeight, center.longitude + halfWidth),
-                new LatLng(center.latitude + halfHeight, center.longitude + halfWidth),
-                new LatLng(center.latitude + halfHeight, center.longitude - halfWidth),
-                new LatLng(center.latitude - halfHeight, center.longitude - halfWidth));
-    }
 
-    /**
-     * Draws a polygon on the map
-     * @param map the google map
-     * @param loc the starting location to draw
-     * @param width the width of the polygon
-     * @param height the height of the polygon
-     * @param color the ColorSet colour of the polygon
-     * @return the created polygon
-     */
-    private Polygon drawPolygon(GoogleMap map, LatLng loc, double width, double height, int color) {
-        Polygon polygon = map.addPolygon(new PolygonOptions()
-                .addAll(createRectangle(loc, width / 2, height / 2))
-                .fillColor(color)
-                .strokeWidth(0)
-                .clickable(true)
-                .strokeColor(Color.argb(0, 255, 255, 255)));
-        return polygon;
-    }
+
+
 
     /**
      * Draws a line on the map
@@ -417,40 +395,19 @@ public class GameMapUI extends FragmentActivity implements
         return (h_flag && v_flag);
     }
 
-    /**
-     * Shifts the location by one tile.
-     * @param point the location
-     * @param lat the latitude
-     * @param lng the longitude
-     * @return the displaced latlng
-     */
-    public LatLng shifter(LatLng point, double lat, double lng) {
-        return new LatLng(point.latitude + lat, point.longitude + lng);
-    }
+
 
     /**
      * Gets a LocationID object from a latlng
      * @param loc the location
      * @return the LocationID
      */
-    private LocationID LocationToID(LatLng loc){
+    public LocationID LocationToID(LatLng loc){
         int LatID = (int)(loc.latitude/latTileUnit) + 1;
         int LngID = (int)(loc.longitude/lngTileUnit) ;
         return new LocationID(LatID,LngID);
     }
 
-    /**
-     * Gets the latitude longitude of the location ID
-     * @param newID the location ID
-     * @return the location of that ID
-     */
-    private LatLng IdTOLocation(LocationID newID){
-        double lat = (newID.getLatID() - 1) * latTileUnit + latTileUnit/ 2.0;
-        double lng = (newID.getLngID()) * lngTileUnit + lngTileUnit / 2.0 -lngTileUnit;
-        System.out.println("converted lat: " + lat + " converted lng: " + lng);
-        LatLng loc = new LatLng(lat,lng);
-        return loc;
-    }
 
 
     /**
@@ -513,29 +470,29 @@ public class GameMapUI extends FragmentActivity implements
      */
     public void DrawPolygonDemo(GoogleMap mMap, LatLng newLoc) {
         //draw tile user is in
-        LocationID id = LocationToID(shifter(newLoc, 0, 0));
+        LocationID id = LocationToID(Utilities.shifter(newLoc, 0, 0));
         TileWebserviceUtility.getResources(id.getLatID(), id.getLngID(), LoginActivity.username, LoginActivity.password, this, getApplicationContext());
         // draw tiles in cross from the user
         for (int i = 1; i < bdUnit; i++) {
-            id = LocationToID(shifter(newLoc, i * latTileUnit, 0));
+            id = LocationToID(Utilities.shifter(newLoc, i * latTileUnit, 0));
             TileWebserviceUtility.getResources(id.getLatID(), id.getLngID(), LoginActivity.username, LoginActivity.password, this, getApplicationContext());
-            id = LocationToID(shifter(newLoc, (-i) * latTileUnit, 0));
+            id = LocationToID(Utilities.shifter(newLoc, (-i) * latTileUnit, 0));
             TileWebserviceUtility.getResources(id.getLatID(), id.getLngID(), LoginActivity.username, LoginActivity.password, this, getApplicationContext());
-            id = LocationToID(shifter(newLoc, 0, i * lngTileUnit));
+            id = LocationToID(Utilities.shifter(newLoc, 0, i * lngTileUnit));
             TileWebserviceUtility.getResources(id.getLatID(), id.getLngID(), LoginActivity.username, LoginActivity.password, this, getApplicationContext());
-            id = LocationToID(shifter(newLoc, 0, (-i) * lngTileUnit));
+            id = LocationToID(Utilities.shifter(newLoc, 0, (-i) * lngTileUnit));
             TileWebserviceUtility.getResources(id.getLatID(), id.getLngID(), LoginActivity.username, LoginActivity.password, this, getApplicationContext());
         }
         // draw polygons in corners
         for (int i = 1; i < bdUnit; i++) {
             for (int j = 1; j < bdUnit; j++) {
-                id = LocationToID(shifter(newLoc, i * latTileUnit, j * lngTileUnit));
+                id = LocationToID(Utilities.shifter(newLoc, i * latTileUnit, j * lngTileUnit));
                 TileWebserviceUtility.getResources(id.getLatID(), id.getLngID(), LoginActivity.username, LoginActivity.password, this, getApplicationContext());
-                id = LocationToID(shifter(newLoc, i * (-latTileUnit), j * lngTileUnit));
+                id = LocationToID(Utilities.shifter(newLoc, i * (-latTileUnit), j * lngTileUnit));
                 TileWebserviceUtility.getResources(id.getLatID(), id.getLngID(), LoginActivity.username, LoginActivity.password, this, getApplicationContext());
-                id = LocationToID(shifter(newLoc, i * (-latTileUnit), j * (-lngTileUnit)));
+                id = LocationToID(Utilities.shifter(newLoc, i * (-latTileUnit), j * (-lngTileUnit)));
                 TileWebserviceUtility.getResources(id.getLatID(), id.getLngID(), LoginActivity.username, LoginActivity.password, this, getApplicationContext());
-                id = LocationToID(shifter(newLoc, i * (latTileUnit), j * (-lngTileUnit)));
+                id = LocationToID(Utilities.shifter(newLoc, i * (latTileUnit), j * (-lngTileUnit)));
                 TileWebserviceUtility.getResources(id.getLatID(), id.getLngID(), LoginActivity.username, LoginActivity.password, this, getApplicationContext());
             }
         }
@@ -707,12 +664,15 @@ public class GameMapUI extends FragmentActivity implements
             System.out.println("tile username: " + tileUsername + " username " + LoginActivity.username);
             Tile t;
             if(tileUsername.equals("null")) {
-                updateTile(colors.gray, tileLatID, tileLngID, null);
+                if (currentLngID == Integer.parseInt(tileLngID) && currentLatID == Integer.parseInt(tileLatID))
+                    //updateTile(colors.gray, tileLatID, tileLngID, tileUsername);
+                    TileWebserviceUtility.captureTile(Integer.parseInt(tileLatID), Integer.parseInt(tileLngID), LoginActivity.username, LoginActivity.password, this, getApplicationContext());
+                    Utilities.updateTile(colors.gray, tileLatID, tileLngID, null,mMap, tiles);
             }
             else if (tileUsername.equalsIgnoreCase(LoginActivity.username)) {
-                updateTile(colors.green, tileLatID, tileLngID, tileUsername);
+                Utilities.updateTile(colors.green, tileLatID, tileLngID, tileUsername, mMap, tiles);
             } else {
-                updateTile(colors.red, tileLatID, tileLngID, tileUsername);
+                Utilities.updateTile(colors.red, tileLatID, tileLngID, tileUsername, mMap, tiles);
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -720,30 +680,23 @@ public class GameMapUI extends FragmentActivity implements
 
     }
 
-    /**
-     * Updates the tile in the Hash Map based on its ID
-     * @param colour the colour of the new tile
-     * @param tileLatID the latID of the tile
-     * @param tileLngID the LngID of the tile
-     * @param username the user of the tile - null if empty
-     */
-    private void updateTile(int colour, String tileLatID, String tileLngID, String username) {
-        Tile t;
-        TileID tileID = new TileID(Integer.parseInt(tileLatID), Integer.parseInt(tileLngID));
-        LocationID latLng = new LocationID(Integer.parseInt(tileLatID), Integer.parseInt(tileLngID));
-        if ((t = tiles.get(tileID)) != null) {
-            //remove the previous tile from the map
-            t.remove();
-            t.setPolygon(drawPolygon(mMap, IdTOLocation(latLng), latTileUnit, lngTileUnit, colour));
-        } else {
-            t = new Tile(
-                    tileID,
-                    username,
-                    drawPolygon(mMap, IdTOLocation(latLng), latTileUnit, lngTileUnit, colour));
-            tiles.put(tileID, t);
+
+
+    public class ProcessUpdateTiles extends Thread {
+        String result;
+        ProcessUpdateTiles(String result) {
+            this.result = result;
         }
-        System.out.println("Tiles size: " + tiles.size());
+
+        @Override
+        public void run() {
+
+        }
     }
+
+
+
+
 }
 
 
@@ -828,66 +781,9 @@ class LocationID {
     }
 }
 
-/**
- * A Tile Class. Holds relavant information for a tile drawn on the screen.
- */
-class Tile {
-    private TileID id;
-    private String username;
-    private Polygon polygon;
 
-    Tile(TileID id, String username, Polygon polygon) {
-        this.id = id;
-        this.username = username;
-        this.polygon = polygon;
-    }
 
-    public TileID getTileID() {
-        return id;
-    }
 
-    public String getUsername() {
-        return username;
-    }
 
-    public Polygon getPolygon() {
-        return polygon;
-    }
 
-    public void setPolygon(Polygon p) {
-        this.polygon = p;
-    }
 
-    public void remove() {
-        polygon.remove();
-    }
-}
-
-/**
- * The unique ID for a tile.
- */
-class TileID {
-    private int latID, lngID;
-    public TileID(int latID, int lngID) {
-        this.latID = latID;
-        this.lngID = lngID;
-    }
-
-    @Override
-    public int hashCode() {
-        String hash = Integer.toString(latID) + Integer.toString(lngID);
-        return hash.hashCode();
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (!(obj instanceof TileID)) {
-            return false;
-        }
-        if (obj == this) {
-            return true;
-        }
-        TileID compareObject = (TileID) obj;
-        return (compareObject.lngID == this.lngID && compareObject.latID == this.latID);
-    }
-}

@@ -32,6 +32,7 @@
 
         <activity
             android:name=".GameMapUI"
+            android:screenOrientation="portrait"
             android:label="@string/title_activity_game_map_ui" />
         <activity android:name=".LoginActivity">
             <intent-filter>
