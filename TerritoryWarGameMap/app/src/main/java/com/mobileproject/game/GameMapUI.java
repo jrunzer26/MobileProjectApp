@@ -5,8 +5,9 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Criteria;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
-import android.os.AsyncTask;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
@@ -16,16 +17,13 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.view.View;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
-
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-
-import android.location.LocationListener;
-
-import com.google.android.gms.gcm.Task;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -38,22 +36,13 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.Polygon;
-import com.google.android.gms.maps.model.PolygonOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
-
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 
 public class GameMapUI extends FragmentActivity implements
@@ -77,8 +66,8 @@ public class GameMapUI extends FragmentActivity implements
     private GoogleMap mMap;
     private Location mLastLocation;
 
-    private int currentLatID;
-    private int currentLngID;
+    public static int currentLatID;
+    public static int currentLngID;
     private LatLng currentLoc;
     private LatLngBounds currentBounds;
 
@@ -99,13 +88,16 @@ public class GameMapUI extends FragmentActivity implements
     private LocationManager locationManager;
     private String bestProvider;
     private final int minTime = 20000; // milliseconds
-    private final int minDistance = 3; // meters
+    private final int minDistance = 2; // meters
 
     private OnLocationChangedListener listener;
 
     public HashMap<TileID, Tile> tiles;
+    public ArrayList<Polyline> lines;
     private boolean initalizeMap = false;
     private boolean threadDone = false;
+
+    private MediaPlayer buttonClick;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -156,6 +148,7 @@ public class GameMapUI extends FragmentActivity implements
      * Initializes the google map with tiles and location.
      */
     private void initializeMap() {
+        buttonClick = MediaPlayer.create(getApplicationContext(), R.raw.soho);
         // Set map initial location here:
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         // set the criteria of the provider
@@ -173,9 +166,8 @@ public class GameMapUI extends FragmentActivity implements
         }
         // add the location manager
         locationManager.requestLocationUpdates(bestProvider, minTime, minDistance, this);
-        //the hashmap containing all the tiles
+        // the hashmap containing all the tiles
         tiles = new HashMap<>();
-
     }
 
     private void setupFirstLocation() {
@@ -219,7 +211,8 @@ public class GameMapUI extends FragmentActivity implements
         @Override
         public void run() {
            while(!threadDone) {
-               DrawPolygonDemo(mMap, new LatLng(currentLatID * latTileUnit - latTileUnit / 2, currentLngID * lngTileUnit - lngTileUnit / 2));
+               UpdateTilesAsync updateTilesAsync = new UpdateTilesAsync(tiles, new LatLng(currentLatID * latTileUnit - latTileUnit / 2, currentLngID * lngTileUnit - lngTileUnit / 2), getApplicationContext(), mMap, colors);
+               updateTilesAsync.execute();
                try {
                    Thread.sleep(45000);
                } catch (InterruptedException e) {
@@ -234,8 +227,8 @@ public class GameMapUI extends FragmentActivity implements
      * Changes the UISettings of the Google Map.
      */
     private void mapSettingInit() {
-       UiSettings settings = mMap.getUiSettings();
-        //settings.setMyLocationButtonEnabled(false);
+        UiSettings settings = mMap.getUiSettings();
+        settings.setMyLocationButtonEnabled(false);
         settings.setZoomControlsEnabled(false);
     }
 
@@ -278,7 +271,50 @@ public class GameMapUI extends FragmentActivity implements
         } else if (mMap != null) {
             // Access to the location has been granted to the app.
             mMap.setMyLocationEnabled(true);
+        }
+    }
 
+
+    /**
+     * Make Camera back to current location
+     */
+    private void getMyLocation() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        double lat = locationManager.getLastKnownLocation(bestProvider).getLatitude();
+        double lng = locationManager.getLastKnownLocation(bestProvider).getLongitude();
+
+        LatLng latLng = new LatLng(lat, lng);
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, MIN_ZOOM_PREF);
+        mMap.animateCamera(cameraUpdate);
+    }
+
+
+    /**
+     * Creates a button event handlers set
+     */
+    public void process(View view){
+        // Play clicker sound
+        buttonClick.start();
+        switch (view.getId()){
+            case R.id.menuIMButton:
+                //startActivity(new Intent(this,InternalMenuActivity.class));
+                RelativeLayout layout1 =(RelativeLayout)findViewById(R.id.internalMenu);
+                if(layout1.getVisibility()==View.VISIBLE){
+                    layout1.setVisibility(View.GONE);
+                } else {
+                    layout1.setVisibility(View.VISIBLE);
+                }
+                break;
+            case R.id.btnIMBack:
+                RelativeLayout layout2 =(RelativeLayout)findViewById(R.id.internalMenu);
+                layout2.setVisibility(View.GONE);
+                break;
+            case R.id.btnBackLocation:
+                getMyLocation();
+            default:
+                break;
         }
     }
 
@@ -496,8 +532,6 @@ public class GameMapUI extends FragmentActivity implements
                 TileWebserviceUtility.getResources(id.getLatID(), id.getLngID(), LoginActivity.username, LoginActivity.password, this, getApplicationContext());
             }
         }
-        //capture in the users location
-        //TileWebserviceUtility.captureTile(currentLatID, currentLngID,LoginActivity.username, LoginActivity.password, this, getApplicationContext());
     }
 
 
@@ -580,7 +614,8 @@ public class GameMapUI extends FragmentActivity implements
             Tile t;
             if ((t = tiles.get(new TileID(currentLatID, currentLngID))) != null) {
                 if (t.getUsername() == null) {
-                    // capture the tile if it is unoccupied
+                    // capture the tile if it is unoccupied - has a chance to turn red if another person requests first
+                    Utilities.updateTile(colors.green, Integer.toString(currentLatID), Integer.toString(currentLngID), LoginActivity.username, mMap, tiles);
                     TileWebserviceUtility.captureTile(currentLatID, currentLngID, LoginActivity.username, LoginActivity.password, this, getApplicationContext());
                 }
             }
@@ -693,42 +728,10 @@ public class GameMapUI extends FragmentActivity implements
 
         }
     }
-
-
-
-
 }
 
 
-/**
- * Holds points for the polylines.
- */
-class LatLngLines {
-    private LatLng pointA, pointB;
 
-    public LatLngLines() {
-        pointA = null;
-        pointB = null;
-    }
-
-    public LatLngLines(LatLng A, LatLng B) {
-        pointA = A;
-        pointB = B;
-    }
-
-    public void setLine(LatLng A, LatLng B) {
-        pointA = A;
-        pointB = B;
-    }
-
-    public LatLng getA() {
-        return pointA;
-    }
-
-    public LatLng getB() {
-        return pointB;
-    }
-}
 
 /**
  * The colour pallet.

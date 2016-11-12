@@ -15,6 +15,8 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -120,12 +122,29 @@ public class Utilities {
      * @return the created polygon
      */
     public static Polygon drawPolygon(GoogleMap map, LatLng loc, double width, double height, int color) {
+
+        List<LatLng> rectangle = createRectangle(loc, width / 2, height / 2);
+        /**
+        Polyline line = map.addPolyline(new PolylineOptions().add(rectangle.get(0), rectangle.get(1))
+                .color(Color.argb(150, 0, 0, 0))
+                .width(2));
+        Polyline line2 =  map.addPolyline(new PolylineOptions().add(rectangle.get(2), rectangle.get(3))
+                .color(Color.argb(150, 0, 0, 0))
+                .width(2));
+        Polyline line3 =  map.addPolyline(new PolylineOptions().add(rectangle.get(1), rectangle.get(2))
+                .color(Color.argb(150, 0, 0, 0))
+                .width(2));
+        Polyline line4 =  map.addPolyline(new PolylineOptions().add(rectangle.get(3), rectangle.get(0))
+                .color(Color.argb(150, 0, 0, 0))
+                .width(2));
+         **/
         Polygon polygon = map.addPolygon(new PolygonOptions()
                 .addAll(createRectangle(loc, width / 2, height / 2))
                 .fillColor(color)
                 .strokeWidth(0)
                 .clickable(true)
                 .strokeColor(Color.argb(0, 255, 255, 255)));
+
         return polygon;
     }
 
@@ -153,5 +172,4 @@ public class Utilities {
         LatLng loc = new LatLng(lat,lng);
         return loc;
     }
-
 }

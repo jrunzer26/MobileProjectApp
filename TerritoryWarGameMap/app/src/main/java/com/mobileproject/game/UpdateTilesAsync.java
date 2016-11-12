@@ -3,6 +3,7 @@ package com.mobileproject.game;
 import android.content.Context;
 import android.os.AsyncTask;
 
+import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 
 import org.json.JSONArray;
@@ -19,21 +20,24 @@ import static com.mobileproject.game.GameMapUI.bdUnit;
 
 class UpdateTilesAsync extends AsyncTask<Void, Void, String> implements AsyncResponse {
     private HashMap<TileID, Tile> tiles;
-    private AsyncResponse callback;
     private LatLng newLoc;
     private Context context;
+    private ColorSet colors;
+    private GoogleMap mMap;
 
-    public UpdateTilesAsync(AsyncResponse callback, HashMap<TileID, Tile> tiles, LatLng newLoc, Context context) {
-        this.callback = callback;
+    public UpdateTilesAsync(HashMap<TileID, Tile> tiles, LatLng newLoc, Context context, GoogleMap mMap, ColorSet colors) {
         this.tiles = tiles;
         this.newLoc = newLoc;
         this.context = context;
+        this.colors = colors;
+        this.mMap = mMap;
     }
 
     @Override
     protected String doInBackground(Void... params) {
         //DrawPolygonDemo(mMap, new LatLng(currentLatID * latTileUnit - latTileUnit / 2, currentLngID * lngTileUnit - lngTileUnit / 2));
         //draw tile user is in
+
         LocationID id = Utilities.LocationToID(Utilities.shifter(newLoc, 0, 0));
         TileWebserviceUtility.getResources(id.getLatID(), id.getLngID(), LoginActivity.username, LoginActivity.password, this, context);
         // draw tiles in cross from the user
@@ -67,6 +71,28 @@ class UpdateTilesAsync extends AsyncTask<Void, Void, String> implements AsyncRes
 
     @Override
     public void processResult(String result) {
-
+        System.out.println("Result from server: " + result);
+        try {
+            JSONObject jsonObject = new JSONObject(result);
+            String tileLatID = jsonObject.getString("tileLatID");
+            String tileLngID = jsonObject.getString("tileLngID");
+            String tileUsername = jsonObject.getString("username");
+            LocationID latLng = new LocationID(Integer.parseInt(tileLatID), Integer.parseInt(tileLngID));
+            System.out.println("tile username: " + tileUsername + " username " + LoginActivity.username);
+            Tile t;
+            if(tileUsername.equals("null")) {
+                if (GameMapUI.currentLngID == Integer.parseInt(tileLngID) && GameMapUI.currentLatID == Integer.parseInt(tileLatID))
+                    //updateTile(colors.gray, tileLatID, tileLngID, tileUsername);
+                    TileWebserviceUtility.captureTile(Integer.parseInt(tileLatID), Integer.parseInt(tileLngID), LoginActivity.username, LoginActivity.password, this, context);
+                Utilities.updateTile(colors.gray, tileLatID, tileLngID, null,mMap, tiles);
+            }
+            else if (tileUsername.equalsIgnoreCase(LoginActivity.username)) {
+                Utilities.updateTile(colors.green, tileLatID, tileLngID, tileUsername, mMap, tiles);
+            } else {
+                Utilities.updateTile(colors.red, tileLatID, tileLngID, tileUsername, mMap, tiles);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 }
