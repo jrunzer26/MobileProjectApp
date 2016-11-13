@@ -72,8 +72,10 @@ class UpdateTilesAsync extends AsyncTask<Void, Void, String> implements AsyncRes
     @Override
     public void processResult(String result) {
         System.out.println("Result from server: " + result);
+        System.out.println("Result from server: " + result);
+        String[] serverResult = result.split(";");
         try {
-            JSONObject jsonObject = new JSONObject(result);
+            JSONObject jsonObject = new JSONObject(serverResult[1]);
             String tileLatID = jsonObject.getString("tileLatID");
             String tileLngID = jsonObject.getString("tileLngID");
             String tileUsername = jsonObject.getString("username");
