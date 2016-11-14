@@ -64,8 +64,6 @@ class UpdateTilesAsync extends AsyncTask<Void, Void, String> implements AsyncRes
                 TileWebserviceUtility.getResources(id.getLatID(), id.getLngID(), LoginActivity.username, LoginActivity.password, this, context);
             }
         }
-        //capture in the users location
-        //TileWebserviceUtility.captureTile(currentLatID, currentLngID,LoginActivity.username, LoginActivity.password, this, context);
         return null;
     }
 
@@ -83,10 +81,12 @@ class UpdateTilesAsync extends AsyncTask<Void, Void, String> implements AsyncRes
             System.out.println("tile username: " + tileUsername + " username " + LoginActivity.username);
             Tile t;
             if(tileUsername.equals("null")) {
-                if (GameMapUI.currentLngID == Integer.parseInt(tileLngID) && GameMapUI.currentLatID == Integer.parseInt(tileLatID))
-                    //updateTile(colors.gray, tileLatID, tileLngID, tileUsername);
+                if (GameMapUI.currentLngID == Integer.parseInt(tileLngID) && GameMapUI.currentLatID == Integer.parseInt(tileLatID)) {
+                    Utilities.updateTile(colors.green, tileLatID, tileLngID, LoginActivity.username ,mMap, tiles);
                     TileWebserviceUtility.captureTile(Integer.parseInt(tileLatID), Integer.parseInt(tileLngID), LoginActivity.username, LoginActivity.password, this, context);
-                Utilities.updateTile(colors.gray, tileLatID, tileLngID, null,mMap, tiles);
+                } else {
+                    Utilities.updateTile(colors.gray, tileLatID, tileLngID, null, mMap, tiles);
+                }
             }
             else if (tileUsername.equalsIgnoreCase(LoginActivity.username)) {
                 Utilities.updateTile(colors.green, tileLatID, tileLngID, tileUsername, mMap, tiles);

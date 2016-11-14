@@ -27,7 +27,7 @@ public class ServerControl extends AsyncTask<String, Void, String> {
     }
     /**
      *
-     * @param params url, method, body, auth, type
+     * @param params url, method, body, auth, type - the type to distinguish processing the result
      * @return response - the json string server response
      */
     protected String doInBackground(String... params) {
