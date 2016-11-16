@@ -93,7 +93,7 @@ public class Utilities {
      * @param tileLngID the LngID of the tile
      * @param username the user of the tile - null if empty
      */
-    public static void updateTile(int colour, String tileLatID, String tileLngID, String username, GoogleMap mMap, HashMap<TileID, Tile> tiles) {
+    public static void updateTile(int colour, String tileLatID, String tileLngID, String username, GoogleMap mMap, HashMap<TileID, Tile> tiles, int soldiers, int gold, int food) {
         Tile t;
         TileID tileID = new TileID(Integer.parseInt(tileLatID), Integer.parseInt(tileLngID));
         LocationID latLng = new LocationID(Integer.parseInt(tileLatID), Integer.parseInt(tileLngID));
@@ -105,7 +105,7 @@ public class Utilities {
             t = new Tile(
                     tileID,
                     username,
-                    drawPolygon(mMap, IdTOLocation(latLng), latTileUnit, lngTileUnit, colour));
+                    drawPolygon(mMap, IdTOLocation(latLng), latTileUnit, lngTileUnit, colour), soldiers, gold, food);
             tiles.put(tileID, t);
         }
         System.out.println("Tiles size: " + tiles.size());

@@ -615,7 +615,7 @@ public class GameMapUI extends FragmentActivity implements
             if ((t = tiles.get(new TileID(currentLatID, currentLngID))) != null) {
                 if (t.getUsername() == null) {
                     // capture the tile if it is unoccupied - has a chance to turn red if another person requests first
-                    Utilities.updateTile(colors.green, Integer.toString(currentLatID), Integer.toString(currentLngID), LoginActivity.username, mMap, tiles);
+                    Utilities.updateTile(colors.green, Integer.toString(currentLatID), Integer.toString(currentLngID), LoginActivity.username, mMap, tiles, 0, 0, 0);
                     TileWebserviceUtility.captureTile(currentLatID, currentLngID, LoginActivity.username, LoginActivity.password, this, getApplicationContext());
                 }
             }
@@ -695,6 +695,9 @@ public class GameMapUI extends FragmentActivity implements
             String tileLatID = jsonObject.getString("tileLatID");
             String tileLngID = jsonObject.getString("tileLngID");
             String tileUsername = jsonObject.getString("username");
+            int soldiers = jsonObject.getInt("soldiers");
+            int gold = jsonObject.getInt("gold");
+            int food = jsonObject.getInt("food");
             LocationID latLng = new LocationID(Integer.parseInt(tileLatID), Integer.parseInt(tileLngID));
             System.out.println("tile username: " + tileUsername + " username " + LoginActivity.username);
             Tile t;
@@ -702,12 +705,12 @@ public class GameMapUI extends FragmentActivity implements
                 if (currentLngID == Integer.parseInt(tileLngID) && currentLatID == Integer.parseInt(tileLatID))
                     //updateTile(colors.gray, tileLatID, tileLngID, tileUsername);
                     TileWebserviceUtility.captureTile(Integer.parseInt(tileLatID), Integer.parseInt(tileLngID), LoginActivity.username, LoginActivity.password, this, getApplicationContext());
-                    Utilities.updateTile(colors.gray, tileLatID, tileLngID, null,mMap, tiles);
+                    Utilities.updateTile(colors.gray, tileLatID, tileLngID, null,mMap, tiles, soldiers, gold, food);
             }
             else if (tileUsername.equalsIgnoreCase(LoginActivity.username)) {
-                Utilities.updateTile(colors.green, tileLatID, tileLngID, tileUsername, mMap, tiles);
+                Utilities.updateTile(colors.green, tileLatID, tileLngID, tileUsername, mMap, tiles, soldiers, gold, food);
             } else {
-                Utilities.updateTile(colors.red, tileLatID, tileLngID, tileUsername, mMap, tiles);
+                Utilities.updateTile(colors.red, tileLatID, tileLngID, tileUsername, mMap, tiles, soldiers, gold, food);
             }
         } catch (JSONException e) {
             e.printStackTrace();
