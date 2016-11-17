@@ -747,6 +747,8 @@ public class GameMapUI extends FragmentActivity implements
      * @param soldiers - the number of soldiers to buy
      */
     private void buySoldiers(TileID tileID, int soldiers) {
+        //check if they have enough money,
+        // post to the server
         TileWebserviceUtility.buySoldiers(LoginActivity.username, LoginActivity.password, tileID.getLatID(), tileID.getLngID(), soldiers, this, this);
     }
 
