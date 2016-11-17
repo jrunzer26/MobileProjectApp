@@ -742,6 +742,15 @@ public class GameMapUI extends FragmentActivity implements
     }
 
     /**
+     * Buys soldiers for the given tile.
+     * @param tileID - the tile to place the soldiers on
+     * @param soldiers - the number of soldiers to buy
+     */
+    private void buySoldiers(TileID tileID, int soldiers) {
+        TileWebserviceUtility.buySoldiers(LoginActivity.username, LoginActivity.password, tileID.getLatID(), tileID.getLngID(), soldiers, this, this);
+    }
+
+    /**
      * Processes the result from the server
      * @param result - the json from the server
      */
@@ -752,44 +761,62 @@ public class GameMapUI extends FragmentActivity implements
         try {
             JSONObject jsonObject = new JSONObject(serverResult[1]);
             if (serverResult[0].equals("1")) {
-                String tileLatID = jsonObject.getString("tileLatID");
-                String tileLngID = jsonObject.getString("tileLngID");
-                String tileUsername = jsonObject.getString("username");
-                int soldiers = jsonObject.getInt("soldiers");
-                int food = jsonObject.getInt("food");
-                int gold = jsonObject.getInt("gold");
-                LocationID latLng = new LocationID(Integer.parseInt(tileLatID), Integer.parseInt(tileLngID));
-                System.out.println("tile username: " + tileUsername + " username " + LoginActivity.username);
-                Tile t;
-                if (tileUsername.equals("null")) {
-                    if (currentLngID == Integer.parseInt(tileLngID) && currentLatID == Integer.parseInt(tileLatID))
-                        //updateTile(colors.gray, tileLatID, tileLngID, tileUsername);
-                        TileWebserviceUtility.captureTile(Integer.parseInt(tileLatID), Integer.parseInt(tileLngID), LoginActivity.username, LoginActivity.password, this, getApplicationContext());
-                    Utilities.updateTile(colors.gray, tileLatID, tileLngID, null, mMap, tiles, soldiers, gold, food);
-                } else if (tileUsername.equalsIgnoreCase(LoginActivity.username)) {
-                    Utilities.updateTile(colors.green, tileLatID, tileLngID, tileUsername, mMap, tiles, soldiers, gold, food);
-                } else {
-                    Utilities.updateTile(colors.red, tileLatID, tileLngID, tileUsername, mMap, tiles, soldiers, gold, food);
-                }
+                handleIncomingTile(jsonObject);
             } else if (serverResult[0].equals("2")) {
                 String goldObtained = jsonObject.getString("goldObtained");
                 String foodObtained = jsonObject.getString("foodObtained");
                 //show("gold obtained: " + goldObtained + " food obtained: " + foodObtained);
             } else if (serverResult[0].equals("3")) {
-                int gold = Integer.parseInt(jsonObject.getString("gold"));
-                int food = Integer.parseInt(jsonObject.getString("food"));
-                int tiles = Integer.parseInt(jsonObject.getString("tiles"));
-                int tilesTaken = Integer.parseInt(jsonObject.getString("tilesTaken"));
-                int soldiers = jsonObject.getInt("totalSoldiers");
-                int goldObtained = jsonObject.getInt("goldObtained");
-                int foodObtained = jsonObject.getInt("foodObtained");
-                int totalGoldObtained = jsonObject.getInt("totalGoldObtained");
-                int totalFoodObtained = jsonObject.getInt("totalFoodObtained");
-                showResourcesChanged(user, new User("", gold, food, tiles, tilesTaken, goldObtained, foodObtained, totalGoldObtained, totalFoodObtained, soldiers, 0));
-                System.out.println("getuser: 3");
+                handleIncomingUser(jsonObject);
+
+            } else if (serverResult[0].equals("4")) {
+                if (jsonObject.has("err")) {
+                    // not enough gold or does not own the tile
+                    show(jsonObject.getString("err"));
+                } else {
+                    show("soldiers added!");
+                    handleIncomingTile(jsonObject);
+                }
+            } else if (serverResult[0].equals("5")) {
+                show("battle results!!!");
             }
         } catch (JSONException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void handleIncomingUser(JSONObject jsonObject) throws JSONException {
+        int gold = Integer.parseInt(jsonObject.getString("gold"));
+        int food = Integer.parseInt(jsonObject.getString("food"));
+        int tiles = Integer.parseInt(jsonObject.getString("tiles"));
+        int tilesTaken = Integer.parseInt(jsonObject.getString("tilesTaken"));
+        int soldiers = jsonObject.getInt("totalSoldiers");
+        int goldObtained = jsonObject.getInt("goldObtained");
+        int foodObtained = jsonObject.getInt("foodObtained");
+        int totalGoldObtained = jsonObject.getInt("totalGoldObtained");
+        int totalFoodObtained = jsonObject.getInt("totalFoodObtained");
+        showResourcesChanged(user, new User("", gold, food, tiles, tilesTaken, goldObtained,
+                foodObtained, totalGoldObtained, totalFoodObtained, soldiers, 0));
+    }
+    private void handleIncomingTile(JSONObject jsonObject) throws JSONException {
+        String tileLatID = jsonObject.getString("tileLatID");
+        String tileLngID = jsonObject.getString("tileLngID");
+        String tileUsername = jsonObject.getString("username");
+        int soldiers = jsonObject.getInt("soldiers");
+        int food = jsonObject.getInt("food");
+        int gold = jsonObject.getInt("gold");
+        LocationID latLng = new LocationID(Integer.parseInt(tileLatID), Integer.parseInt(tileLngID));
+        System.out.println("tile username: " + tileUsername + " username " + LoginActivity.username);
+        Tile t;
+        if (tileUsername.equals("null")) {
+            if (currentLngID == Integer.parseInt(tileLngID) && currentLatID == Integer.parseInt(tileLatID))
+                //updateTile(colors.gray, tileLatID, tileLngID, tileUsername);
+                TileWebserviceUtility.captureTile(Integer.parseInt(tileLatID), Integer.parseInt(tileLngID), LoginActivity.username, LoginActivity.password, this, getApplicationContext());
+            Utilities.updateTile(colors.gray, tileLatID, tileLngID, null, mMap, tiles, soldiers, gold, food);
+        } else if (tileUsername.equalsIgnoreCase(LoginActivity.username)) {
+            Utilities.updateTile(colors.green, tileLatID, tileLngID, tileUsername, mMap, tiles, soldiers, gold, food);
+        } else {
+            Utilities.updateTile(colors.red, tileLatID, tileLngID, tileUsername, mMap, tiles, soldiers, gold, food);
         }
     }
 }
