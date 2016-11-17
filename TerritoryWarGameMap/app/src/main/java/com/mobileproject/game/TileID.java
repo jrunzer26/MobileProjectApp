@@ -8,6 +8,7 @@ package com.mobileproject.game;
  * The unique ID for a tile.
  */
 public class TileID {
+
     private int latID, lngID;
     public TileID(int latID, int lngID) {
         this.latID = latID;
@@ -30,6 +31,14 @@ public class TileID {
         }
         TileID compareObject = (TileID) obj;
         return (compareObject.lngID == this.lngID && compareObject.latID == this.latID);
+    }
+
+    public int getLatID() {
+        return latID;
+    }
+
+    public int getLngID() {
+        return lngID;
     }
 
 

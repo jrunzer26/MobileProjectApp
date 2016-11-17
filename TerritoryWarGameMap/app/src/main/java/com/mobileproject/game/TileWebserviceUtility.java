@@ -89,6 +89,25 @@ public class TileWebserviceUtility {
         ServerControl sc = new ServerControl(callback);
         sc.execute(context.getString(R.string.server) + "users/",
                 ServerControl.POST, jsonObject.toString(), auth.toString(), "3");
-        System.out.println("get user utility");
+    }
+
+    public static void buySoldiers(String username, String password, int tileLatID, int tileLngID, int soldiers, AsyncResponse callback, Context context) {
+        JSONObject jsonObject = new JSONObject();
+        JSONObject auth = new JSONObject();
+        try {
+            auth.put("username", username);
+            auth.put("password", password);
+            jsonObject.put("username", username);
+            jsonObject.put("tileLatID", tileLatID);
+            jsonObject.put("tileLngID", tileLngID);
+            jsonObject.put("soldiers", soldiers);
+            System.out.println(jsonObject.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        ServerControl sc = new ServerControl(callback);
+        // fix spelling on server
+        sc.execute(context.getString(R.string.server) + "tiles/purchace-soldiers",
+                ServerControl.POST, jsonObject.toString(), auth.toString(), "4");
     }
 }
