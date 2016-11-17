@@ -98,6 +98,7 @@ public class GameMapUI extends FragmentActivity implements
     private boolean threadDone = false;
 
     private MediaPlayer buttonClick;
+    private User user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,7 +118,53 @@ public class GameMapUI extends FragmentActivity implements
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         initializeMap();
+        UserDBHelper userDBHelper = new UserDBHelper(this);
+        user = userDBHelper.getUser(LoginActivity.username);
+        if (user == null) {
+            user = new User(LoginActivity.username);
+        }
+
     }
+
+    /**
+     * Updates the HUB with the users resources
+     * @param user - the user's resources to update the HUD with
+     */
+    private void updateHUD(User user) {
+        show("saved gold: " + user.getGold() + " food: " + user.getFood() + " soldiers available: "
+                    + user.getSoldiersAvailable() + " totalSoldiers: " + user.getTotalSoldiers());
+        System.out.println("update HUD");
+
+    }
+
+    /**
+     * Shows what the user has gained/lost when logging in again
+     * @param user the current user's resources
+     * @param serverUser the same user but with updated resources from the server
+     */
+    private void showResourcesChanged(User user, User serverUser) {
+        int addedFood = serverUser.getFood() - user.getFood();
+        int addedGold = serverUser.getGold() - user.getGold();
+        int changedTiles = user.getTiles() - serverUser.getTiles();
+        int changedSoldiers = user.getTotalSoldiers() - serverUser.getTotalSoldiers();
+
+        if (addedFood > 0) {
+            show("you gained: " + addedFood + " food");
+        }
+        if (addedGold > 0) {
+            show("you gained: " + addedGold + " gold");
+        }
+        if (changedSoldiers < 0) {
+            show("you lost: " + changedSoldiers + " soldiers");
+        }
+        if (changedTiles < 0) {
+            show("you lost: " +  -1 * changedTiles + " tile(s)");
+        }
+
+        show("resources changed");
+        this.user = serverUser;
+    }
+
 
 
     @Override
@@ -130,6 +177,7 @@ public class GameMapUI extends FragmentActivity implements
             locationManager.removeUpdates(this);
         }
     }
+
 
     @Override
     protected void onResume() {
@@ -170,6 +218,9 @@ public class GameMapUI extends FragmentActivity implements
         tiles = new HashMap<>();
     }
 
+    /**
+     * Sets up the user with it's last known location.
+     */
     private void setupFirstLocation() {
         initalizeMap = true;
         // the last known latitude and longitude of the user
@@ -196,14 +247,15 @@ public class GameMapUI extends FragmentActivity implements
         SouthBoundLat = (currentLatID - bdUnit) * latTileUnit;
         WestBoundLng = (currentLngID - bdUnit) * lngTileUnit;
         EastBoundLng = (currentLngID + bdUnit) * lngTileUnit;
-
+        // collect the users resources
+        TileWebserviceUtility.collectResources(LoginActivity.username, LoginActivity.password, this, this);
+        TileWebserviceUtility.getUser(LoginActivity.username, LoginActivity.password, this, this);
         DrawTiles(mMap);
         // Drawing the titles: line length in KMs
-
-        //DrawPolygonDemo(mMap, new LatLng(currentLatID * latTileUnit - latTileUnit / 2, currentLngID * lngTileUnit - lngTileUnit / 2));
         // update the map every 30 seconds
         UpdateMapThread taskThread = new UpdateMapThread();
         taskThread.start();
+        updateHUD(user);
     }
 
     class UpdateMapThread extends Thread {
@@ -554,6 +606,9 @@ public class GameMapUI extends FragmentActivity implements
     @Override
     protected void onStop() {
         mGoogleApiClient.disconnect();
+        // save the state of the user
+        UserDBHelper dbHelper = new UserDBHelper(this);
+        dbHelper.saveUser(user);
         super.onStop();
     }
 
@@ -575,7 +630,7 @@ public class GameMapUI extends FragmentActivity implements
             LatLng latlng = new LatLng(lat,lng);
             CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latlng, 17);
             mMap.animateCamera(cameraUpdate);
-            show("Last Location:"+String.valueOf(lat)+"  "+String.valueOf(lng));
+            //("Last Location:"+String.valueOf(lat)+"  "+String.valueOf(lng));
         } else {
             show("No Location Detected");
         }
@@ -594,7 +649,10 @@ public class GameMapUI extends FragmentActivity implements
     }
 
 
-    // Every time when the location changed:
+    /**
+     * Executed when the location of the user changed
+     * @param location - the newest location of the user
+     */
     @Override
     public void onLocationChanged(Location location) {
         // added to ensure that the map is animated
@@ -690,45 +748,48 @@ public class GameMapUI extends FragmentActivity implements
     @Override
     public void processResult(String result) {
         System.out.println("Result from server: " + result);
+        String[] serverResult = result.split(";");
         try {
-            JSONObject jsonObject = new JSONObject(result);
-            String tileLatID = jsonObject.getString("tileLatID");
-            String tileLngID = jsonObject.getString("tileLngID");
-            String tileUsername = jsonObject.getString("username");
-            int soldiers = jsonObject.getInt("soldiers");
-            int gold = jsonObject.getInt("gold");
-            int food = jsonObject.getInt("food");
-            LocationID latLng = new LocationID(Integer.parseInt(tileLatID), Integer.parseInt(tileLngID));
-            System.out.println("tile username: " + tileUsername + " username " + LoginActivity.username);
-            Tile t;
-            if(tileUsername.equals("null")) {
-                if (currentLngID == Integer.parseInt(tileLngID) && currentLatID == Integer.parseInt(tileLatID))
-                    //updateTile(colors.gray, tileLatID, tileLngID, tileUsername);
-                    TileWebserviceUtility.captureTile(Integer.parseInt(tileLatID), Integer.parseInt(tileLngID), LoginActivity.username, LoginActivity.password, this, getApplicationContext());
-                    Utilities.updateTile(colors.gray, tileLatID, tileLngID, null,mMap, tiles, soldiers, gold, food);
-            }
-            else if (tileUsername.equalsIgnoreCase(LoginActivity.username)) {
-                Utilities.updateTile(colors.green, tileLatID, tileLngID, tileUsername, mMap, tiles, soldiers, gold, food);
-            } else {
-                Utilities.updateTile(colors.red, tileLatID, tileLngID, tileUsername, mMap, tiles, soldiers, gold, food);
+            JSONObject jsonObject = new JSONObject(serverResult[1]);
+            if (serverResult[0].equals("1")) {
+                String tileLatID = jsonObject.getString("tileLatID");
+                String tileLngID = jsonObject.getString("tileLngID");
+                String tileUsername = jsonObject.getString("username");
+                int soldiers = jsonObject.getInt("soldiers");
+                int food = jsonObject.getInt("food");
+                int gold = jsonObject.getInt("gold");
+                LocationID latLng = new LocationID(Integer.parseInt(tileLatID), Integer.parseInt(tileLngID));
+                System.out.println("tile username: " + tileUsername + " username " + LoginActivity.username);
+                Tile t;
+                if (tileUsername.equals("null")) {
+                    if (currentLngID == Integer.parseInt(tileLngID) && currentLatID == Integer.parseInt(tileLatID))
+                        //updateTile(colors.gray, tileLatID, tileLngID, tileUsername);
+                        TileWebserviceUtility.captureTile(Integer.parseInt(tileLatID), Integer.parseInt(tileLngID), LoginActivity.username, LoginActivity.password, this, getApplicationContext());
+                    Utilities.updateTile(colors.gray, tileLatID, tileLngID, null, mMap, tiles, soldiers, gold, food);
+                } else if (tileUsername.equalsIgnoreCase(LoginActivity.username)) {
+                    Utilities.updateTile(colors.green, tileLatID, tileLngID, tileUsername, mMap, tiles, soldiers, gold, food);
+                } else {
+                    Utilities.updateTile(colors.red, tileLatID, tileLngID, tileUsername, mMap, tiles, soldiers, gold, food);
+                }
+            } else if (serverResult[0].equals("2")) {
+                String goldObtained = jsonObject.getString("goldObtained");
+                String foodObtained = jsonObject.getString("foodObtained");
+                //show("gold obtained: " + goldObtained + " food obtained: " + foodObtained);
+            } else if (serverResult[0].equals("3")) {
+                int gold = Integer.parseInt(jsonObject.getString("gold"));
+                int food = Integer.parseInt(jsonObject.getString("food"));
+                int tiles = Integer.parseInt(jsonObject.getString("tiles"));
+                int tilesTaken = Integer.parseInt(jsonObject.getString("tilesTaken"));
+                int soldiers = jsonObject.getInt("totalSoldiers");
+                int goldObtained = jsonObject.getInt("goldObtained");
+                int foodObtained = jsonObject.getInt("foodObtained");
+                int totalGoldObtained = jsonObject.getInt("totalGoldObtained");
+                int totalFoodObtained = jsonObject.getInt("totalFoodObtained");
+                showResourcesChanged(user, new User("", gold, food, tiles, tilesTaken, goldObtained, foodObtained, totalGoldObtained, totalFoodObtained, soldiers, 0));
+                System.out.println("getuser: 3");
             }
         } catch (JSONException e) {
             e.printStackTrace();
-        }
-
-    }
-
-
-
-    public class ProcessUpdateTiles extends Thread {
-        String result;
-        ProcessUpdateTiles(String result) {
-            this.result = result;
-        }
-
-        @Override
-        public void run() {
-
         }
     }
 }

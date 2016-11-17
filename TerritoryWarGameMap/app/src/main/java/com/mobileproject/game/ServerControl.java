@@ -19,6 +19,7 @@ import java.net.URL;
 public class ServerControl extends AsyncTask<String, Void, String> {
     public static final String GET = "GET";
     public static final String POST = "POST";
+    private String type = null;
     private AsyncResponse asyncResponse;
 
     public ServerControl(AsyncResponse asyncResponse) {
@@ -26,13 +27,15 @@ public class ServerControl extends AsyncTask<String, Void, String> {
     }
     /**
      *
-     * @param params url, method, body, auth
+     * @param params url, method, body, auth, type - the type to distinguish processing the result
      * @return response - the json string server response
      */
     protected String doInBackground(String... params) {
         String content = "";
         try {
             URL url = new URL(params[0]);
+            if (params.length > 4)
+                type = params[4];
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             if (params.length > 3) {
                 try {
@@ -101,6 +104,9 @@ public class ServerControl extends AsyncTask<String, Void, String> {
      * @param result the json result
      */
     protected void onPostExecute(String result) {
-        asyncResponse.processResult(result);
+        if (type != null)
+            asyncResponse.processResult(type + ";" + result);
+        else
+            asyncResponse.processResult(result);
     }
 }

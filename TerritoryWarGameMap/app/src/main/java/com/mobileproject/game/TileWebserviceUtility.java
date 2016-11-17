@@ -15,6 +15,9 @@ import org.json.JSONObject;
  */
 public class TileWebserviceUtility {
 
+    /**
+     * Captures a tile on the server.
+     */
     public static void captureTile(int tileLatID, int tileLngID, String username, String password, AsyncResponse callback, Context context) {
         JSONObject jsonObject = new JSONObject();
         JSONObject auth = new JSONObject();
@@ -31,9 +34,12 @@ public class TileWebserviceUtility {
 
         ServerControl capture = new ServerControl(callback);
         capture.execute(context.getString(R.string.server) + "tiles/capture",
-                ServerControl.POST, jsonObject.toString(), auth.toString());
+                ServerControl.POST, jsonObject.toString(), auth.toString(), "1");
     }
 
+    /**
+     * Gets the Resources of the tile.
+     */
     public static void getResources(int tileLatID, int tileLngID, String username, String password, AsyncResponse callback, Context context) {
         JSONObject jsonObject = new JSONObject();
         JSONObject auth = new JSONObject();
@@ -48,6 +54,41 @@ public class TileWebserviceUtility {
         }
         ServerControl sc = new ServerControl(callback);
         sc.execute(context.getString(R.string.server) + "tiles/resources",
-                ServerControl.POST, jsonObject.toString(), auth.toString());
+                ServerControl.POST, jsonObject.toString(), auth.toString(), "1");
+    }
+
+    /** Collects the resources for the user **/
+    public static void collectResources(String username, String password, AsyncResponse callback, Context context) {
+        JSONObject jsonObject = new JSONObject();
+        JSONObject auth = new JSONObject();
+        try {
+            auth.put("username", username);
+            auth.put("password", password);
+            jsonObject.put("username", username);
+            System.out.println(jsonObject.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        ServerControl sc = new ServerControl(callback);
+        sc.execute(context.getString(R.string.server) + "users/collect",
+                ServerControl.POST, jsonObject.toString(), auth.toString(), "2");
+    }
+
+    /** Gets the user's resources from the server **/
+    public static void getUser(String username, String password, AsyncResponse callback, Context context) {
+        JSONObject jsonObject = new JSONObject();
+        JSONObject auth = new JSONObject();
+        try {
+            auth.put("username", username);
+            auth.put("password", password);
+            jsonObject.put("username", username);
+            System.out.println(jsonObject.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        ServerControl sc = new ServerControl(callback);
+        sc.execute(context.getString(R.string.server) + "users/",
+                ServerControl.POST, jsonObject.toString(), auth.toString(), "3");
+        System.out.println("get user utility");
     }
 }
