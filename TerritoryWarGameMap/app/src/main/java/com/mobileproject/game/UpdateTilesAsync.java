@@ -77,21 +77,24 @@ class UpdateTilesAsync extends AsyncTask<Void, Void, String> implements AsyncRes
             String tileLatID = jsonObject.getString("tileLatID");
             String tileLngID = jsonObject.getString("tileLngID");
             String tileUsername = jsonObject.getString("username");
+            int soldiers = jsonObject.getInt("soldiers");
+            int gold = jsonObject.getInt("gold");
+            int food = jsonObject.getInt("food");
             LocationID latLng = new LocationID(Integer.parseInt(tileLatID), Integer.parseInt(tileLngID));
             System.out.println("tile username: " + tileUsername + " username " + LoginActivity.username);
             Tile t;
             if(tileUsername.equals("null")) {
                 if (GameMapUI.currentLngID == Integer.parseInt(tileLngID) && GameMapUI.currentLatID == Integer.parseInt(tileLatID)) {
-                    Utilities.updateTile(colors.green, tileLatID, tileLngID, LoginActivity.username ,mMap, tiles);
+                    Utilities.updateTile(colors.green, tileLatID, tileLngID, LoginActivity.username ,mMap, tiles, soldiers, gold, food);
                     TileWebserviceUtility.captureTile(Integer.parseInt(tileLatID), Integer.parseInt(tileLngID), LoginActivity.username, LoginActivity.password, this, context);
                 } else {
-                    Utilities.updateTile(colors.gray, tileLatID, tileLngID, null, mMap, tiles);
+                    Utilities.updateTile(colors.gray, tileLatID, tileLngID, null, mMap, tiles, soldiers, gold, food);
                 }
             }
             else if (tileUsername.equalsIgnoreCase(LoginActivity.username)) {
-                Utilities.updateTile(colors.green, tileLatID, tileLngID, tileUsername, mMap, tiles);
+                Utilities.updateTile(colors.green, tileLatID, tileLngID, tileUsername, mMap, tiles, soldiers, gold, food);
             } else {
-                Utilities.updateTile(colors.red, tileLatID, tileLngID, tileUsername, mMap, tiles);
+                Utilities.updateTile(colors.red, tileLatID, tileLngID, tileUsername, mMap, tiles, soldiers, gold, food);
             }
         } catch (JSONException e) {
             e.printStackTrace();

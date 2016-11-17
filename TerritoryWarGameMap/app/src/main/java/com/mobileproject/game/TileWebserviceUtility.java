@@ -89,5 +89,6 @@ public class TileWebserviceUtility {
         ServerControl sc = new ServerControl(callback);
         sc.execute(context.getString(R.string.server) + "users/",
                 ServerControl.POST, jsonObject.toString(), auth.toString(), "3");
+        System.out.println("get user utility");
     }
 }

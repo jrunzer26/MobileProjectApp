@@ -13,11 +13,17 @@ public class Tile {
     private TileID id;
     private String username;
     private Polygon polygon;
+    private int soldiers;
+    private int gold;
+    private int food;
 
-    Tile(TileID id, String username, Polygon polygon) {
+    Tile(TileID id, String username, Polygon polygon, int soldiers, int gold, int food) {
         this.id = id;
         this.username = username;
         this.polygon = polygon;
+        this.soldiers = soldiers;
+        this.gold = gold;
+        this.food = food;
     }
 
     public TileID getTileID() {
@@ -39,4 +45,21 @@ public class Tile {
     public void remove() {
         polygon.remove();
     }
+
+    public TileID getId() {
+        return id;
+    }
+
+    public int getSoldiers() {
+        return soldiers;
+    }
+
+    public int getGold() {
+        return gold;
+    }
+
+    public int getFood() {
+        return food;
+    }
+
 }

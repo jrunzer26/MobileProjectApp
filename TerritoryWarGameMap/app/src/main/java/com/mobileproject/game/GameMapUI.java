@@ -145,7 +145,8 @@ public class GameMapUI extends FragmentActivity implements
     private void showResourcesChanged(User user, User serverUser) {
         int addedFood = serverUser.getFood() - user.getFood();
         int addedGold = serverUser.getGold() - user.getGold();
-        int changedTiles = serverUser.getTiles() - serverUser.getTiles();
+        int changedTiles = user.getTiles() - serverUser.getTiles();
+        int changedSoldiers = user.getTotalSoldiers() - serverUser.getTotalSoldiers();
 
         if (addedFood > 0) {
             show("you gained: " + addedFood + " food");
@@ -153,12 +154,15 @@ public class GameMapUI extends FragmentActivity implements
         if (addedGold > 0) {
             show("you gained: " + addedGold + " gold");
         }
-
-        if (changedTiles < 0) {
-            show("you lost: " + changedTiles + " tiles");
-        } else if (changedTiles > 0) {
-            show("you gained: " + changedTiles + " tiles");
+        if (changedSoldiers < 0) {
+            show("you lost: " + changedSoldiers + " soldiers");
         }
+        if (changedTiles < 0) {
+            show("you lost: " +  -1 * changedTiles + " tile(s)");
+        }
+
+        show("resources changed");
+        this.user = serverUser;
     }
 
 
@@ -669,7 +673,7 @@ public class GameMapUI extends FragmentActivity implements
             if ((t = tiles.get(new TileID(currentLatID, currentLngID))) != null) {
                 if (t.getUsername() == null) {
                     // capture the tile if it is unoccupied - has a chance to turn red if another person requests first
-                    Utilities.updateTile(colors.green, Integer.toString(currentLatID), Integer.toString(currentLngID), LoginActivity.username, mMap, tiles);
+                    Utilities.updateTile(colors.green, Integer.toString(currentLatID), Integer.toString(currentLngID), LoginActivity.username, mMap, tiles, 0, 0, 0);
                     TileWebserviceUtility.captureTile(currentLatID, currentLngID, LoginActivity.username, LoginActivity.password, this, getApplicationContext());
                 }
             }
@@ -751,6 +755,9 @@ public class GameMapUI extends FragmentActivity implements
                 String tileLatID = jsonObject.getString("tileLatID");
                 String tileLngID = jsonObject.getString("tileLngID");
                 String tileUsername = jsonObject.getString("username");
+                int soldiers = jsonObject.getInt("soldiers");
+                int food = jsonObject.getInt("food");
+                int gold = jsonObject.getInt("gold");
                 LocationID latLng = new LocationID(Integer.parseInt(tileLatID), Integer.parseInt(tileLngID));
                 System.out.println("tile username: " + tileUsername + " username " + LoginActivity.username);
                 Tile t;
@@ -758,11 +765,11 @@ public class GameMapUI extends FragmentActivity implements
                     if (currentLngID == Integer.parseInt(tileLngID) && currentLatID == Integer.parseInt(tileLatID))
                         //updateTile(colors.gray, tileLatID, tileLngID, tileUsername);
                         TileWebserviceUtility.captureTile(Integer.parseInt(tileLatID), Integer.parseInt(tileLngID), LoginActivity.username, LoginActivity.password, this, getApplicationContext());
-                    Utilities.updateTile(colors.gray, tileLatID, tileLngID, null, mMap, tiles);
+                    Utilities.updateTile(colors.gray, tileLatID, tileLngID, null, mMap, tiles, soldiers, gold, food);
                 } else if (tileUsername.equalsIgnoreCase(LoginActivity.username)) {
-                    Utilities.updateTile(colors.green, tileLatID, tileLngID, tileUsername, mMap, tiles);
+                    Utilities.updateTile(colors.green, tileLatID, tileLngID, tileUsername, mMap, tiles, soldiers, gold, food);
                 } else {
-                    Utilities.updateTile(colors.red, tileLatID, tileLngID, tileUsername, mMap, tiles);
+                    Utilities.updateTile(colors.red, tileLatID, tileLngID, tileUsername, mMap, tiles, soldiers, gold, food);
                 }
             } else if (serverResult[0].equals("2")) {
                 String goldObtained = jsonObject.getString("goldObtained");
@@ -773,7 +780,13 @@ public class GameMapUI extends FragmentActivity implements
                 int food = Integer.parseInt(jsonObject.getString("food"));
                 int tiles = Integer.parseInt(jsonObject.getString("tiles"));
                 int tilesTaken = Integer.parseInt(jsonObject.getString("tilesTaken"));
-                showResourcesChanged(user, new User("", gold, food, tiles, tilesTaken, 0, 0, 0, 0, 0, 0));
+                int soldiers = jsonObject.getInt("totalSoldiers");
+                int goldObtained = jsonObject.getInt("goldObtained");
+                int foodObtained = jsonObject.getInt("foodObtained");
+                int totalGoldObtained = jsonObject.getInt("totalGoldObtained");
+                int totalFoodObtained = jsonObject.getInt("totalFoodObtained");
+                showResourcesChanged(user, new User("", gold, food, tiles, tilesTaken, goldObtained, foodObtained, totalGoldObtained, totalFoodObtained, soldiers, 0));
+                System.out.println("getuser: 3");
             }
         } catch (JSONException e) {
             e.printStackTrace();
