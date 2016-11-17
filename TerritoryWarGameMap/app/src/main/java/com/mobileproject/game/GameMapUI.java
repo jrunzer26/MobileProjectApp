@@ -58,6 +58,7 @@ public class GameMapUI extends FragmentActivity implements
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private static final float MIN_ZOOM_PREF = 17f;
     private static final float MAX_ZOOM_PREF = MIN_ZOOM_PREF;
+    private Criteria criteria;
 
     protected static final String TAG = "MainActivity";
 
@@ -200,7 +201,7 @@ public class GameMapUI extends FragmentActivity implements
         // Set map initial location here:
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         // set the criteria of the provider
-        Criteria criteria = new Criteria();
+        criteria = new Criteria();
         criteria.setAccuracy(Criteria.ACCURACY_FINE);
         criteria.setAltitudeRequired(false);
         criteria.setPowerRequirement(Criteria.NO_REQUIREMENT);
@@ -304,10 +305,6 @@ public class GameMapUI extends FragmentActivity implements
         // Get current location:
         mMap.setOnMyLocationButtonClickListener(this);
         enableMyLocation();
-
-        if (locationManager != null) {
-            setupFirstLocation();
-        }
     }
 
 
@@ -334,12 +331,19 @@ public class GameMapUI extends FragmentActivity implements
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
-        double lat = locationManager.getLastKnownLocation(bestProvider).getLatitude();
-        double lng = locationManager.getLastKnownLocation(bestProvider).getLongitude();
-
-        LatLng latLng = new LatLng(lat, lng);
-        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, MIN_ZOOM_PREF);
-        mMap.animateCamera(cameraUpdate);
+        if (bestProvider == null) {
+            bestProvider = locationManager.getBestProvider(criteria, true);
+        } else {
+            Location location = locationManager.getLastKnownLocation(bestProvider);
+            if (location != null) {
+                LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+                CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, MIN_ZOOM_PREF);
+                mMap.animateCamera(cameraUpdate);
+            } else {
+                finish();
+                startActivity(getIntent());
+            }
+        }
     }
 
 
