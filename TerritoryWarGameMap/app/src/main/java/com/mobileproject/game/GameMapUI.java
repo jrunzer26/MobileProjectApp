@@ -21,7 +21,9 @@ import android.view.View;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
+
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
@@ -36,10 +38,13 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -56,8 +61,8 @@ public class GameMapUI extends FragmentActivity implements
         AsyncResponse {
 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
-    private static final float MIN_ZOOM_PREF = 17f;
-    private static final float MAX_ZOOM_PREF = MIN_ZOOM_PREF;
+    private static final float MIN_ZOOM_PREF = 15f;
+    private static final float MAX_ZOOM_PREF = 18f;
     private Criteria criteria;
 
     protected static final String TAG = "MainActivity";
@@ -77,7 +82,7 @@ public class GameMapUI extends FragmentActivity implements
     private double WestBoundLng;
     private double EastBoundLng;
 
-    public static final double bdUnit = 4; // number of tiles in each direction
+    public static final double bdUnit = 6; // number of tiles in each direction
     public static final double latTileUnit = 0.0018; // length of a tile
     public static final double lngTileUnit = 0.0018; // width of a tile
 
@@ -305,6 +310,9 @@ public class GameMapUI extends FragmentActivity implements
         // Get current location:
         mMap.setOnMyLocationButtonClickListener(this);
         enableMyLocation();
+
+
+        setOnPolygonClickable(mMap);
     }
 
 
@@ -337,7 +345,7 @@ public class GameMapUI extends FragmentActivity implements
             Location location = locationManager.getLastKnownLocation(bestProvider);
             if (location != null) {
                 LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-                CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, MIN_ZOOM_PREF);
+                CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, MAX_ZOOM_PREF);
                 mMap.animateCamera(cameraUpdate);
             } else {
                 finish();
@@ -825,6 +833,51 @@ public class GameMapUI extends FragmentActivity implements
             Utilities.updateTile(colors.red, tileLatID, tileLngID, tileUsername, mMap, tiles, soldiers, gold, food);
         }
     }
+
+
+    private void debugBarSwitch(boolean bool){
+        TextView text = (TextView)findViewById(R.id.debug);
+
+        if(bool){
+            text.setVisibility(View.VISIBLE);
+        } else {
+            text.setVisibility(View.GONE);
+        }
+    }
+
+    /**
+     * Showing the debugging information on the top of game.
+     * @param msg
+     */
+    private void showDebug(String msg) {
+        TextView text = (TextView)findViewById(R.id.debug);
+        text.setText(msg);
+    }
+
+    /**
+     * Add the On Polygon Listener to the Map.
+     * @param map
+     */
+    private void setOnPolygonClickable(GoogleMap map){
+        map.setOnPolygonClickListener(new GoogleMap.OnPolygonClickListener() {
+            @Override
+            public void onPolygonClick(Polygon polygon) {
+                LatLng point = polygon.getPoints().get(2);
+                LocationID id = LocationToID(point);
+                TileID tid = new TileID(id.getLatID(),id.getLngID());
+
+                Tile t = tiles.get(tid);
+
+                t.setPolygon(Utilities.drawPolygon(mMap,Utilities.shifter(point,-latTileUnit/2,-lngTileUnit/2),latTileUnit,lngTileUnit,colors.yellow));
+
+                showDebug(polygon.getPoints().get(0).toString()+polygon.getPoints().get(1).toString()+polygon.getPoints().get(2).toString()+polygon.getPoints().get(3).toString());
+
+
+            }
+        }
+        );
+
+    }
 }
 
 
@@ -834,7 +887,7 @@ public class GameMapUI extends FragmentActivity implements
  * The colour pallet.
  */
 class ColorSet {
-    public int green, red, blue, gray, orange;
+    public int green, red, blue, gray, orange, yellow;
 
     ColorSet() {
         green = Color.argb(100, 0, 255, 0);
@@ -842,6 +895,7 @@ class ColorSet {
         blue = Color.argb(100, 0, 0, 255);
         gray = Color.argb(100, 100, 100, 100);
         orange = Color.argb(100, 255, 165, 0);
+        yellow = Color.argb(200,255,255,0);
     }
 }
 
@@ -862,6 +916,7 @@ class LocationID {
         this.LatID = LatID;
         this.LngID = LngID;
     }
+
 
     public int getLatID() {
         return LatID;

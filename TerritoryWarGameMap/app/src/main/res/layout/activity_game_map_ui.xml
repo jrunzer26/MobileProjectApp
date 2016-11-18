@@ -78,6 +78,14 @@
             android:textColor="@color/colorWhite"
             android:text="Internal Game Menu"/>
 
+        <CheckBox
+            android:id="@+id/ckbDebug"
+            android:textSize="18sp"
+            android:layout_centerInParent="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Debug Mode"/>
+
         <ImageButton
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
@@ -89,6 +97,13 @@
             android:layout_height="50dp" />
 
     </RelativeLayout>
+
+    <TextView
+        android:id="@+id/debug"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorWhite"
+        android:text="Debug Bar:"/>
 
     <ImageButton
 
