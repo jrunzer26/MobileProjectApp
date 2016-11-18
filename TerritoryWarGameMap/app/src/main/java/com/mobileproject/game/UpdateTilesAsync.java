@@ -6,7 +6,6 @@ import android.os.AsyncTask;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -19,13 +18,13 @@ import static com.mobileproject.game.GameMapUI.bdUnit;
  */
 
 class UpdateTilesAsync extends AsyncTask<Void, Void, String> implements AsyncResponse {
-    private HashMap<TileID, Tile> tiles;
+    private HashMap<Tile.TileID, Tile> tiles;
     private LatLng newLoc;
     private Context context;
     private ColorSet colors;
     private GoogleMap mMap;
 
-    public UpdateTilesAsync(HashMap<TileID, Tile> tiles, LatLng newLoc, Context context, GoogleMap mMap, ColorSet colors) {
+    public UpdateTilesAsync(HashMap<Tile.TileID, Tile> tiles, LatLng newLoc, Context context, GoogleMap mMap, ColorSet colors) {
         this.tiles = tiles;
         this.newLoc = newLoc;
         this.context = context;
@@ -38,29 +37,29 @@ class UpdateTilesAsync extends AsyncTask<Void, Void, String> implements AsyncRes
         //DrawPolygonDemo(mMap, new LatLng(currentLatID * latTileUnit - latTileUnit / 2, currentLngID * lngTileUnit - lngTileUnit / 2));
         //draw tile user is in
 
-        LocationID id = Utilities.LocationToID(Utilities.shifter(newLoc, 0, 0));
+        Tile.TileID id = new Tile.TileID(Utilities.shifter(newLoc, 0, 0));
         TileWebserviceUtility.getResources(id.getLatID(), id.getLngID(), LoginActivity.username, LoginActivity.password, this, context);
         // draw tiles in cross from the user
         for (int i = 1; i < bdUnit; i++) {
-            id = Utilities.LocationToID(Utilities.shifter(newLoc, i * GameMapUI.latTileUnit, 0));
+            id = new Tile.TileID(Utilities.shifter(newLoc, i * GameMapUI.latTileUnit, 0));
             TileWebserviceUtility.getResources(id.getLatID(), id.getLngID(), LoginActivity.username, LoginActivity.password, this, context);
-            id = Utilities.LocationToID(Utilities.shifter(newLoc, (-i) * GameMapUI.latTileUnit, 0));
+            id = new Tile.TileID(Utilities.shifter(newLoc, (-i) * GameMapUI.latTileUnit, 0));
             TileWebserviceUtility.getResources(id.getLatID(), id.getLngID(), LoginActivity.username, LoginActivity.password, this, context);
-            id = Utilities.LocationToID(Utilities.shifter(newLoc, 0, i * GameMapUI.lngTileUnit));
+            id = new Tile.TileID(Utilities.shifter(newLoc, 0, i * GameMapUI.lngTileUnit));
             TileWebserviceUtility.getResources(id.getLatID(), id.getLngID(), LoginActivity.username, LoginActivity.password, this, context);
-            id = Utilities.LocationToID(Utilities.shifter(newLoc, 0, (-i) * GameMapUI.lngTileUnit));
+            id = new Tile.TileID(Utilities.shifter(newLoc, 0, (-i) * GameMapUI.lngTileUnit));
             TileWebserviceUtility.getResources(id.getLatID(), id.getLngID(), LoginActivity.username, LoginActivity.password, this, context);
         }
         // draw polygons in corners
         for (int i = 1; i < bdUnit; i++) {
             for (int j = 1; j < bdUnit; j++) {
-                id = Utilities.LocationToID(Utilities.shifter(newLoc, i * GameMapUI.latTileUnit, j * GameMapUI.lngTileUnit));
+                id = new Tile.TileID(Utilities.shifter(newLoc, i * GameMapUI.latTileUnit, j * GameMapUI.lngTileUnit));
                 TileWebserviceUtility.getResources(id.getLatID(), id.getLngID(), LoginActivity.username, LoginActivity.password, this, context);
-                id = Utilities.LocationToID(Utilities.shifter(newLoc, i * (-GameMapUI.latTileUnit), j * GameMapUI.lngTileUnit));
+                id = new Tile.TileID(Utilities.shifter(newLoc, i * (-GameMapUI.latTileUnit), j * GameMapUI.lngTileUnit));
                 TileWebserviceUtility.getResources(id.getLatID(), id.getLngID(), LoginActivity.username, LoginActivity.password, this, context);
-                id = Utilities.LocationToID(Utilities.shifter(newLoc, i * (-GameMapUI.latTileUnit), j * (-GameMapUI.lngTileUnit)));
+                id = new Tile.TileID(Utilities.shifter(newLoc, i * (-GameMapUI.latTileUnit), j * (-GameMapUI.lngTileUnit)));
                 TileWebserviceUtility.getResources(id.getLatID(), id.getLngID(), LoginActivity.username, LoginActivity.password, this, context);
-                id = Utilities.LocationToID(Utilities.shifter(newLoc, i * (GameMapUI.latTileUnit), j * (-GameMapUI.lngTileUnit)));
+                id = new Tile.TileID(Utilities.shifter(newLoc, i * (GameMapUI.latTileUnit), j * (-GameMapUI.lngTileUnit)));
                 TileWebserviceUtility.getResources(id.getLatID(), id.getLngID(), LoginActivity.username, LoginActivity.password, this, context);
             }
         }
@@ -74,19 +73,18 @@ class UpdateTilesAsync extends AsyncTask<Void, Void, String> implements AsyncRes
         String[] serverResult = result.split(";");
         try {
             JSONObject jsonObject = new JSONObject(serverResult[1]);
-            String tileLatID = jsonObject.getString("tileLatID");
-            String tileLngID = jsonObject.getString("tileLngID");
+            int tileLatID = jsonObject.getInt("tileLatID");
+            int tileLngID = jsonObject.getInt("tileLngID");
             String tileUsername = jsonObject.getString("username");
             int soldiers = jsonObject.getInt("soldiers");
             int gold = jsonObject.getInt("gold");
             int food = jsonObject.getInt("food");
-            LocationID latLng = new LocationID(Integer.parseInt(tileLatID), Integer.parseInt(tileLngID));
             System.out.println("tile username: " + tileUsername + " username " + LoginActivity.username);
             Tile t;
             if(tileUsername.equals("null")) {
-                if (GameMapUI.currentLngID == Integer.parseInt(tileLngID) && GameMapUI.currentLatID == Integer.parseInt(tileLatID)) {
+                if (GameMapUI.currentLngID == tileLngID && GameMapUI.currentLatID == tileLatID) {
                     Utilities.updateTile(colors.green, tileLatID, tileLngID, LoginActivity.username ,mMap, tiles, soldiers, gold, food);
-                    TileWebserviceUtility.captureTile(Integer.parseInt(tileLatID), Integer.parseInt(tileLngID), LoginActivity.username, LoginActivity.password, this, context);
+                    TileWebserviceUtility.captureTile(tileLatID, tileLngID, LoginActivity.username, LoginActivity.password, this, context);
                 } else {
                     Utilities.updateTile(colors.gray, tileLatID, tileLngID, null, mMap, tiles, soldiers, gold, food);
                 }
