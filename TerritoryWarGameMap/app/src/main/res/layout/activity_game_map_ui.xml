@@ -6,7 +6,7 @@
     android:layout_height="fill_parent"
     tools:context="com.mobileproject.game.GameMapUI">
 
-    <fragment xmlns:map="http://schemas.android.com/apk/res-auto"
+    <fragment
         xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
@@ -45,8 +45,8 @@
 
     <ImageButton
         android:id="@+id/btnBackLocation"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:layout_marginTop="25dp"
         android:layout_marginEnd="25dp"
         android:layout_gravity="top|end"
@@ -60,35 +60,17 @@
         android:layout_gravity="start|bottom"
         android:src="@drawable/commander"/>
 
+    <include layout="@layout/notification_layout"/>
 
-    <RelativeLayout
+    <include layout="@layout/internal_menu"/>
+
+    <TextView
+        android:id="@+id/debug"
         android:visibility="gone"
-        android:layout_gravity="center_vertical|center_horizontal"
-        android:background="@drawable/menu_bg"
-        android:layout_width="350dp"
-        android:layout_height="500dp"
-        android:id="@+id/internalMenu">
-        <TextView
-            android:id="@+id/textIMTitle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="22sp"
-            android:layout_marginTop="20dp"
-            android:gravity="center_horizontal"
-            android:textColor="@color/colorWhite"
-            android:text="Internal Game Menu"/>
-
-        <ImageButton
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:id="@+id/btnIMBack"
-            android:onClick="process"
-            android:background="@drawable/btn_close"
-            android:layout_marginBottom="20dp"
-            android:layout_width="200dp"
-            android:layout_height="50dp" />
-
-    </RelativeLayout>
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorWhiteTrans"
+        android:text="Debugging:"/>
 
     <ImageButton
 

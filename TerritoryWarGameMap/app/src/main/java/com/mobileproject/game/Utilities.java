@@ -8,6 +8,7 @@ package com.mobileproject.game;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
+import android.media.MediaPlayer;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
@@ -15,13 +16,10 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
-import com.google.android.gms.maps.model.Polyline;
-import com.google.android.gms.maps.model.PolylineOptions;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -112,6 +110,8 @@ public class Utilities {
     }
 
 
+
+
     /**
      * Draws a polygon on the map
      * @param map the google map
@@ -158,4 +158,22 @@ public class Utilities {
         LatLng loc = new LatLng(lat,lng);
         return loc;
     }
+
+    public static void SoundPlayer(Context context , final MediaPlayer mp ,String mode) {
+        switch (mode){
+            case "play":
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mp.start();
+                    }
+                });
+                break;
+            case "stop":
+                mp.stop();
+            default:
+                break;
+        }
+    }
+
 }

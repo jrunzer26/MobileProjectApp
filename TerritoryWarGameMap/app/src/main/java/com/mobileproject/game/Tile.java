@@ -16,6 +16,7 @@ public class Tile {
     private int soldiers;
     private int gold;
     private int food;
+    private boolean selected;
 
     Tile(TileID id, String username, Polygon polygon, int soldiers, int gold, int food) {
         this.id = id;
@@ -24,6 +25,7 @@ public class Tile {
         this.soldiers = soldiers;
         this.gold = gold;
         this.food = food;
+        this.setSelected(false);
     }
 
     public TileID getTileID() {
@@ -60,6 +62,14 @@ public class Tile {
 
     public int getFood() {
         return food;
+    }
+
+    public void setSelected(boolean bool){
+        selected = bool;
+    }
+
+    public boolean isSelected(){
+        return selected;
     }
 
 }

@@ -4,91 +4,90 @@
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:gravity="center_horizontal"
     android:background="@color/colorMainMenuBackgroud"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
     tools:context="com.mobileproject.game.MainMenuActivity">
 
     <ImageView
         android:id="@+id/imgBanner"
-        android:src="@drawable/banner"
-        android:layout_marginBottom="50dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:scaleType="centerCrop"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:src="@drawable/banner" />
 
 
-    <Button
-        android:id="@+id/mainGameMenuBtn1"
-        android:src="@drawable/btn_enter_game"
-        android:layout_width="250dp"
-        android:layout_height="87dp"
-        android:textColor="@color/colorBlack"
-        android:onClick="process"
-        android:textStyle="bold"
-        android:layout_marginTop="@dimen/menu_itmes_margin_gap"
-        android:layout_marginLeft="30dp"
-        android:layout_marginRight="30dp"
-        android:background="@drawable/btn_enter_game" />
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:paddingTop="20dp"
+        android:paddingBottom="20dp"
+        android:layout_gravity="center_vertical|center_horizontal"
+        android:layout_weight="1"
+        android:orientation="vertical">
 
-    <Button
-        android:id="@+id/mainGameMenuBtn2"
-        android:layout_width="200dp"
-        android:layout_height="70dp"
-        android:textColor="@color/colorBlack"
-        android:onClick="process"
-        android:layout_marginTop="@dimen/menu_itmes_margin_gap"
-        android:layout_marginLeft="30dp"
-        android:layout_marginRight="30dp"
-        android:background="@drawable/btn_options" />
+        <Button
+            android:id="@+id/mainGameMenuBtn1"
+            android:layout_width="250dp"
+            android:layout_height="87dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:layout_gravity="center"
+            android:background="@drawable/btn_enter_game"
+            android:onClick="process"
+            android:src="@drawable/btn_enter_game"
+            android:textColor="@color/colorBlack"
+            android:textStyle="bold" />
 
-    <!--
-    <Button
-        android:id="@+id/mainGameMenuBtn3"
-        android:layout_width="250dp"
-        android:layout_height="87dp"
-        android:textColor="@color/colorBlack"
-        android:onClick="process"
-        android:layout_marginTop="@dimen/menu_itmes_margin_gap"
-        android:layout_marginLeft="30dp"
-        android:layout_marginRight="30dp"
-        android:background="@drawable/btn_about" />
-        -->
+        <Button
+            android:id="@+id/mainGameMenuBtn2"
+            android:layout_width="200dp"
+            android:layout_height="70dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:layout_marginTop="@dimen/menu_itmes_margin_gap"
+            android:layout_gravity="center"
+            android:background="@drawable/btn_options"
+            android:onClick="process"
+            android:textColor="@color/colorBlack" />
 
-    <Button
-        android:id="@+id/mainGameMenuBtn4"
-        android:layout_width="200dp"
-        android:layout_height="70dp"
-        android:textColor="@color/colorBlack"
-        android:onClick="process"
-        android:layout_marginTop="@dimen/menu_itmes_margin_gap"
-        android:layout_marginLeft="30dp"
-        android:layout_marginRight="30dp"
-        android:background="@drawable/btn_credits" />
+        <Button
+            android:id="@+id/mainGameMenuBtn3"
+            android:layout_width="200dp"
+            android:layout_height="70dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:layout_marginTop="@dimen/menu_itmes_margin_gap"
+            android:layout_gravity="center"
+            android:background="@drawable/btn_credits"
+            android:onClick="process"
+            android:textColor="@color/colorBlack" />
 
 
-    <Button
-        android:id="@+id/mainGameMenuBtn5"
-        android:layout_width="200dp"
-        android:layout_height="70dp"
-        android:textColor="@color/colorBlack"
-        android:onClick="process"
-        android:layout_marginTop="@dimen/menu_itmes_margin_gap"
-        android:layout_marginLeft="30dp"
-        android:layout_marginRight="30dp"
-        android:background="@drawable/btn_logout" />
+        <Button
+            android:id="@+id/mainGameMenuBtn4"
+            android:layout_width="200dp"
+            android:layout_height="70dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:layout_marginTop="@dimen/menu_itmes_margin_gap"
+            android:layout_gravity="center"
+            android:background="@drawable/btn_logout"
+            android:onClick="process"
+            android:textColor="@color/colorBlack" />
 
-    <Button
-        android:id="@+id/mainGameMenuBtn6"
-        android:layout_width="200dp"
-        android:layout_height="70dp"
-        android:textColor="@color/colorBlack"
-        android:onClick="process"
-        android:layout_marginTop="@dimen/menu_itmes_margin_gap"
-        android:layout_marginLeft="30dp"
-        android:layout_marginRight="30dp"
-        android:background="@drawable/btn_exit_game" />
+        <Button
+            android:id="@+id/mainGameMenuBtn5"
+            android:layout_width="250dp"
+            android:layout_height="87dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:layout_marginTop="@dimen/menu_itmes_margin_gap"
+            android:layout_gravity="center"
+            android:background="@drawable/btn_exit_game"
+            android:onClick="process"
+            android:textColor="@color/colorBlack" />
 
-
+    </LinearLayout>
 </LinearLayout>

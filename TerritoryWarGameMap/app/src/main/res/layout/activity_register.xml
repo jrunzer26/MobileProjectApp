@@ -11,13 +11,10 @@ android:paddingTop="@dimen/activity_vertical_margin"
 tools:context="com.mobileproject.game.RegisterActivity"
 android:orientation="vertical">
 
-<TextView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="@string/register_title"
-    android:paddingBottom="@dimen/marginbottom_login_underlogintitle"
-    android:textSize="@dimen/textsize_login_title"
-    android:layout_gravity="center_horizontal"/>
+<ImageView
+    android:src="@drawable/banner_reg"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" />
 
 
 <TextView android:id="@+id/textview_register_username"
@@ -68,17 +65,24 @@ android:orientation="vertical">
     android:orientation="horizontal"
     android:layout_gravity="center_horizontal">
 
-    <Button android:id="@+id/button_register_register"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/login_register"
-        android:textSize="@dimen/textsize_login_loginbutton"
-        android:textAllCaps="false"
-        android:onClick="register"/>
+
+    <Button
+    android:id="@+id/button_register_register"
+    android:layout_width="200dp"
+    android:layout_height="70dp"
+    android:layout_marginLeft="30dp"
+    android:layout_marginRight="30dp"
+    android:layout_marginTop="@dimen/menu_itmes_margin_gap"
+    android:layout_gravity="center"
+    android:background="@drawable/btn_reg"
+    android:layout_marginEnd="@dimen/margin_register_belowButtons"
+    android:onClick="register"
+    android:textColor="@color/colorBlack" />
 </android.support.v7.widget.ButtonBarLayout>
 
 <TextView android:id="@+id/textview_register_warning"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:textSize="18sp"
     android:textColor="@color/color_red"/>
 </LinearLayout>
