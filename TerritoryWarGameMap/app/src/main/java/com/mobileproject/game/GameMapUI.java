@@ -1,6 +1,7 @@
 package com.mobileproject.game;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Criteria;
@@ -16,10 +17,13 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -104,6 +108,7 @@ public class GameMapUI extends FragmentActivity implements
     private boolean threadDone = false;
 
     private MediaPlayer buttonClick;
+    private MediaPlayer bgMusic;
     private User user;
 
     @Override
@@ -129,6 +134,10 @@ public class GameMapUI extends FragmentActivity implements
         if (user == null) {
             user = new User(LoginActivity.username);
         }
+
+
+
+        listenerInit();
 
     }
 
@@ -176,6 +185,7 @@ public class GameMapUI extends FragmentActivity implements
     @Override
     protected void onPause() {
         super.onPause();
+        bgMusic.pause();
         if (locationManager != null) {
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 return;
@@ -188,6 +198,7 @@ public class GameMapUI extends FragmentActivity implements
     @Override
     protected void onResume() {
         super.onResume();
+        bgMusic.start();
         if (locationManager != null) {
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 return;
@@ -197,6 +208,36 @@ public class GameMapUI extends FragmentActivity implements
         }
     }
 
+    /**
+     * Initialization for all Listener
+     */
+    private void listenerInit(){
+        CheckBox debugMode = (CheckBox)findViewById(R.id.ckbDebug);
+        CheckBox bgMuiscMode = (CheckBox)findViewById(R.id.ckbBgMusic);
+        final TextView debugBar = (TextView)findViewById(R.id.debug);
+
+        debugMode.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if(b){
+                    debugBar.setVisibility(View.VISIBLE);
+                } else {
+                    debugBar.setVisibility(View.GONE);
+                }
+            }
+        });
+
+        bgMuiscMode.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if(b){
+                    bgMusic.start();
+                }else {
+                    bgMusic.pause();
+                }
+            }
+        });
+    }
 
     /**
      * Initializes the google map with tiles and location.
@@ -271,6 +312,7 @@ public class GameMapUI extends FragmentActivity implements
            while(!threadDone) {
                UpdateTilesAsync updateTilesAsync = new UpdateTilesAsync(tiles, new LatLng(currentLatID * latTileUnit - latTileUnit / 2, currentLngID * lngTileUnit - lngTileUnit / 2), getApplicationContext(), mMap, colors);
                updateTilesAsync.execute();
+
                try {
                    Thread.sleep(45000);
                } catch (InterruptedException e) {
@@ -288,6 +330,10 @@ public class GameMapUI extends FragmentActivity implements
         UiSettings settings = mMap.getUiSettings();
         settings.setMyLocationButtonEnabled(false);
         settings.setZoomControlsEnabled(false);
+        mMap.setMinZoomPreference(MIN_ZOOM_PREF);
+        mMap.setMaxZoomPreference(MAX_ZOOM_PREF);
+        //mMap.setLatLngBoundsForCameraTarget(getMapViewBounds());
+
     }
 
     /**
@@ -313,6 +359,8 @@ public class GameMapUI extends FragmentActivity implements
 
 
         setOnPolygonClickable(mMap);
+
+        updateNotification("Notification System Sample Text Here This is juat a example text so don't feel asasasas",200);
     }
 
 
@@ -363,7 +411,6 @@ public class GameMapUI extends FragmentActivity implements
         buttonClick.start();
         switch (view.getId()){
             case R.id.menuIMButton:
-                //startActivity(new Intent(this,InternalMenuActivity.class));
                 RelativeLayout layout1 =(RelativeLayout)findViewById(R.id.internalMenu);
                 if(layout1.getVisibility()==View.VISIBLE){
                     layout1.setVisibility(View.GONE);
@@ -405,10 +452,10 @@ public class GameMapUI extends FragmentActivity implements
         LatLngBounds bounds;
         double boundUnit = 0.01;
         // set upper left corner and bottom right coordinates
-        LatLng UL = new LatLng(currentLoc.latitude - boundUnit, currentLoc.longitude - boundUnit);
-        LatLng BR = new LatLng(currentLoc.latitude + boundUnit, currentLoc.longitude + boundUnit);
-        // final the bounds
-        bounds = new LatLngBounds(UL, BR);
+        //LatLng northeast = new LatLng(mLastLocation.getLatitude() + boundUnit, mLastLocation.getLongitude() - boundUnit);
+        //LatLng southwest = new LatLng(mLastLocation.getLatitude() - boundUnit, mLastLocation.getLongitude() + boundUnit);
+        // finalize the bounds
+        bounds = new LatLngBounds(new LatLng(SouthBoundLat,WestBoundLng), new LatLng(NorthBoundLat,EastBoundLng));
         currentBounds = bounds;
         return bounds;
     }
@@ -611,6 +658,12 @@ public class GameMapUI extends FragmentActivity implements
     @Override
     protected void onStart() {
         //mGoogleApiClient.connect();
+        CheckBox bgMusicMode = (CheckBox)findViewById(R.id.ckbBgMusic);
+        if(bgMusicMode.isChecked()){
+            bgMusic = MediaPlayer.create(this,R.raw.jocsnight);
+            bgMusic.setLooping(true);
+            bgMusic.start();
+        }
         super.onStart();
     }
 
@@ -621,6 +674,7 @@ public class GameMapUI extends FragmentActivity implements
         // save the state of the user
         UserDBHelper dbHelper = new UserDBHelper(this);
         dbHelper.saveUser(user);
+        bgMusic.pause();
         super.onStop();
     }
 
@@ -676,6 +730,7 @@ public class GameMapUI extends FragmentActivity implements
         }
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
         mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
+
         // find the tile id where the user is, then try to capture it
         LocationID locationID = LocationToID(latLng);
         if (currentLatID != locationID.getLatID() || currentLngID != locationID.getLngID()) {
@@ -835,16 +890,6 @@ public class GameMapUI extends FragmentActivity implements
     }
 
 
-    private void debugBarSwitch(boolean bool){
-        TextView text = (TextView)findViewById(R.id.debug);
-
-        if(bool){
-            text.setVisibility(View.VISIBLE);
-        } else {
-            text.setVisibility(View.GONE);
-        }
-    }
-
     /**
      * Showing the debugging information on the top of game.
      * @param msg
@@ -878,6 +923,19 @@ public class GameMapUI extends FragmentActivity implements
         );
 
     }
+
+    /**
+     * Update ingame notification system
+     * @param msg the content message need to display inside a buble
+     * @param delay the delay of each character typing anmiation
+     */
+    private void updateNotification(String msg ,long delay){
+        Typewriter text = (Typewriter) findViewById(R.id.txtNotifiction);
+        text.setVisibility(View.VISIBLE);
+        text.setCharacterDelay(delay);
+        text.animateText(msg);
+    }
+
 }
 
 
@@ -937,8 +995,48 @@ class LocationID {
 }
 
 
+/**
+ * A Typewriter Effect textview type class, achieve a typing animation.
+ */
 
+class Typewriter extends TextView {
 
+    private CharSequence mText;
+    private int mIndex;
+    private long mDelay = 500; //Default 500ms delay
+
+    public Typewriter(Context context) {
+        super(context);
+    }
+
+    public Typewriter(Context context, AttributeSet attrs) {
+        super(context, attrs);
+    }
+
+    private Handler mHandler = new Handler();
+    private Runnable characterAdder = new Runnable() {
+        @Override
+        public void run() {
+            setText(mText.subSequence(0, mIndex++));
+            if(mIndex <= mText.length()) {
+                mHandler.postDelayed(characterAdder, mDelay);
+            }
+        }
+    };
+
+    public void animateText(CharSequence text) {
+        mText = text;
+        mIndex = 0;
+
+        setText("");
+        mHandler.removeCallbacks(characterAdder);
+        mHandler.postDelayed(characterAdder, mDelay);
+    }
+
+    public void setCharacterDelay(long millis) {
+        mDelay = millis;
+    }
+}
 
 
 

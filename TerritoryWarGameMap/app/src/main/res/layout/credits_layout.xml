@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.mobileproject.game.OptionsMenuActivity">
+
+    <ImageView
+        android:src="@drawable/banner_credits"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <ScrollView
+        android:id="@+id/svCredits"
+        android:soundEffectsEnabled="true"
+        android:layout_weight="1"
+        android:layout_width="match_parent"
+        android:layout_height="0dp">
+
+
+        <LinearLayout
+            android:id="@+id/llCreditsContent"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/imgCredits"
+                android:layout_gravity="center|top"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:src="@drawable/credits"/>
+
+            <TextView
+                android:id="@+id/txtCreditsIntro"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorBlack"
+                android:gravity="center|top"
+                android:paddingTop="30dp"
+                android:paddingBottom="20dp"
+                android:textStyle="bold"
+                android:textSize="30sp"
+                android:text="Made with \u2764 by:"/>
+
+            <TextView
+                android:id="@+id/txtCreditsName1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorBlack"
+                android:gravity="center|top"
+                android:paddingTop="30dp"
+                android:paddingBottom="0dp"
+                android:textSize="26sp"
+                android:text="Yulong(Joe) Fang"/>
+            <TextView
+                android:id="@+id/txtCreditsStudentNumber1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorGray"
+                android:gravity="center|top"
+                android:textSize="20sp"
+                android:text="SID#:100471536"/>
+
+            <TextView
+                android:id="@+id/txtCreditsName2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorBlack"
+                android:gravity="center|top"
+                android:paddingTop="30dp"
+                android:paddingBottom="0dp"
+                android:textSize="26sp"
+                android:text="Jason Runzer"/>
+
+            <TextView
+                android:id="@+id/txtCreditsStudentNumber2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorGray"
+                android:gravity="center|top"
+                android:textSize="20sp"
+                android:text="SID#:100520993"/>
+
+            <ImageView
+                android:id="@+id/imgUOITLogo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:src="@drawable/uoit_logo"/>
+
+        </LinearLayout>
+
+
+    </ScrollView>
+
+    <Button
+        android:id="@+id/creditsBackBtn"
+        android:layout_width="200dp"
+        android:layout_height="70dp"
+        android:layout_gravity="bottom|center_horizontal"
+        android:textColor="@color/colorBlack"
+        android:onClick="process"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/btn_back" />
+
+</LinearLayout>

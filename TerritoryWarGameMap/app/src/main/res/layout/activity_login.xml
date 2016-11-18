@@ -11,14 +11,10 @@ android:paddingTop="@dimen/activity_vertical_margin"
 tools:context="com.mobileproject.game.LoginActivity"
 android:orientation="vertical">
 
-<TextView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="@string/login_title"
-    android:paddingBottom="@dimen/marginbottom_login_underlogintitle"
-    android:textSize="@dimen/textsize_login_title"
-    android:layout_gravity="center_horizontal"/>
-
+<ImageView
+    android:src="@drawable/banner_login"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" />
 
 <TextView android:id="@+id/textview_login_username"
     android:layout_width="wrap_content"
@@ -54,27 +50,39 @@ android:orientation="vertical">
     android:orientation="horizontal"
     android:layout_gravity="center_horizontal">
 
-    <Button android:id="@+id/button_login_login"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/login_login"
-        android:textSize="@dimen/textsize_login_loginbutton"
-        android:textAllCaps="false"
-        android:layout_marginEnd="@dimen/margin_login_buttons"
-        android:onClick="login"/>
 
-    <Button android:id="@+id/button_login_register"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/login_register"
-        android:textSize="@dimen/textsize_login_loginbutton"
-        android:textAllCaps="false"
-        android:layout_marginStart="@dimen/margin_login_buttons"
-        android:onClick="register"/>
+    <Button
+        android:id="@+id/loginMenuLoginBtn"
+        android:layout_width="180dp"
+        android:layout_height="63dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginTop="@dimen/menu_itmes_margin_gap"
+        android:layout_gravity="center"
+        android:background="@drawable/btn_login"
+        android:layout_marginEnd="@dimen/margin_login_buttons"
+        android:onClick="login"
+        android:textColor="@color/colorBlack" />
+
+    <Button
+        android:id="@+id/loginMenuRegisterBtn"
+        android:layout_width="180dp"
+        android:layout_height="63dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginTop="@dimen/menu_itmes_margin_gap"
+        android:layout_gravity="center"
+        android:background="@drawable/btn_reg_hover"
+        android:layout_marginEnd="@dimen/margin_register_belowButtons"
+        android:onClick="register"
+        android:textColor="@color/colorBlack" />
+
 </android.support.v7.widget.ButtonBarLayout>
 
 <TextView android:id="@+id/textview_login_warning"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:textSize="18sp"
     android:textColor="@color/color_red"/>
 </LinearLayout>

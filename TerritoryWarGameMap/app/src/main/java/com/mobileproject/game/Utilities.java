@@ -8,6 +8,7 @@ package com.mobileproject.game;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
+import android.media.MediaPlayer;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
@@ -157,4 +158,22 @@ public class Utilities {
         LatLng loc = new LatLng(lat,lng);
         return loc;
     }
+
+    public static void SoundPlayer(Context context , final MediaPlayer mp ,String mode) {
+        switch (mode){
+            case "play":
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mp.start();
+                    }
+                });
+                break;
+            case "stop":
+                mp.stop();
+            default:
+                break;
+        }
+    }
+
 }

@@ -5,6 +5,8 @@
     <color name="colorAccent">#FF4081</color>
     <color name="colorBlack">#000000</color>
     <color name="colorWhite">#ffffff</color>
+    <color name="colorWhiteTrans">#99ffffff</color>
     <color name="colorMainMenuBackgroud">#eaeaea</color>
     <color name="color_red">#FF0000</color>
+    <color name="colorGray">#888</color>
 </resources>

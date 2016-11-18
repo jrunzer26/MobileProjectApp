@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/internalMenu"
+    android:layout_width="350dp"
+    android:layout_height="500dp"
+    android:layout_gravity="center_vertical|center_horizontal"
+    android:background="@drawable/menu_bg"
+    android:visibility="gone">
+    <TextView
+        android:typeface="serif"
+        android:id="@+id/textIMTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:gravity="center_horizontal"
+        android:text="Game Menu"
+        android:textColor="@color/colorWhite"
+        android:textSize="25sp"
+        android:textStyle="bold"/>
+
+    <CheckBox
+        android:id="@+id/ckbDebug"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="60dp"
+        android:layout_marginTop="120dp"
+        android:text="Debugging Mode"
+        android:textSize="22sp"/>
+    <CheckBox
+        android:id="@+id/ckbBgMusic"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="60dp"
+        android:layout_marginTop="170dp"
+        android:checked="true"
+        android:text="Background Music"
+        android:textSize="22sp"/>
+
+    <ImageButton
+        android:id="@+id/btnIMBack"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/btn_close"
+        android:onClick="process" />
+
+</RelativeLayout>
