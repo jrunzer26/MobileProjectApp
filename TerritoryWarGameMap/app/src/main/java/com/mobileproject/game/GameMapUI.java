@@ -102,7 +102,7 @@ public class GameMapUI extends FragmentActivity implements
 
     private OnLocationChangedListener listener;
 
-    public HashMap<TileID, Tile> tiles;
+    public HashMap<Tile.TileID, Tile> tiles;
     public ArrayList<Polyline> lines;
     private boolean initalizeMap = false;
     private boolean threadDone = false;
@@ -278,11 +278,11 @@ public class GameMapUI extends FragmentActivity implements
         double lat = locationManager.getLastKnownLocation(bestProvider).getLatitude();
         double lng = locationManager.getLastKnownLocation(bestProvider).getLongitude();
         // make a locationID from that to find the center tile
-        LocationID id = LocationToID(new LatLng(lat, lng));
+        Tile.TileID id = new Tile.TileID(new LatLng(lat, lng));
         // set the current LatID and LngID to the users position
         currentLatID = id.getLatID();
         currentLngID = id.getLngID();
-        System.out.println("lat, lng: " + lat + "," + lng + " current location id: " + id.printID() + "\nset location id: 24413, -43831");
+        //System.out.println("lat, lng: " + lat + "," + lng + " current location id: " + id.printID() + "\nset location id: 24413, -43831");
         System.out.println();
         //create the new colour set to shade the tiles
         colors = new ColorSet();
@@ -544,17 +544,6 @@ public class GameMapUI extends FragmentActivity implements
 
 
 
-    /**
-     * Gets a LocationID object from a latlng
-     * @param loc the location
-     * @return the LocationID
-     */
-    public LocationID LocationToID(LatLng loc){
-        int LatID = (int)(loc.latitude/latTileUnit) + 1;
-        int LngID = (int)(loc.longitude/lngTileUnit) ;
-        return new LocationID(LatID,LngID);
-    }
-
 
 
     /**
@@ -608,41 +597,6 @@ public class GameMapUI extends FragmentActivity implements
     @Override
     public boolean onMyLocationButtonClick() {
         return false;
-    }
-
-    /**
-     * Draws the tiles on the map within the bdUnit.
-     * @param mMap the Google Map
-     * @param newLoc the center location
-     */
-    public void DrawPolygonDemo(GoogleMap mMap, LatLng newLoc) {
-        //draw tile user is in
-        LocationID id = LocationToID(Utilities.shifter(newLoc, 0, 0));
-        TileWebserviceUtility.getResources(id.getLatID(), id.getLngID(), LoginActivity.username, LoginActivity.password, this, getApplicationContext());
-        // draw tiles in cross from the user
-        for (int i = 1; i < bdUnit; i++) {
-            id = LocationToID(Utilities.shifter(newLoc, i * latTileUnit, 0));
-            TileWebserviceUtility.getResources(id.getLatID(), id.getLngID(), LoginActivity.username, LoginActivity.password, this, getApplicationContext());
-            id = LocationToID(Utilities.shifter(newLoc, (-i) * latTileUnit, 0));
-            TileWebserviceUtility.getResources(id.getLatID(), id.getLngID(), LoginActivity.username, LoginActivity.password, this, getApplicationContext());
-            id = LocationToID(Utilities.shifter(newLoc, 0, i * lngTileUnit));
-            TileWebserviceUtility.getResources(id.getLatID(), id.getLngID(), LoginActivity.username, LoginActivity.password, this, getApplicationContext());
-            id = LocationToID(Utilities.shifter(newLoc, 0, (-i) * lngTileUnit));
-            TileWebserviceUtility.getResources(id.getLatID(), id.getLngID(), LoginActivity.username, LoginActivity.password, this, getApplicationContext());
-        }
-        // draw polygons in corners
-        for (int i = 1; i < bdUnit; i++) {
-            for (int j = 1; j < bdUnit; j++) {
-                id = LocationToID(Utilities.shifter(newLoc, i * latTileUnit, j * lngTileUnit));
-                TileWebserviceUtility.getResources(id.getLatID(), id.getLngID(), LoginActivity.username, LoginActivity.password, this, getApplicationContext());
-                id = LocationToID(Utilities.shifter(newLoc, i * (-latTileUnit), j * lngTileUnit));
-                TileWebserviceUtility.getResources(id.getLatID(), id.getLngID(), LoginActivity.username, LoginActivity.password, this, getApplicationContext());
-                id = LocationToID(Utilities.shifter(newLoc, i * (-latTileUnit), j * (-lngTileUnit)));
-                TileWebserviceUtility.getResources(id.getLatID(), id.getLngID(), LoginActivity.username, LoginActivity.password, this, getApplicationContext());
-                id = LocationToID(Utilities.shifter(newLoc, i * (latTileUnit), j * (-lngTileUnit)));
-                TileWebserviceUtility.getResources(id.getLatID(), id.getLngID(), LoginActivity.username, LoginActivity.password, this, getApplicationContext());
-            }
-        }
     }
 
 
@@ -731,16 +685,16 @@ public class GameMapUI extends FragmentActivity implements
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
         mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
 
-        // find the tile id where the user is, then try to capture it
-        LocationID locationID = LocationToID(latLng);
-        if (currentLatID != locationID.getLatID() || currentLngID != locationID.getLngID()) {
-            currentLatID = locationID.getLatID();
-            currentLngID = locationID.getLngID();
+
+        Tile.TileID tileID = new Tile.TileID(latLng);
+        if (currentLatID != tileID.getLatID() || currentLngID != tileID.getLngID()) {
+            currentLatID = tileID.getLatID();
+            currentLngID = tileID.getLngID();
             Tile t;
-            if ((t = tiles.get(new TileID(currentLatID, currentLngID))) != null) {
+            if ((t = tiles.get(new Tile.TileID(currentLatID, currentLngID))) != null) {
                 if (t.getUsername() == null) {
                     // capture the tile if it is unoccupied - has a chance to turn red if another person requests first
-                    Utilities.updateTile(colors.green, Integer.toString(currentLatID), Integer.toString(currentLngID), LoginActivity.username, mMap, tiles, 0, 0, 0);
+                    Utilities.updateTile(colors.green, currentLatID, currentLngID, LoginActivity.username, mMap, tiles, 0, 0, 0);
                     TileWebserviceUtility.captureTile(currentLatID, currentLngID, LoginActivity.username, LoginActivity.password, this, getApplicationContext());
                 }
             }
@@ -813,7 +767,7 @@ public class GameMapUI extends FragmentActivity implements
      * @param tileID - the tile to place the soldiers on
      * @param soldiers - the number of soldiers to buy
      */
-    private void buySoldiers(TileID tileID, int soldiers) {
+    private void buySoldiers(Tile.TileID tileID, int soldiers) {
         //check if they have enough money,
         // post to the server
         TileWebserviceUtility.buySoldiers(LoginActivity.username, LoginActivity.password, tileID.getLatID(), tileID.getLngID(), soldiers, this, this);
@@ -868,19 +822,17 @@ public class GameMapUI extends FragmentActivity implements
                 foodObtained, totalGoldObtained, totalFoodObtained, soldiers, 0));
     }
     private void handleIncomingTile(JSONObject jsonObject) throws JSONException {
-        String tileLatID = jsonObject.getString("tileLatID");
-        String tileLngID = jsonObject.getString("tileLngID");
+        int tileLatID = jsonObject.getInt("tileLatID");
+        int tileLngID = jsonObject.getInt("tileLngID");
         String tileUsername = jsonObject.getString("username");
         int soldiers = jsonObject.getInt("soldiers");
         int food = jsonObject.getInt("food");
         int gold = jsonObject.getInt("gold");
-        LocationID latLng = new LocationID(Integer.parseInt(tileLatID), Integer.parseInt(tileLngID));
         System.out.println("tile username: " + tileUsername + " username " + LoginActivity.username);
         Tile t;
         if (tileUsername.equals("null")) {
-            if (currentLngID == Integer.parseInt(tileLngID) && currentLatID == Integer.parseInt(tileLatID))
-                //updateTile(colors.gray, tileLatID, tileLngID, tileUsername);
-                TileWebserviceUtility.captureTile(Integer.parseInt(tileLatID), Integer.parseInt(tileLngID), LoginActivity.username, LoginActivity.password, this, getApplicationContext());
+            if (currentLngID == tileLngID && currentLatID == tileLatID)
+                TileWebserviceUtility.captureTile(tileLatID, tileLngID, LoginActivity.username, LoginActivity.password, this, getApplicationContext());
             Utilities.updateTile(colors.gray, tileLatID, tileLngID, null, mMap, tiles, soldiers, gold, food);
         } else if (tileUsername.equalsIgnoreCase(LoginActivity.username)) {
             Utilities.updateTile(colors.green, tileLatID, tileLngID, tileUsername, mMap, tiles, soldiers, gold, food);
@@ -908,16 +860,15 @@ public class GameMapUI extends FragmentActivity implements
             @Override
             public void onPolygonClick(Polygon polygon) {
                 LatLng point = polygon.getPoints().get(2);
-                LocationID id = LocationToID(point);
-                TileID tid = new TileID(id.getLatID(),id.getLngID());
-
+                Tile.TileID tid = new Tile.TileID(point);
                 Tile t = tiles.get(tid);
-
-                t.setPolygon(Utilities.drawPolygon(mMap,Utilities.shifter(point,-latTileUnit/2,-lngTileUnit/2),latTileUnit,lngTileUnit,colors.yellow));
-
+                if (t.select()) {
+                    // selected - get username etc..
+                } else {
+                    // unselect
+                }
+                t.drawTile(mMap);
                 showDebug(polygon.getPoints().get(0).toString()+polygon.getPoints().get(1).toString()+polygon.getPoints().get(2).toString()+polygon.getPoints().get(3).toString());
-
-
             }
         }
         );
@@ -939,8 +890,6 @@ public class GameMapUI extends FragmentActivity implements
 }
 
 
-
-
 /**
  * The colour pallet.
  */
@@ -957,42 +906,6 @@ class ColorSet {
     }
 }
 
-/**
- * The LocationID class. Stores the ID of a latlng.
- */
-class LocationID {
-
-    private int LatID, LngID;
-
-
-    public LocationID() {
-        LatID = 0;
-        LngID = 0;
-    }
-
-    public LocationID(int LatID, int LngID) {
-        this.LatID = LatID;
-        this.LngID = LngID;
-    }
-
-
-    public int getLatID() {
-        return LatID;
-    }
-
-    public int getLngID() {
-        return LngID;
-    }
-
-    private void setID(int LatID, int LngID) {
-        this.LatID = LatID;
-        this.LngID = LngID;
-    }
-
-    public String printID() {
-        return "LatID: " + LatID + " LngID: " + LngID;
-    }
-}
 
 
 /**
