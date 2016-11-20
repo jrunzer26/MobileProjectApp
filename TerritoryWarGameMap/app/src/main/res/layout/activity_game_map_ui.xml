@@ -54,6 +54,8 @@
 
     <include layout="@layout/notification_layout"/>
 
+    <include layout="@layout/buysolider_layout" />
+
     <include layout="@layout/internal_menu"/>
 
     <TextView
