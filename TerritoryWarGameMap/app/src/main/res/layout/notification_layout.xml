@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/notificationSystem"
+    android:visibility="gone"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
 
@@ -23,6 +25,6 @@
         android:textColor="@color/colorBlack"
         android:textStyle="bold"
         android:rotation="2"
-        android:text="Notification System Sample Text Here This is juat a example text so don't feel asasasas"/>
+        android:text="@string/welcome_banner"/>
 
 </FrameLayout>

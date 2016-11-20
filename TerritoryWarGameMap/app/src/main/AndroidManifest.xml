@@ -33,7 +33,7 @@
         <activity
             android:name=".GameMapUI"
             android:screenOrientation="portrait"
-            android:label="@string/title_activity_game_map_ui" />
+            android:label="@string/title_activity_game_activity" />
         <activity android:name=".LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
