@@ -18,7 +18,7 @@ import static com.mobileproject.game.GameMapUI.lngTileUnit;
  */
 
 /**
- * A Tile Class. Holds relavant information for a tile drawn on the screen.
+ * A Tile Class. Holds relevant information for a tile drawn on the screen.
  */
 public class Tile {
     private TileID id;

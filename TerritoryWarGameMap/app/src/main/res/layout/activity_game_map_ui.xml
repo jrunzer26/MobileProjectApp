@@ -32,15 +32,7 @@
 
 
 
-    <ImageView
-        android:id="@+id/imgBar"
-        android:layout_width="200dp"
-        android:layout_height="40dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="10dp"
-        android:layout_gravity="top|start"
-        android:scaleType="centerCrop"
-        android:src="@drawable/bar"/>
+    <include layout="@layout/resource_bar_layout"/>
 
 
     <ImageButton
@@ -73,7 +65,6 @@
         android:text="Debugging:"/>
 
     <ImageButton
-
         android:id="@+id/menuIMButton"
         android:layout_width="80dp"
         android:layout_height="80dp"
@@ -83,6 +74,16 @@
         android:onClick="process"
         android:layout_gravity="bottom|end"
         android:src="@drawable/icon_gear" />
+
+    <TextView
+        android:id="@+id/textUsername"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:textColor="@color/colorWhite"
+        android:textSize="20sp"
+        android:text="Username"
+        android:layout_gravity="bottom|center" />
 
 
 </FrameLayout>

@@ -1,9 +1,11 @@
 package com.mobileproject.game;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
@@ -17,14 +19,17 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
-import android.util.AttributeSet;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -39,10 +44,12 @@ import com.google.android.gms.maps.LocationSource;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
@@ -82,7 +89,7 @@ public class GameMapUI extends FragmentActivity implements
 
     public static int currentLatID;
     public static int currentLngID;
-    private LatLng currentLoc;
+    private Location currentLoc;
     private LatLngBounds currentBounds;
 
     private double NorthBoundLat;
@@ -90,7 +97,7 @@ public class GameMapUI extends FragmentActivity implements
     private double WestBoundLng;
     private double EastBoundLng;
 
-    public static final double bdUnit = 6; // number of tiles in each direction
+    public static final double bdUnit = 7; // number of tiles in each direction
     public static final double latTileUnit = 0.0018; // length of a tile
     public static final double lngTileUnit = 0.0018; // width of a tile
 
@@ -114,6 +121,9 @@ public class GameMapUI extends FragmentActivity implements
     private MediaPlayer buttonClick;
     private MediaPlayer bgMusic;
     private User user;
+    private Marker marker;
+
+    private boolean notificationON;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -137,11 +147,12 @@ public class GameMapUI extends FragmentActivity implements
         user = userDBHelper.getUser(LoginActivity.username);
         if (user == null) {
             user = new User(LoginActivity.username);
+
         }
+        setResourceBar(this.user);
+        setUsername(user.getUsername());
 
-
-
-        listenerInit();
+        MenuListenerInit();
 
     }
 
@@ -153,7 +164,6 @@ public class GameMapUI extends FragmentActivity implements
         show("saved gold: " + user.getGold() + " food: " + user.getFood() + " soldiers available: "
                     + user.getSoldiersAvailable() + " totalSoldiers: " + user.getTotalSoldiers());
         System.out.println("update HUD");
-
     }
 
     /**
@@ -182,6 +192,9 @@ public class GameMapUI extends FragmentActivity implements
 
         show("resources changed");
         this.user = serverUser;
+
+        setResourceBar(this.user);
+
     }
 
 
@@ -213,20 +226,22 @@ public class GameMapUI extends FragmentActivity implements
     }
 
     /**
-     * Initialization for all Listener
+     * Initialization for all Listener for the internal game menus
      */
-    private void listenerInit(){
+    private void MenuListenerInit(){
+        notificationON = true;
         CheckBox debugMode = (CheckBox)findViewById(R.id.ckbDebug);
         CheckBox bgMuiscMode = (CheckBox)findViewById(R.id.ckbBgMusic);
-
-        final AsyncResponse battleCall = this;
-        final Context context = this;
+        CheckBox notificationMode = (CheckBox)findViewById(R.id.ckbNotification);
+        CheckBox nightMode = (CheckBox)findViewById(R.id.ckbNightMode);
         final TextView debugBar = (TextView)findViewById(R.id.debug);
+        final FrameLayout notification = (FrameLayout)findViewById(R.id.notificationSystem);
+        final ImageView bg = (ImageView)findViewById(R.id.imgBgg);
 
         debugMode.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if(b){
+            public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
+                if(checked){
                     debugBar.setVisibility(View.VISIBLE);
                 } else {
                     debugBar.setVisibility(View.GONE);
@@ -236,11 +251,38 @@ public class GameMapUI extends FragmentActivity implements
 
         bgMuiscMode.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if(b){
+            public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
+                if(checked){
                     bgMusic.start();
                 }else {
                     bgMusic.pause();
+                }
+            }
+        });
+
+        notificationMode.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
+                if(checked){
+                    notificationON = true;
+                    notification.setVisibility(View.VISIBLE);
+                } else {
+                    notificationON = false;
+                    notification.setVisibility(View.GONE);
+                }
+            }
+        });
+
+
+        nightMode.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
+                if(checked){
+                    mMap.setMapStyle(createMapStyle("night"));
+                    bg.setVisibility(View.GONE);
+                } else {
+                    mMap.setMapStyle(createMapStyle("retro"));
+                    bg.setVisibility(View.VISIBLE);
                 }
             }
         });
@@ -310,6 +352,10 @@ public class GameMapUI extends FragmentActivity implements
         taskThread = new UpdateMapThread();
         taskThread.start();
         updateHUD(user);
+
+        setResourceBar(user);
+
+
     }
 
     class UpdateMapThread extends Thread {
@@ -340,6 +386,39 @@ public class GameMapUI extends FragmentActivity implements
         mMap.setMaxZoomPreference(MAX_ZOOM_PREF);
         //mMap.setLatLngBoundsForCameraTarget(getMapViewBounds());
 
+
+        // Customize the marker info window
+        mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+
+            @Override
+            public View getInfoWindow(Marker arg0) {
+                return null;
+            }
+
+            @Override
+            public View getInfoContents(Marker marker) {
+
+                LinearLayout info = new LinearLayout(getApplicationContext());
+                info.setOrientation(LinearLayout.VERTICAL);
+                info.setPadding(10,10,10,10);
+
+
+                TextView title = new TextView(getApplicationContext());
+                title.setTextColor(Color.BLACK);
+                title.setGravity(Gravity.CENTER);
+                title.setTypeface(null, Typeface.BOLD);
+                title.setText(marker.getTitle());
+
+                TextView snippet = new TextView(getApplicationContext());
+                snippet.setTextColor(Color.BLACK);
+                snippet.setText(marker.getSnippet());
+
+                info.addView(title);
+                info.addView(snippet);
+
+                return info;
+            }
+        });
     }
 
     /**
@@ -355,8 +434,6 @@ public class GameMapUI extends FragmentActivity implements
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         mapSettingInit();
-        // Set bounds
-        //mMap.setLatLngBoundsForCameraTarget(getMapViewBounds());
         // Set the map style here:
         mMap.setMapStyle(createMapStyle("retro"));
         // Get current location:
@@ -366,7 +443,8 @@ public class GameMapUI extends FragmentActivity implements
 
         setOnPolygonClickable(mMap);
 
-        updateNotification("Notification System Sample Text Here This is juat a example text so don't feel asasasas",200);
+        // say something to welcome new player:
+        updateNotification(getString(R.string.welcome_banner),100,5000);
     }
 
 
@@ -443,27 +521,35 @@ public class GameMapUI extends FragmentActivity implements
      */
     private MapStyleOptions createMapStyle(String styleName) {
         MapStyleOptions style;
-        if (styleName == "retro")
-            style = MapStyleOptions.loadRawResourceStyle(this, R.raw.style_json);
-        else
-            style = MapStyleOptions.loadRawResourceStyle(this, R.raw.style_json);
+        if (styleName == "retro"){
+            style = MapStyleOptions.loadRawResourceStyle(this, R.raw.style_retro);
+        }
+        else if(styleName == "night"){
+            style = MapStyleOptions.loadRawResourceStyle(this, R.raw.night_mode);
+        } else {
+            style = MapStyleOptions.loadRawResourceStyle(this, R.raw.style_retro);
+        }
         return style;
     }
 
     /**
-     * Gets the View Bounds of the map.
-     * @return the view bounds
+     * set the View Bounds of the map.
      */
-    private LatLngBounds getMapViewBounds() {
+    private void setMapViewBounds(LatLng loc) {
+
         LatLngBounds bounds;
-        double boundUnit = 0.01;
+        double boundUnit = (bdUnit * latTileUnit) / 10;
+
         // set upper left corner and bottom right coordinates
-        //LatLng northeast = new LatLng(mLastLocation.getLatitude() + boundUnit, mLastLocation.getLongitude() - boundUnit);
-        //LatLng southwest = new LatLng(mLastLocation.getLatitude() - boundUnit, mLastLocation.getLongitude() + boundUnit);
+        LatLng northeast = Utilities.shifter(loc,+boundUnit,+boundUnit);
+        LatLng southwest = Utilities.shifter(loc,-boundUnit,-boundUnit);
+
+        showDebug("Bounds: NE-"+northeast.toString()+"  SW-"+southwest.toString());
+
         // finalize the bounds
-        bounds = new LatLngBounds(new LatLng(SouthBoundLat,WestBoundLng), new LatLng(NorthBoundLat,EastBoundLng));
+        bounds = new LatLngBounds(southwest,northeast);
         currentBounds = bounds;
-        return bounds;
+        mMap.setLatLngBoundsForCameraTarget(bounds);
     }
 
 
@@ -488,7 +574,7 @@ public class GameMapUI extends FragmentActivity implements
      * @return true if successful
      */
     private boolean populateHorizontalLines() {
-        for (double s = SouthBoundLat; s < NorthBoundLat; s += latTileUnit) {
+        for (double s = SouthBoundLat; s < NorthBoundLat+latTileUnit; s += latTileUnit) {
             LatLng A = new LatLng(s, WestBoundLng);
             LatLng B = new LatLng(s, EastBoundLng);
             parallelLines.add(new LatLngLines(A, B));
@@ -504,7 +590,7 @@ public class GameMapUI extends FragmentActivity implements
      * @return true if successful
      */
     private boolean populateVerticalLines() {
-        for (double s = WestBoundLng; s < EastBoundLng; s += lngTileUnit) {
+        for (double s = WestBoundLng; s < EastBoundLng+lngTileUnit; s += lngTileUnit) {
             LatLng A = new LatLng(SouthBoundLat, s);
             LatLng B = new LatLng(NorthBoundLat, s);
             verticalLines.add(new LatLngLines(A, B));
@@ -624,6 +710,7 @@ public class GameMapUI extends FragmentActivity implements
             bgMusic.setLooping(true);
             bgMusic.start();
         }
+        setResourceBar(user);
         super.onStart();
     }
 
@@ -656,7 +743,8 @@ public class GameMapUI extends FragmentActivity implements
             LatLng latlng = new LatLng(lat,lng);
             CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latlng, 17);
             mMap.animateCamera(cameraUpdate);
-            //("Last Location:"+String.valueOf(lat)+"  "+String.valueOf(lng));
+            setMapViewBounds(latlng);
+            //showDebug("Last Location:"+String.valueOf(lat)+"  "+String.valueOf(lng));
         } else {
             show("No Location Detected");
         }
@@ -683,6 +771,8 @@ public class GameMapUI extends FragmentActivity implements
     public void onLocationChanged(Location location) {
         // added to ensure that the map is animated
         if (listener != null) {
+            currentLoc = location;
+            //setMapViewBounds(new LatLng(location.getLatitude(),location.getLongitude()));
             listener.onLocationChanged(location);
         }
         if (!initalizeMap) {
@@ -877,12 +967,52 @@ public class GameMapUI extends FragmentActivity implements
 
     /**
      * Showing the debugging information on the top of game.
-     * @param msg
+     * @param msg the messages needed to be display
      */
     private void showDebug(String msg) {
         TextView text = (TextView)findViewById(R.id.debug);
         text.setText(msg);
     }
+
+
+    /**
+     * Showing the tile information in a pops-out floating window above the selected tile.
+     * @param location where to show the window.
+     */
+    private void addTileInfoWindow(LatLng location){
+        if(marker!=null) {
+            // if marker is there, just remove it.
+            marker.remove();
+        }
+        // find the tile id for this tile.
+        Tile.TileID tid = new Tile.TileID(location);
+        Tile tile = tiles.get(tid);
+
+        marker = mMap.addMarker(new MarkerOptions()
+                .position(Utilities.shifter(location,0,0))
+                .title("== Territory Property ==")
+                .snippet("LatID: "+tid.getLatID()
+                        +"\nLngID: "+tid.getLngID()
+                        +"\nOwner: "+tile.getUsername()
+                        +"\nResource: "+tile.getFood()+tile.getGold()
+                        +"\nSoldiers: "+tile.getSoldiers()
+                )
+                .icon(BitmapDescriptorFactory.fromBitmap(resizeMapIcons("selected_icon",100,100))));
+        marker.showInfoWindow();
+
+//        Location newLocation = new Location(bestProvider);
+//        newLocation.setLatitude(location.latitude);
+//        newLocation.setLongitude(location.longitude);
+//        animateMarker(marker,newLocation);
+    }
+
+
+    public Bitmap resizeMapIcons(String iconName, int width, int height){
+        Bitmap imageBitmap = BitmapFactory.decodeResource(getResources(),getResources().getIdentifier(iconName, "drawable", getPackageName()));
+        Bitmap resizedBitmap = Bitmap.createScaledBitmap(imageBitmap, width, height, false);
+        return resizedBitmap;
+    }
+
 
     /**
      * Add the On Polygon Listener to the Map.
@@ -892,16 +1022,26 @@ public class GameMapUI extends FragmentActivity implements
         map.setOnPolygonClickListener(new GoogleMap.OnPolygonClickListener() {
             @Override
             public void onPolygonClick(Polygon polygon) {
-                LatLng point = polygon.getPoints().get(2);
+                LatLng point = polygon.getPoints().get(2); // Southeast Corner point !
+                point = Utilities.shifter(point,-latTileUnit/2,-lngTileUnit/2); // temporary fixed only works on Lat:0~90 Lng:-180~0
                 Tile.TileID tid = new Tile.TileID(point);
                 Tile t = tiles.get(tid);
                 if (t.select()) {
                     // selected - get username etc..
+                    addTileInfoWindow(point);
+
+                    String name = t.getUsername();
+                    if(name!=null){
+                        updateNotification("The owner of this territory is "+name,50,1000);
+                    } else {
+                        updateNotification("Congratulation! This territory is Unoccupied!!",50,1000);
+                    }
+
                 } else {
                     // unselect
                 }
                 t.drawTile(mMap);
-                showDebug(polygon.getPoints().get(0).toString()+polygon.getPoints().get(1).toString()+polygon.getPoints().get(2).toString()+polygon.getPoints().get(3).toString());
+                //showDebug(polygon.getPoints().get(0).toString()+polygon.getPoints().get(1).toString()+polygon.getPoints().get(2).toString()+polygon.getPoints().get(3).toString());
             }
         }
         );
@@ -910,17 +1050,51 @@ public class GameMapUI extends FragmentActivity implements
 
     /**
      * Update ingame notification system
-     * @param msg the content message need to display inside a buble
-     * @param delay the delay of each character typing anmiation
+     * @param msg the content message need to display inside a bubble
+     * @param delay the delay of each character typing animation
+     * @param dismiss the delay of dismiss of entire notification bubble, if is -1 then never dismiss
      */
-    private void updateNotification(String msg ,long delay){
-        Typewriter text = (Typewriter) findViewById(R.id.txtNotifiction);
-        text.setVisibility(View.VISIBLE);
-        text.setCharacterDelay(delay);
-        text.animateText(msg);
+    private void updateNotification(String msg ,long delay, long dismiss) {
+        if (notificationON) {
+            final FrameLayout notification = (FrameLayout) findViewById(R.id.notificationSystem);
+            Typewriter text = (Typewriter) findViewById(R.id.txtNotifiction);
+            notification.setVisibility(View.VISIBLE);
+
+                    text.setCharacterDelay(delay);
+                    text.animateText(msg);
+
+
+            if (dismiss > 0) {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        notification.setVisibility(View.GONE);
+                    }
+                }, delay * msg.length() + dismiss);
+            }
+        }
+    }
+
+    private void setResourceBar(User u){
+        TextView solider = (TextView)findViewById(R.id.textResSolider);
+        TextView gold = (TextView)findViewById(R.id.textResGold);
+        TextView food = (TextView)findViewById(R.id.textResFood);
+
+        solider.setText(String.valueOf(u.getTotalSoldiers()));
+        gold.setText(String.valueOf(u.getGold()));
+        food.setText(String.valueOf(u.getFood()));
+
+    }
+
+    private void setUsername(String name){
+        TextView username = (TextView)findViewById(R.id.textUsername);
+        username.setText(name);
     }
 
 }
+
+
+
 
 
 /**
@@ -941,48 +1115,6 @@ class ColorSet {
 
 
 
-/**
- * A Typewriter Effect textview type class, achieve a typing animation.
- */
-
-class Typewriter extends TextView {
-
-    private CharSequence mText;
-    private int mIndex;
-    private long mDelay = 500; //Default 500ms delay
-
-    public Typewriter(Context context) {
-        super(context);
-    }
-
-    public Typewriter(Context context, AttributeSet attrs) {
-        super(context, attrs);
-    }
-
-    private Handler mHandler = new Handler();
-    private Runnable characterAdder = new Runnable() {
-        @Override
-        public void run() {
-            setText(mText.subSequence(0, mIndex++));
-            if(mIndex <= mText.length()) {
-                mHandler.postDelayed(characterAdder, mDelay);
-            }
-        }
-    };
-
-    public void animateText(CharSequence text) {
-        mText = text;
-        mIndex = 0;
-
-        setText("");
-        mHandler.removeCallbacks(characterAdder);
-        mHandler.postDelayed(characterAdder, mDelay);
-    }
-
-    public void setCharacterDelay(long millis) {
-        mDelay = millis;
-    }
-}
 
 
 
