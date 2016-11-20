@@ -110,4 +110,35 @@ public class TileWebserviceUtility {
         sc.execute(context.getString(R.string.server) + "tiles/purchace-soldiers",
                 ServerControl.POST, jsonObject.toString(), auth.toString(), "4");
     }
+
+    /**
+     * Battles two tiles on the server.
+     * @param username the username
+     * @param password the password
+     * @param tile1 the tile that the user owns
+     * @param tile2 the tile that the user would like to attack
+     */
+    public static void battle(String username, String password, Tile tile1, Tile tile2, AsyncResponse callback, Context context) {
+        JSONObject jsonObject = new JSONObject();
+        JSONObject auth = new JSONObject();
+        try {
+            auth.put("username", username);
+            auth.put("password", password);
+            jsonObject.put("username", username);
+            Tile.TileID tile1ID = tile1.getTileID();
+            Tile.TileID tile2ID = tile2.getTileID();
+            jsonObject.put("tileLatID1",tile1ID.getLatID());
+            jsonObject.put("tileLngID1", tile1ID.getLngID());
+            jsonObject.put("tileLatID2",tile2ID.getLatID());
+            jsonObject.put("tileLngID2", tile2ID.getLngID());
+            System.out.println(jsonObject.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        ServerControl sc = new ServerControl(callback);
+        // fix spelling on server
+        sc.execute(context.getString(R.string.server) + "tiles/battle",
+                ServerControl.POST, jsonObject.toString(), auth.toString(), "5");
+        GameMapUI.mapLock = true;
+    }
 }

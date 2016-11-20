@@ -24,6 +24,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.FrameLayout;
@@ -53,6 +54,7 @@ import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -70,11 +72,13 @@ public class GameMapUI extends FragmentActivity implements
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         AsyncResponse {
+    public static boolean mapLock = false;
 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private static final float MIN_ZOOM_PREF = 15f;
     private static final float MAX_ZOOM_PREF = 18f;
     private Criteria criteria;
+    private UpdateMapThread taskThread;
 
     protected static final String TAG = "MainActivity";
 
@@ -345,7 +349,7 @@ public class GameMapUI extends FragmentActivity implements
         DrawTiles(mMap);
         // Drawing the titles: line length in KMs
         // update the map every 30 seconds
-        UpdateMapThread taskThread = new UpdateMapThread();
+        taskThread = new UpdateMapThread();
         taskThread.start();
         updateHUD(user);
 
@@ -360,8 +364,7 @@ public class GameMapUI extends FragmentActivity implements
         public void run() {
            while(!threadDone) {
                UpdateTilesAsync updateTilesAsync = new UpdateTilesAsync(tiles, new LatLng(currentLatID * latTileUnit - latTileUnit / 2, currentLngID * lngTileUnit - lngTileUnit / 2), getApplicationContext(), mMap, colors);
-               updateTilesAsync.execute();
-
+               updateTilesAsync.start();
                try {
                    Thread.sleep(45000);
                } catch (InterruptedException e) {
@@ -895,12 +898,33 @@ public class GameMapUI extends FragmentActivity implements
                 }
             } else if (serverResult[0].equals("5")) {
                 show("battle results!!!");
+                show(serverResult[1]);
+                System.out.println("battle results");
+                System.out.println(serverResult[1]);
+                JSONArray tileArray = jsonObject.getJSONArray("tiles");
+                show("new food: " + jsonObject.getString("food"));
+                JSONObject tile1 = tileArray.getJSONObject(0);
+                JSONObject tile2 = tileArray.getJSONObject(1);
+                if (tile2.getString("username").equals("null")) {
+                    show("you won!");
+                } else {
+                    show("oh no you lost the battle!");
+                    // compare the tiles before and after here and notify the user.
+                }
+                handleIncomingTile(tile1);
+                handleIncomingTile(tile2);
             }
+            mapLock = false;
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
 
+    /**
+     * Handles incoming user data from the server on the UI thread
+     * @param jsonObject the user json
+     * @throws JSONException
+     */
     private void handleIncomingUser(JSONObject jsonObject) throws JSONException {
         int gold = Integer.parseInt(jsonObject.getString("gold"));
         int food = Integer.parseInt(jsonObject.getString("food"));
@@ -914,6 +938,12 @@ public class GameMapUI extends FragmentActivity implements
         showResourcesChanged(user, new User("", gold, food, tiles, tilesTaken, goldObtained,
                 foodObtained, totalGoldObtained, totalFoodObtained, soldiers, 0));
     }
+
+    /**
+     * Handels an incoming tile and updates the map in the main UI thread.
+     * @param jsonObject the tile from the server
+     * @throws JSONException
+     */
     private void handleIncomingTile(JSONObject jsonObject) throws JSONException {
         int tileLatID = jsonObject.getInt("tileLatID");
         int tileLngID = jsonObject.getInt("tileLngID");
