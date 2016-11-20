@@ -36,6 +36,26 @@
         android:text="Background Music"
         android:textSize="22sp"/>
 
+    <CheckBox
+        android:id="@+id/ckbNotification"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="60dp"
+        android:layout_marginTop="220dp"
+        android:checked="true"
+        android:text="Conversation"
+        android:textSize="22sp"/>
+
+    <CheckBox
+    android:id="@+id/ckbNightMode"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="60dp"
+    android:layout_marginTop="270dp"
+    android:checked="false"
+    android:text="Map Night Mode"
+    android:textSize="22sp"/>
+
     <ImageButton
         android:id="@+id/btnIMBack"
         android:layout_width="200dp"

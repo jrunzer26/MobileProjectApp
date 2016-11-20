@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/resourceBar"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:background="@drawable/resbar"
+        android:layout_gravity="top|start"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_width="250dp"
+        android:layout_height="45dp" />
+
+        <TextView
+            android:id="@+id/textResSolider"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorWhite"
+            android:layout_gravity="top|start"
+            android:layout_marginTop="37dp"
+            android:layout_marginStart="70dp"
+            android:textSize="20sp"
+            android:text="0"/>
+
+        <TextView
+            android:id="@+id/textResGold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorWhite"
+            android:layout_gravity="top|start"
+            android:layout_marginTop="37dp"
+            android:layout_marginStart="147dp"
+            android:textSize="20sp"
+            android:text="0"/>
+
+        <TextView
+            android:id="@+id/textResFood"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorWhite"
+            android:layout_gravity="top|start"
+            android:layout_marginTop="37dp"
+            android:layout_marginStart="225dp"
+            android:textSize="20sp"
+            android:text="0"/>
+
+
+
+
+</FrameLayout>
