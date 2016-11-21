@@ -56,6 +56,8 @@
 
     <include layout="@layout/buysolider_layout" />
 
+    <include layout="@layout/battle_layout"/>
+
     <include layout="@layout/internal_menu"/>
 
     <TextView

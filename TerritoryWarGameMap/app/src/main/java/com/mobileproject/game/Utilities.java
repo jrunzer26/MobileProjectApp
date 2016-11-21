@@ -80,13 +80,19 @@ public class Utilities {
     public static void updateTile(int colour, int tileLatID, int tileLngID, String username, GoogleMap mMap, HashMap<Tile.TileID, Tile> tiles, int soldiers, int gold, int food) {
         Tile t;
         Tile.TileID tileID = new Tile.TileID(tileLatID, tileLngID);
-        if ((t = tiles.get(tileID)) == null) {
+        t = tiles.get(tileID);
+        if (t == null) {
             t = new Tile(
                     tileID,
                     username, soldiers, gold, food, colour);
             tiles.put(tileID, t);
+            System.out.println("new tile");
         } else {
             t.setColour(colour);
+            t.setFood(food);
+            t.setGold(gold);
+            t.setSoldiers(soldiers);
+            t.setUsername(username);
         }
         t.drawTile(mMap);
         System.out.println("Tiles size: " + tiles.size());

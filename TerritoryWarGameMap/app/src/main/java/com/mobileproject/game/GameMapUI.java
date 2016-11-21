@@ -1,6 +1,7 @@
 package com.mobileproject.game;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -60,6 +61,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 
 
 public class GameMapUI extends FragmentActivity implements
@@ -96,7 +98,7 @@ public class GameMapUI extends FragmentActivity implements
     private double WestBoundLng;
     private double EastBoundLng;
 
-    public static final double bdUnit = 9; // number of tiles in each direction
+    public static final double bdUnit = 4; // number of tiles in each direction
     public static final double latTileUnit = 0.0018; // length of a tile
     public static final double lngTileUnit = 0.0018; // width of a tile
 
@@ -113,6 +115,7 @@ public class GameMapUI extends FragmentActivity implements
     private OnLocationChangedListener listener;
 
     public HashMap<Tile.TileID, Tile> tiles;
+    private LinkedList<Tile.TileID> tilesSelected;
     public ArrayList<Polyline> lines;
     private boolean initalizeMap = false;
     private boolean threadDone = false;
@@ -311,6 +314,7 @@ public class GameMapUI extends FragmentActivity implements
         locationManager.requestLocationUpdates(bestProvider, minTime, minDistance, this);
         // the hashmap containing all the tiles
         tiles = new HashMap<>();
+        tilesSelected = new LinkedList<>();
     }
 
     /**
@@ -894,6 +898,8 @@ public class GameMapUI extends FragmentActivity implements
                     show(jsonObject.getString("err"));
                 } else {
                     show("soldiers added!");
+                    System.out.println("soldiers added");
+                    show("You successfully purchased soldiers!");
                     handleIncomingTile(jsonObject);
                 }
             } else if (serverResult[0].equals("5")) {
@@ -906,10 +912,9 @@ public class GameMapUI extends FragmentActivity implements
                 JSONObject tile1 = tileArray.getJSONObject(0);
                 JSONObject tile2 = tileArray.getJSONObject(1);
                 if (tile2.getString("username").equals("null")) {
-                    show("you won!");
+                    updateNotification("You won the battle! Go capture it!", 50, 1000);
                 } else {
-                    show("oh no you lost the battle!");
-                    // compare the tiles before and after here and notify the user.
+                    updateNotification("Defeated! Put soldiers on your territory to protect it again!", 50, 1000);
                 }
                 handleIncomingTile(tile1);
                 handleIncomingTile(tile2);
@@ -958,6 +963,7 @@ public class GameMapUI extends FragmentActivity implements
                 TileWebserviceUtility.captureTile(tileLatID, tileLngID, LoginActivity.username, LoginActivity.password, this, getApplicationContext());
             Utilities.updateTile(colors.gray, tileLatID, tileLngID, null, mMap, tiles, soldiers, gold, food);
         } else if (tileUsername.equalsIgnoreCase(LoginActivity.username)) {
+            System.out.println("updating soldiers: " + soldiers);
             Utilities.updateTile(colors.green, tileLatID, tileLngID, tileUsername, mMap, tiles, soldiers, gold, food);
         } else {
             Utilities.updateTile(colors.red, tileLatID, tileLngID, tileUsername, mMap, tiles, soldiers, gold, food);
@@ -988,7 +994,8 @@ public class GameMapUI extends FragmentActivity implements
         Tile.TileID tid = new Tile.TileID(location);
         Tile tile = tiles.get(tid);
 
-        setBuySoliderPopsout(tid,true);
+        if (tile.getUsername() != null && tile.getUsername().equals(LoginActivity.username))
+            setBuySoliderPopsout(tid,true);
 
         marker = mMap.addMarker(new MarkerOptions()
                 .position(Utilities.shifter(location,0,0))
@@ -1021,7 +1028,7 @@ public class GameMapUI extends FragmentActivity implements
      * Add the On Polygon Listener to the Map.
      * @param map
      */
-    private void setOnPolygonClickable(GoogleMap map){
+    private void setOnPolygonClickable(final GoogleMap map){
         map.setOnPolygonClickListener(new GoogleMap.OnPolygonClickListener() {
             @Override
             public void onPolygonClick(Polygon polygon) {
@@ -1030,8 +1037,22 @@ public class GameMapUI extends FragmentActivity implements
                 Tile.TileID tid = new Tile.TileID(point);
                 Tile t = tiles.get(tid);
                 if (t.select()) {
+                    show(""+t.getSoldiers());
                     // selected - get username etc..
+                    if (tilesSelected.size() == 2) {
+                        Tile.TileID removeTile = tilesSelected.get(1);
+                        Tile unselectedTile = tiles.get(removeTile);
+                        unselectedTile.select();
+                        unselectedTile.drawTile(mMap);
+                        tilesSelected.remove(1);
+
+                    }
+                    tilesSelected.push(tid);
                     addTileInfoWindow(point);
+                    if (tilesSelected.size() == 2) {
+                        attemptShowBattlePopout();
+                        setBuySoliderPopsout(null, false);
+                    }
 
                     String name = t.getUsername();
                     if(name!=null){
@@ -1041,7 +1062,16 @@ public class GameMapUI extends FragmentActivity implements
                     }
 
                 } else {
-                    // unselect
+                    tilesSelected.remove(tid);
+                    // unselect the tile
+                    // remove the marker
+                    if(marker!=null) {
+                        // if marker is there, just remove it.
+                        marker.remove();
+                    }
+                    // remove the buy option
+                    setBuySoliderPopsout(null, false);
+                    makeBattlePopout(false);
                 }
                 t.drawTile(mMap);
                 //showDebug(polygon.getPoints().get(0).toString()+polygon.getPoints().get(1).toString()+polygon.getPoints().get(2).toString()+polygon.getPoints().get(3).toString());
@@ -1050,6 +1080,40 @@ public class GameMapUI extends FragmentActivity implements
         );
 
     }
+
+    private void attemptShowBattlePopout() {
+        String tile1Username = tiles.get(tilesSelected.get(0)).getUsername();
+        String tile2Username = tiles.get(tilesSelected.get(1)).getUsername();
+        boolean show = true;
+        if (tile1Username != null && tile2Username != null) {
+            if (tile1Username.equals(LoginActivity.username) && tile2Username.equals(LoginActivity.username)) {
+                show = false;
+            }
+            makeBattlePopout(show);
+        }
+    }
+
+
+    private void makeBattlePopout(boolean enable) {
+        final FrameLayout battlePanel = (FrameLayout)findViewById(R.id.layoutBattle);
+        final TextView battle_num = (TextView) findViewById(R.id.txtviewBattle);
+        Button battleBtn = (Button) findViewById(R.id.battleNowBtn);
+        final AsyncResponse callback = this;
+        final Context context  = this;
+        if(enable){
+            battlePanel.setVisibility(View.VISIBLE);
+            battleBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    battlePanel.setVisibility(View.GONE);
+                    TileWebserviceUtility.battle(LoginActivity.username, LoginActivity.password, tiles.get(tilesSelected.get(0)),tiles.get(tilesSelected.get(1)), callback, context);
+                }
+            });
+        } else {
+            battlePanel.setVisibility(View.GONE);
+        }
+    }
+
 
     /**
      * Update ingame notification system
@@ -1109,7 +1173,7 @@ public class GameMapUI extends FragmentActivity implements
     }
 
     private void setBuySoliderPopsout(final Tile.TileID id, boolean visible){
-        final FrameLayout buySoliderPanel = (FrameLayout)findViewById(R.id.layoutBuySolider);
+        final FrameLayout buySoliderPanel = (FrameLayout)findViewById(R.id.layout_BuySoldier);
         final EditText buy_num = (EditText)findViewById(R.id.editBuySoliderNum);
         Button buyBtn = (Button) findViewById(R.id.buyNowBtn);
 
@@ -1123,7 +1187,7 @@ public class GameMapUI extends FragmentActivity implements
                         buySoldiers(id,Integer.parseInt(buy_num.getText().toString()));
                     }
                     buySoliderPanel.setVisibility(View.GONE);
-                    show("You have purchased "+Integer.parseInt(buy_num.getText().toString())+" new solider!");
+
                 }
             });
         } else {

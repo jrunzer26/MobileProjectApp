@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:visibility="gone"
-    android:id="@+id/layout_BuySoldier"
+    android:id="@+id/layoutBattle"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -9,13 +9,13 @@
         android:layout_gravity="bottom|end"
         android:layout_marginBottom="28dp"
         android:layout_marginEnd="110dp"
-        android:id="@+id/imgBuyBg"
+        android:id="@+id/imgBattleBg"
         android:scaleType="fitXY"
         android:layout_width="200dp"
         android:layout_height="70dp"
         android:src="@drawable/buy_bg"/>
 
-    <EditText
+    <TextView
         android:layout_gravity="bottom|end"
         android:layout_marginEnd="230dp"
         android:layout_marginBottom="49dp"
@@ -23,16 +23,15 @@
         android:paddingBottom="5dp"
         android:paddingLeft="15dp"
         android:paddingRight="15dp"
-        android:id="@+id/editBuySoliderNum"
+        android:id="@+id/txtviewBattle"
         android:layout_width="wrap_content"
         android:background="@drawable/edit_text_style"
         android:layout_height="wrap_content"
-        android:inputType="numberDecimal"
         android:maxLength="3"
-        android:text="0"/>
+        android:text="battle"/>
 
     <Button
-        android:id="@+id/buyNowBtn"
+        android:id="@+id/battleNowBtn"
         android:layout_gravity="bottom|end"
         android:layout_marginEnd="140dp"
         android:layout_marginBottom="42dp"

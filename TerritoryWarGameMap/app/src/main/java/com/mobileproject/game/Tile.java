@@ -200,4 +200,20 @@ public class Tile {
             return loc;
         }
     }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public void setSoldiers(int soldiers) {
+        this.soldiers = soldiers;
+    }
+
+    public void setGold(int gold) {
+        this.gold = gold;
+    }
+
+    public void setFood(int food) {
+        this.food = food;
+    }
 }
