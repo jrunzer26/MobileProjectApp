@@ -194,9 +194,6 @@ public class GameMapUI extends FragmentActivity implements
 
         show("resources changed");
         this.user = serverUser;
-
-        setResourceBar(this.user);
-
     }
 
 
@@ -934,14 +931,17 @@ public class GameMapUI extends FragmentActivity implements
         int gold = Integer.parseInt(jsonObject.getString("gold"));
         int food = Integer.parseInt(jsonObject.getString("food"));
         int tiles = Integer.parseInt(jsonObject.getString("tiles"));
+
         int tilesTaken = Integer.parseInt(jsonObject.getString("tilesTaken"));
         int soldiers = jsonObject.getInt("totalSoldiers");
         int goldObtained = jsonObject.getInt("goldObtained");
         int foodObtained = jsonObject.getInt("foodObtained");
         int totalGoldObtained = jsonObject.getInt("totalGoldObtained");
         int totalFoodObtained = jsonObject.getInt("totalFoodObtained");
-        showResourcesChanged(user, new User("", gold, food, tiles, tilesTaken, goldObtained,
-                foodObtained, totalGoldObtained, totalFoodObtained, soldiers, 0));
+        User newUser = new User("", gold, food, tiles, tilesTaken, goldObtained,
+                foodObtained, totalGoldObtained, totalFoodObtained, soldiers, 0);
+        showResourcesChanged(user, newUser);
+        setResourceBar(newUser);
     }
 
     /**
