@@ -5,7 +5,6 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
@@ -20,13 +19,13 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -97,7 +96,7 @@ public class GameMapUI extends FragmentActivity implements
     private double WestBoundLng;
     private double EastBoundLng;
 
-    public static final double bdUnit = 7; // number of tiles in each direction
+    public static final double bdUnit = 9; // number of tiles in each direction
     public static final double latTileUnit = 0.0018; // length of a tile
     public static final double lngTileUnit = 0.0018; // width of a tile
 
@@ -339,10 +338,10 @@ public class GameMapUI extends FragmentActivity implements
         parallelLines = new ArrayList<LatLngLines>();
         verticalLines = new ArrayList<LatLngLines>();
         // the bounds of the tiles to render
-        NorthBoundLat = (currentLatID + bdUnit) * latTileUnit;
+        NorthBoundLat = (currentLatID + bdUnit) * latTileUnit - latTileUnit;
         SouthBoundLat = (currentLatID - bdUnit) * latTileUnit;
         WestBoundLng = (currentLngID - bdUnit) * lngTileUnit;
-        EastBoundLng = (currentLngID + bdUnit) * lngTileUnit;
+        EastBoundLng = (currentLngID + bdUnit) * lngTileUnit - lngTileUnit;
         // collect the users resources
         TileWebserviceUtility.collectResources(LoginActivity.username, LoginActivity.password, this, this);
         TileWebserviceUtility.getUser(LoginActivity.username, LoginActivity.password, this, this);
@@ -391,32 +390,32 @@ public class GameMapUI extends FragmentActivity implements
         mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
 
             @Override
-            public View getInfoWindow(Marker arg0) {
-                return null;
+            public View getInfoWindow(Marker marker) {
+                View info = getLayoutInflater().inflate(R.layout.tile_info_window, null);
+
+                FrameLayout parent = (FrameLayout)info.findViewById(R.id.viewTileInfoWindow);
+
+                TextView snippet = new TextView(getApplicationContext());
+                snippet.setTextSize(18);
+                snippet.setTextColor(Color.BLACK);
+                snippet.setText(marker.getSnippet());
+
+                LinearLayout content = new LinearLayout(getApplicationContext());
+                content.setOrientation(LinearLayout.VERTICAL);
+                content.setPadding(150,120,150,150);
+
+
+                content.addView(snippet);
+
+
+                parent.addView(content);
+
+                return info;
             }
 
             @Override
             public View getInfoContents(Marker marker) {
-
-                LinearLayout info = new LinearLayout(getApplicationContext());
-                info.setOrientation(LinearLayout.VERTICAL);
-                info.setPadding(10,10,10,10);
-
-
-                TextView title = new TextView(getApplicationContext());
-                title.setTextColor(Color.BLACK);
-                title.setGravity(Gravity.CENTER);
-                title.setTypeface(null, Typeface.BOLD);
-                title.setText(marker.getTitle());
-
-                TextView snippet = new TextView(getApplicationContext());
-                snippet.setTextColor(Color.BLACK);
-                snippet.setText(marker.getSnippet());
-
-                info.addView(title);
-                info.addView(snippet);
-
-                return info;
+                return null;
             }
         });
     }
@@ -867,6 +866,7 @@ public class GameMapUI extends FragmentActivity implements
         //check if they have enough money,
         // post to the server
         TileWebserviceUtility.buySoldiers(LoginActivity.username, LoginActivity.password, tileID.getLatID(), tileID.getLngID(), soldiers, this, this);
+        increaseResourceBar(soldiers,-10,0);
     }
 
     /**
@@ -988,16 +988,19 @@ public class GameMapUI extends FragmentActivity implements
         Tile.TileID tid = new Tile.TileID(location);
         Tile tile = tiles.get(tid);
 
+        setBuySoliderPopsout(tid,true);
+
         marker = mMap.addMarker(new MarkerOptions()
                 .position(Utilities.shifter(location,0,0))
                 .title("== Territory Property ==")
-                .snippet("LatID: "+tid.getLatID()
-                        +"\nLngID: "+tid.getLngID()
-                        +"\nOwner: "+tile.getUsername()
-                        +"\nResource: "+tile.getFood()+tile.getGold()
-                        +"\nSoldiers: "+tile.getSoldiers()
+                .snippet("LatID: \u0009"+tid.getLatID()
+                        +"\nLngID: \u0009"+tid.getLngID()
+                        +"\nOwner: \u0009"+tile.getUsername()
+                        +"\nResource: \u0009"+tile.getFood()+tile.getGold()
+                        +"\nSoldiers: \u0009"+tile.getSoldiers()
                 )
                 .icon(BitmapDescriptorFactory.fromBitmap(resizeMapIcons("selected_icon",100,100))));
+
         marker.showInfoWindow();
 
 //        Location newLocation = new Location(bestProvider);
@@ -1083,7 +1086,21 @@ public class GameMapUI extends FragmentActivity implements
         solider.setText(String.valueOf(u.getTotalSoldiers()));
         gold.setText(String.valueOf(u.getGold()));
         food.setText(String.valueOf(u.getFood()));
+    }
 
+    private void increaseResourceBar(int s, int g, int f){
+        TextView solider = (TextView)findViewById(R.id.textResSolider);
+        TextView gold = (TextView)findViewById(R.id.textResGold);
+        TextView food = (TextView)findViewById(R.id.textResFood);
+
+        int ss = Integer.parseInt(solider.getText().toString());
+        int gg = Integer.parseInt(gold.getText().toString());
+        int ff = Integer.parseInt(food.getText().toString());
+
+
+        solider.setText(String.valueOf(ss+s));
+        gold.setText(String.valueOf(gg+g));
+        food.setText(String.valueOf(ff+f));
     }
 
     private void setUsername(String name){
@@ -1091,6 +1108,28 @@ public class GameMapUI extends FragmentActivity implements
         username.setText(name);
     }
 
+    private void setBuySoliderPopsout(final Tile.TileID id, boolean visible){
+        final FrameLayout buySoliderPanel = (FrameLayout)findViewById(R.id.layoutBuySolider);
+        final EditText buy_num = (EditText)findViewById(R.id.editBuySoliderNum);
+        Button buyBtn = (Button) findViewById(R.id.buyNowBtn);
+
+        if(visible){
+            buySoliderPanel.setVisibility(View.VISIBLE);
+            buyBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    if(Integer.parseInt(buy_num.getText().toString())>0){
+                        buySoldiers(id,Integer.parseInt(buy_num.getText().toString()));
+                    }
+                    buySoliderPanel.setVisibility(View.GONE);
+                    show("You have purchased "+Integer.parseInt(buy_num.getText().toString())+" new solider!");
+                }
+            });
+        } else {
+            buySoliderPanel.setVisibility(View.GONE);
+        }
+    }
 }
 
 
