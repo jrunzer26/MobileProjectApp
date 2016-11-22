@@ -146,11 +146,16 @@ public class GameMapUI extends FragmentActivity implements
         mapFragment.getMapAsync(this);
         initializeMap();
         UserDBHelper userDBHelper = new UserDBHelper(this);
+        System.out.println("showing users: ");
+        userDBHelper.showUsers();
         user = userDBHelper.getUser(LoginActivity.username);
         if (user == null) {
             user = new User(LoginActivity.username);
+            show("new user");
+            show(user.getUsername());
 
-        }
+        } else
+            show("food: " + user.getFood());
         setResourceBar(this.user);
         setUsername(user.getUsername());
 
@@ -179,19 +184,22 @@ public class GameMapUI extends FragmentActivity implements
         int changedTiles = user.getTiles() - serverUser.getTiles();
         int changedSoldiers = user.getTotalSoldiers() - serverUser.getTotalSoldiers();
 
+        StringBuilder updateString = new StringBuilder();
+
         if (addedFood > 0) {
-            show("you gained: " + addedFood + " food");
+            updateString.append("you gained: " + addedFood + " food, ");
         }
         if (addedGold > 0) {
-            show("you gained: " + addedGold + " gold");
+            updateString.append(addedGold + " gold.");
         }
         if (changedSoldiers < 0) {
-            show("you lost: " + changedSoldiers + " soldiers");
+            updateString.append("You lost: " + changedSoldiers + " soldiers");
         }
         if (changedTiles < 0) {
-            show("you lost: " +  -1 * changedTiles + " tile(s)");
+            updateString.append("you lost: " +  -1 * changedTiles + " tile(s)");
         }
-
+        if (updateString.length() > 0)
+            updateNotification(updateString.toString(), 50, 5000);
         show("resources changed");
         this.user = serverUser;
     }
@@ -202,6 +210,8 @@ public class GameMapUI extends FragmentActivity implements
     protected void onPause() {
         super.onPause();
         bgMusic.pause();
+        UserDBHelper dbHelper = new UserDBHelper(this);
+        dbHelper.saveUser(user);
         if (locationManager != null) {
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 return;
@@ -719,8 +729,7 @@ public class GameMapUI extends FragmentActivity implements
     protected void onStop() {
         mGoogleApiClient.disconnect();
         // save the state of the user
-        UserDBHelper dbHelper = new UserDBHelper(this);
-        dbHelper.saveUser(user);
+
         bgMusic.pause();
         super.onStop();
     }
@@ -867,7 +876,7 @@ public class GameMapUI extends FragmentActivity implements
         //check if they have enough money,
         // post to the server
         TileWebserviceUtility.buySoldiers(LoginActivity.username, LoginActivity.password, tileID.getLatID(), tileID.getLngID(), soldiers, this, this);
-        increaseResourceBar(soldiers,-10,0);
+        //creaseResourceBar(soldiers,-10,0);
     }
 
     /**
@@ -894,6 +903,7 @@ public class GameMapUI extends FragmentActivity implements
                     // not enough gold or does not own the tile
                     show(jsonObject.getString("err"));
                 } else {
+                    TileWebserviceUtility.getUser(LoginActivity.username, LoginActivity.password, this, this);
                     show("soldiers added!");
                     System.out.println("soldiers added");
                     show("You successfully purchased soldiers!");
@@ -938,9 +948,10 @@ public class GameMapUI extends FragmentActivity implements
         int foodObtained = jsonObject.getInt("foodObtained");
         int totalGoldObtained = jsonObject.getInt("totalGoldObtained");
         int totalFoodObtained = jsonObject.getInt("totalFoodObtained");
-        User newUser = new User("", gold, food, tiles, tilesTaken, goldObtained,
+        User newUser = new User(LoginActivity.username, gold, food, tiles, tilesTaken, goldObtained,
                 foodObtained, totalGoldObtained, totalFoodObtained, soldiers, 0);
         showResourcesChanged(user, newUser);
+        user = newUser;
         setResourceBar(newUser);
     }
 
