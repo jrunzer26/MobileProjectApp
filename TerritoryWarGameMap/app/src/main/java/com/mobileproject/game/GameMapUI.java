@@ -158,9 +158,9 @@ public class GameMapUI extends FragmentActivity implements
             show("food: " + user.getFood());
         setResourceBar(this.user);
         setUsername(user.getUsername());
-
+        //create the new colour set to shade the tiles
+        colors = new ColorSet();
         MenuListenerInit();
-
     }
 
     /**
@@ -212,6 +212,7 @@ public class GameMapUI extends FragmentActivity implements
         bgMusic.pause();
         UserDBHelper dbHelper = new UserDBHelper(this);
         dbHelper.saveUser(user);
+        threadDone = true;
         if (locationManager != null) {
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 return;
@@ -225,12 +226,16 @@ public class GameMapUI extends FragmentActivity implements
     protected void onResume() {
         super.onResume();
         bgMusic.start();
+        threadDone = false;
         if (locationManager != null) {
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 return;
             }
             if (initalizeMap)
                 locationManager.requestLocationUpdates(bestProvider, minTime, minDistance, this);
+        }
+        if (mMap != null) {
+            new UpdateMapThread().start();
         }
     }
 
@@ -343,8 +348,7 @@ public class GameMapUI extends FragmentActivity implements
         currentLngID = id.getLngID();
         //System.out.println("lat, lng: " + lat + "," + lng + " current location id: " + id.printID() + "\nset location id: 24413, -43831");
         System.out.println();
-        //create the new colour set to shade the tiles
-        colors = new ColorSet();
+
         // the vertical lines that are drawn on the screen
         parallelLines = new ArrayList<LatLngLines>();
         verticalLines = new ArrayList<LatLngLines>();
