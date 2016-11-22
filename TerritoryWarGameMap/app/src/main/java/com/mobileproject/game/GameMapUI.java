@@ -235,7 +235,7 @@ public class GameMapUI extends FragmentActivity implements
                 locationManager.requestLocationUpdates(bestProvider, minTime, minDistance, this);
         }
         if (mMap != null) {
-            new UpdateMapThread().start();
+            new UpdateMapThread(this, this).start();
         }
     }
 
@@ -363,7 +363,7 @@ public class GameMapUI extends FragmentActivity implements
         DrawTiles(mMap);
         // Drawing the titles: line length in KMs
         // update the map every 30 seconds
-        taskThread = new UpdateMapThread();
+        taskThread = new UpdateMapThread(this, this);
         taskThread.start();
         updateHUD(user);
 
@@ -373,11 +373,17 @@ public class GameMapUI extends FragmentActivity implements
     }
 
     class UpdateMapThread extends Thread {
-
+        private AsyncResponse callback;
+        private Context context;
+        public UpdateMapThread(AsyncResponse callback, Context context) {
+            this.callback = callback;
+            this.context = context;
+        }
         @Override
         public void run() {
            while(!threadDone) {
                UpdateTilesAsync updateTilesAsync = new UpdateTilesAsync(tiles, new LatLng(currentLatID * latTileUnit - latTileUnit / 2, currentLngID * lngTileUnit - lngTileUnit / 2), getApplicationContext(), mMap, colors);
+               TileWebserviceUtility.getUser(LoginActivity.username, LoginActivity.password, callback, context);
                updateTilesAsync.start();
                try {
                    Thread.sleep(45000);
