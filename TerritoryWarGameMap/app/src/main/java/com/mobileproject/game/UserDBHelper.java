@@ -32,7 +32,7 @@ public class UserDBHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("Create table Users (          " +
-                "username int primary key,        " +
+                "username text primary key,        " +
                 "gold int DEFAULT 0,              " +
                 "food int DEFAULT 0,              " +
                 "tiles int DEFAULT 0,             " +
@@ -56,6 +56,8 @@ public class UserDBHelper extends SQLiteOpenHelper {
      * @param user the user to save
      */
     public void saveUser(User user) {
+        System.out.println("saving user");
+        System.out.println("username: " + user.getUsername());
         ContentValues values = new ContentValues();
         values.put("username", user.getUsername());
         values.put("gold", user.getGold());
@@ -68,10 +70,26 @@ public class UserDBHelper extends SQLiteOpenHelper {
         values.put("totalFoodObtained", user.getTotalFoodObtained());
         values.put("totalSoldiers", user.getTotalSoldiers());
         values.put("soldiersAvailable", user.getSoldiersAvailable());
+        System.out.println("saving user: " + user.getUsername());
         String[] username = {user.getUsername()};
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete("Users","username = ?", username);
         db.insert("Users", null, values);
+    }
+
+    public void showUsers() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        if (db != null) {
+            String[] select = new String[0];
+            Cursor cursor = db.rawQuery("Select * from users", select);
+            cursor.moveToFirst();
+            if (!cursor.isAfterLast()) {
+                System.out.println("username: " + cursor.getInt(cursor.getColumnIndex("username")));
+                System.out.println(cursor.getInt(cursor.getColumnIndex("gold")));
+                System.out.println(cursor.getInt(cursor.getColumnIndex("food")));
+                cursor.moveToNext();
+            }
+        }
     }
 
 
@@ -81,6 +99,7 @@ public class UserDBHelper extends SQLiteOpenHelper {
      * @return a user with the resources
      */
     public User getUser(String username) {
+        System.out.println("get user: " + username);
         SQLiteDatabase db = this.getWritableDatabase();
         if (db != null) {
             String[] columns = new String[]{
@@ -105,6 +124,7 @@ public class UserDBHelper extends SQLiteOpenHelper {
             Cursor cursor = db.query("Users", columns, where, whereArgs,
                     groupBy, groupArgs, orderBy);
 
+
             if (cursor.getCount() > 0) {
                 cursor.moveToFirst();
                 User user = new User(username,
@@ -118,6 +138,7 @@ public class UserDBHelper extends SQLiteOpenHelper {
                         cursor.getInt(cursor.getColumnIndex("totalFoodObtained")),
                         cursor.getInt(cursor.getColumnIndex("totalSoldiers")),
                         cursor.getInt(cursor.getColumnIndex("soldiersAvailable")));
+                System.out.println("after get: username: " + user.getUsername());
                 return user;
             }
         }
