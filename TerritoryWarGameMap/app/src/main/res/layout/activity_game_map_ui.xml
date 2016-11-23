@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:map="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_show_grades"
     android:layout_width="fill_parent"
@@ -20,7 +21,7 @@
         android:layout_height="match_parent"
         android:src="@drawable/bgg"
         android:scaleType="centerCrop"
-        android:layout_gravity="center|bottom"/>
+        android:layout_gravity="center|bottom" />
 
     <ImageView
         android:id="@+id/imgBottom"
@@ -28,7 +29,7 @@
         android:layout_height="wrap_content"
         android:src="@drawable/bottom"
         android:scaleType="centerCrop"
-        android:layout_gravity="center|bottom"/>
+        android:layout_gravity="center|bottom" />
 
 
 
@@ -43,14 +44,14 @@
         android:layout_marginEnd="25dp"
         android:layout_gravity="top|end"
         android:onClick="process"
-        android:background="@drawable/location_map"/>
+        android:background="@drawable/location_map" />
 
     <ImageView
         android:id="@+id/imgCommanderFigure"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
         android:layout_gravity="start|bottom"
-        android:src="@drawable/commander"/>
+        android:src="@drawable/commander" />
 
     <include layout="@layout/notification_layout"/>
 
@@ -66,15 +67,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/colorWhiteTrans"
-        android:text="Debugging:"/>
+        android:text="Debugging:" />
 
     <ImageButton
         android:id="@+id/menuIMButton"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:background="@drawable/oval"
         android:layout_marginBottom="25dp"
         android:layout_marginEnd="25dp"
+        android:scaleType="fitXY"
         android:onClick="process"
         android:layout_gravity="bottom|end"
         android:src="@drawable/icon_gear" />
@@ -88,6 +90,13 @@
         android:textSize="20sp"
         android:text="Username"
         android:layout_gravity="bottom|center" />
+
+
+
+    <include layout="@layout/explosion_animation_layout"/>
+
+
+    <include layout="@layout/statistics_board_layout"/>
 
 
 </FrameLayout>

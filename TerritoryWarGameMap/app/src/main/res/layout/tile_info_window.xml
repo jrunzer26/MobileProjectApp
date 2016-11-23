@@ -5,23 +5,25 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
 
-    <ImageView
-        android:id="@+id/imgInfoWindowBg"
-        android:scaleType="fitXY"
-        android:alpha="0.8"
-        android:layout_width="280dp"
-        android:layout_height="180dp"
-        android:src="@drawable/bg_book" />
 
-    <TextView
-        android:id="@+id/txtIWTitles"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@color/colorBlack"
-        android:paddingStart="85dp"
-        android:paddingTop="20dp"
-        android:textStyle="bold"
-        android:text="Territory Property"/>
+    <FrameLayout
+        android:id="@+id/imgInfoWindowBg"
+        android:layout_width="200dp"
+        android:layout_height="150dp"
+        android:alpha="0.8"
+        android:background="@drawable/bg_book">
+        <TextView
+            android:id="@+id/txtIWTitles"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorBlack"
+            android:paddingStart="45dp"
+            android:paddingTop="10dp"
+            android:textStyle="bold"
+            android:text="Territory Property"/>
+    </FrameLayout>
+
+
 
 
 </FrameLayout>

@@ -20,6 +20,7 @@ android:orientation="vertical">
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:text="@string/login_username"
+    android:textColor="@color/colorBlack"
     android:textSize="@dimen/textsize_login_usernamepassword" />
 
 <EditText android:id="@+id/edittext_login_username"
@@ -34,6 +35,7 @@ android:orientation="vertical">
     android:layout_height="wrap_content"
     android:text="@string/login_password"
     android:textSize="@dimen/textsize_login_usernamepassword"
+    android:textColor="@color/colorBlack"
     android:layout_marginTop="@dimen/margintop_login_underFields"/>
 
 <EditText android:id="@+id/edittext_login_password"
@@ -44,40 +46,30 @@ android:orientation="vertical">
     android:textSize="@dimen/textsize_login_usernamepassword"
     android:layout_marginBottom="@dimen/margin_login_belowButtons"/>
 
-<android.support.v7.widget.ButtonBarLayout
+<LinearLayout
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
+    android:orientation="vertical"
     android:layout_gravity="center_horizontal">
 
 
     <Button
         android:id="@+id/loginMenuLoginBtn"
-        android:layout_width="180dp"
-        android:layout_height="63dp"
-        android:layout_marginLeft="30dp"
-        android:layout_marginRight="30dp"
-        android:layout_marginTop="@dimen/menu_itmes_margin_gap"
+        android:layout_width="220dp"
+        android:layout_height="83dp"
         android:layout_gravity="center"
         android:background="@drawable/btn_login"
-        android:layout_marginEnd="@dimen/margin_login_buttons"
-        android:onClick="login"
-        android:textColor="@color/colorBlack" />
+        android:onClick="login" />
 
     <Button
         android:id="@+id/loginMenuRegisterBtn"
         android:layout_width="180dp"
         android:layout_height="63dp"
-        android:layout_marginLeft="30dp"
-        android:layout_marginRight="30dp"
-        android:layout_marginTop="@dimen/menu_itmes_margin_gap"
         android:layout_gravity="center"
         android:background="@drawable/btn_reg_hover"
-        android:layout_marginEnd="@dimen/margin_register_belowButtons"
-        android:onClick="register"
-        android:textColor="@color/colorBlack" />
+        android:onClick="register" />
 
-</android.support.v7.widget.ButtonBarLayout>
+</LinearLayout>
 
 <TextView android:id="@+id/textview_login_warning"
     android:layout_width="wrap_content"
