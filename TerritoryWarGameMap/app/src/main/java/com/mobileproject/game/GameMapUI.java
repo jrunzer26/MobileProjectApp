@@ -127,6 +127,8 @@ public class GameMapUI extends FragmentActivity implements
 
     private boolean notificationON;
 
+    // a new comment
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
