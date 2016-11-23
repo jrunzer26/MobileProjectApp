@@ -6,55 +6,70 @@
     android:layout_gravity="center_vertical|center_horizontal"
     android:background="@drawable/menu_bg"
     android:visibility="gone">
-    <TextView
-        android:typeface="serif"
+    <ImageView
         android:id="@+id/textIMTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="0dp"
         android:gravity="center_horizontal"
-        android:text="Game Menu"
-        android:textColor="@color/colorWhite"
-        android:textSize="25sp"
-        android:textStyle="bold"/>
+        android:src="@drawable/title_game_menu"
+        android:typeface="serif"/>
 
-    <CheckBox
-        android:id="@+id/ckbDebug"
-        android:layout_width="match_parent"
+    <Switch
+        android:id="@+id/switchBgMusic"
+        android:layout_centerHorizontal="true"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="60dp"
-        android:layout_marginTop="120dp"
-        android:text="Debugging Mode"
-        android:textSize="22sp"/>
-    <CheckBox
-        android:id="@+id/ckbBgMusic"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="60dp"
-        android:layout_marginTop="170dp"
+        android:layout_below="@+id/textIMTitle"
+        android:switchPadding="13sp"
         android:checked="true"
         android:text="Background Music"
         android:textSize="22sp"/>
 
-    <CheckBox
-        android:id="@+id/ckbNotification"
-        android:layout_width="match_parent"
+    <Switch
+        android:id="@+id/switchNotification"
+        android:layout_centerHorizontal="true"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="60dp"
-        android:layout_marginTop="220dp"
+        android:layout_below="@id/switchBgMusic"
+        android:layout_marginTop="20dp"
         android:checked="true"
-        android:text="Conversation"
+        android:text="Conversation            "
         android:textSize="22sp"/>
 
-    <CheckBox
-    android:id="@+id/ckbNightMode"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginStart="60dp"
-    android:layout_marginTop="270dp"
-    android:checked="false"
-    android:text="Map Night Mode"
-    android:textSize="22sp"/>
+    <Switch
+        android:id="@+id/switchNightMode"
+        android:layout_centerHorizontal="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/switchNotification"
+        android:layout_marginTop="20dp"
+        android:checked="false"
+        android:text="Map Night Mode     "
+        android:textSize="22sp"/>
+
+
+    <Switch
+        android:id="@+id/switchDebug"
+        android:layout_centerHorizontal="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/switchNightMode"
+        android:layout_marginTop="20dp"
+        android:textSize="22sp"
+        android:text="Debugging Mode    " />
+
+    <Button
+        android:id="@+id/btnStartStat"
+        android:layout_centerHorizontal="true"
+        android:layout_width="250dp"
+        android:layout_marginTop="20dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/switchDebug"
+        android:onClick="process"
+        android:background="@drawable/btn_stat"/>
+
+
 
     <ImageButton
         android:id="@+id/btnIMBack"
@@ -65,5 +80,7 @@
         android:layout_marginBottom="20dp"
         android:background="@drawable/btn_close"
         android:onClick="process" />
+
+
 
 </RelativeLayout>
