@@ -24,6 +24,7 @@ public class MainMenuActivity extends AppCompatActivity {
         soundInit();
         scrollViewController();
     }
+
     // Initialization
     private void soundInit(){
         buttonClick = MediaPlayer.create(getApplicationContext(), R.raw.soho);
@@ -99,7 +100,6 @@ public class MainMenuActivity extends AppCompatActivity {
 
     private int scrollViewController(){
         ScrollView view = (ScrollView)findViewById(R.id.svCredits);
-
         return 1;
     }
 

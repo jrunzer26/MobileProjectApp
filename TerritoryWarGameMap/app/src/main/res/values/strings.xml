@@ -1,49 +1,61 @@
 <resources>
-  <string name="app_name">Territory War Game Map</string>
-  <string name="banner_text">Welcome to Territory War Game,\nEnjoy your time and Have fun here</string>
+    <string name="app_name">Territory War Game Map</string>
+    <string name="banner_text">Welcome to Territory War Game,\nEnjoy your time and Have fun here</string>
 
-  <!-- Server -->
-  <string name="server">http://159.203.42.84:3000/</string>
+    <!-- Server -->
+    <string name="server">http://159.203.42.84:3000/</string>
 
-  <!-- Strings related to LoginActivity -->
-  <string name="login_title">Login</string>
-  <string name="login_login">Login</string>
-  <string name="login_username">Username</string>
-  <string name="login_password">Password</string>
-  <string name="login_usernamehint">E.g. Xx_NoScope_xX</string>
-  <string name="login_passwordhint">password</string>
-  <string name="login_register">Register</string>
-  <string name="login_nocredentials">Please enter a username and password</string>
+    <!-- Strings related to LoginActivity -->
+    <string name="login_title">Login</string>
+    <string name="login_login">Login</string>
+    <string name="login_username">Username</string>
+    <string name="login_password">Password</string>
+    <string name="login_usernamehint">E.g. Xx_NoScope_xX</string>
+    <string name="login_passwordhint">password</string>
+    <string name="login_register">Register</string>
+    <string name="login_nocredentials">Please enter a username and password</string>
 
-  <!-- Strings related to RegisterActivity -->
-  <string name="register_title">Register</string>
-  <string name="register_usernametaken">The username already exists</string>
-  <string name="register_passowrdnotsame">The two passwords provided are not the same.</string>
-  <string name="register_passwordshort">Your password must be 5-16 characters long</string>
-  <string name="register_usernameshort">Your username must be 8-16 characters long</string>
-  <string name="register_password">Password: 8-16 characters long</string>
-  <string name="register_username">Username: 5-16 characters long</string>
-  <string name="register_retypepassword">Retype Password</string>
+    <!-- Strings related to RegisterActivity -->
+    <string name="register_title">Register</string>
+    <string name="register_usernametaken">The username already exists</string>
+    <string name="register_passowrdnotsame">The two passwords provided are not the same.</string>
+    <string name="register_passwordshort">Your password must be 5-16 characters long</string>
+    <string name="register_usernameshort">Your username must be 8-16 characters long</string>
+    <string name="register_password">Password: 8-16 characters long</string>
+    <string name="register_username">Username: 5-16 characters long</string>
+    <string name="register_retypepassword">Retype Password</string>
 
 
-  <!-- Strings related to GameActivity -->
-  <string name="title_activity_game_activity">Game</string>
-  <string name="game_logoutbutton">Logout</string>
-  <!--Button-->
-  <string name="btnGameMenuItem1">Enter Game Now</string>
-  <string name="btnGameMenuItem2">Setting and Help</string>
-  <string name="btnGameMenuItem3">About The Game</string>
-  <string name="btnGameMenuItem4">Exit Game</string>
+    <!-- Strings related to GameActivity -->
+    <string name="title_activity_game_activity">Game</string>
+    <string name="game_logoutbutton">Logout</string>
+    <!--Button-->
+    <string name="btnGameMenuItem1">Enter Game Now</string>
+    <string name="btnGameMenuItem2">Setting and Help</string>
+    <string name="btnGameMenuItem3">About The Game</string>
+    <string name="btnGameMenuItem4">Exit Game</string>
 
-<!--Game welcome banner text-->
-  <string name="welcome_banner">Welcome To The Game of Territory War : Age Alpha!</string>
+    <!--Game welcome banner text-->
+    <string name="welcome_banner">Welcome To The Game of Territory War : Age Alpha!</string>
 
     <!--Statistics Board-->
     <string name="statistics_board">= Game Statistics Board =</string>
 
-  <!--    Permissions    -->
-  <string name="permission_rationale_location">Access to the location service is required to demonstrate the \'my location\' feature, which shows your current location on the map.</string>
-  <string name="location_permission_denied">This sample requires location permission to enable the \'my location\' layer. Please try again and grant access to use the location.\nIf the permission has been permanently denied, it can be enabled from the System Settings &gt; Apps &gt; \'Google Maps API Demos\'.</string>
-  <string name="permission_required_toast">Location permission is required for this demo.</string>
+    <!--    Permissions    -->
+    <string name="permission_rationale_location">Access to the location service is required to demonstrate the \'my location\' feature, which shows your current location on the map.</string>
+    <string name="location_permission_denied">This sample requires location permission to enable the \'my location\' layer. Please try again and grant access to use the location.\nIf the permission has been permanently denied, it can be enabled from the System Settings &gt; Apps &gt; \'Google Maps API Demos\'.</string>
+    <string name="permission_required_toast">Location permission is required for this demo.</string>
+
+    <!-- Changed Resources -->
+    <string name="gameUI_goldChanged">You gained %1$d gold!</string>
+    <string name="gameUI_foodChanged">You gained %1$d food!</string>
+    <string name="gameUI_soldiersChanged">You lost %1$d soldiers!</string>
+    <string name="gameUI_tilesChanged">You lost %1$d tile(s)!</string>
+    <string name="gameUI_owner">Owner: %1$s</string>
+    <string name="gameUI_food">Food: %1$d</string>
+    <string name="gameUI_gold">Gold: %1$d</string>
+    <string name="gameUI_soldiers">Soldiers: %1$d</string>
+    <string name="gameUI_territoryProperty">== Territory Property ==</string>
+
 
 </resources>

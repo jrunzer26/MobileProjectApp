@@ -13,8 +13,6 @@ public class OptionsMenuActivity extends AppCompatActivity {
         setContentView(R.layout.activity_options_menu);
     }
 
-
-
     public void process(View view){
         this.finish();
         startActivity(new Intent(this,MainMenuActivity.class));
