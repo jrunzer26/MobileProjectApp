@@ -25,6 +25,7 @@ public class ServerControl extends AsyncTask<String, Void, String> {
     public ServerControl(AsyncResponse asyncResponse) {
         this.asyncResponse = asyncResponse;
     }
+
     /**
      *
      * @param params url, method, body, auth, type - the type to distinguish processing the result

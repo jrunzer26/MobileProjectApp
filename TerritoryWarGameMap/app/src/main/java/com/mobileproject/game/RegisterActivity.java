@@ -92,6 +92,9 @@ public class RegisterActivity extends AppCompatActivity implements AsyncResponse
             ((TextView) findViewById(R.id.textview_register_warning)).setText(Utilities.getErr(result));
     }
 
+    /**
+     * Hides the warning on the screen.
+     */
     private void hideWarning() {
         ((TextView) findViewById(R.id.textview_register_warning)).setText("");
     }

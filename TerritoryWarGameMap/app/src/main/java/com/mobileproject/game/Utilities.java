@@ -38,6 +38,11 @@ public class Utilities {
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
+    /**
+     * Gets the error from the JSON string
+     * @param error the JSON from the server
+     * @return the error message
+     */
     public static String getErr(String error) {
         try {
             JSONObject resultJSON = new JSONObject(error);
@@ -100,8 +105,13 @@ public class Utilities {
         }
     }
 
-
-    public static void SoundPlayer(Context context , final MediaPlayer mp ,String mode) {
+    /**
+     * Plays or stops the sound player.
+     * @param context the current context
+     * @param mp the current media player
+     * @param mode "play" to start playing, "stop" to stop playing
+     */
+    public static void SoundPlayer(Context context, final MediaPlayer mp, String mode) {
         switch (mode){
             case "play":
                 new Thread(new Runnable() {
