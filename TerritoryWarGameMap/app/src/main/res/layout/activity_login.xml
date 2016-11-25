@@ -11,70 +11,70 @@ android:paddingTop="@dimen/activity_vertical_margin"
 tools:context="com.mobileproject.game.LoginActivity"
 android:orientation="vertical">
 
-<ImageView
-    android:src="@drawable/banner_login"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content" />
+    <ImageView
+        android:src="@drawable/banner_login"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
-<TextView android:id="@+id/textview_login_username"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="@string/login_username"
-    android:textColor="@color/colorBlack"
-    android:textSize="@dimen/textsize_login_usernamepassword" />
+    <TextView android:id="@+id/textview_login_username"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/login_username"
+        android:textColor="@color/colorBlack"
+        android:textSize="@dimen/textsize_login_usernamepassword" />
 
-<EditText android:id="@+id/edittext_login_username"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:hint="@string/login_usernamehint"
-    android:inputType="textNoSuggestions"
-    android:textSize="@dimen/textsize_login_usernamepassword" />
+    <EditText android:id="@+id/edittext_login_username"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/login_usernamehint"
+        android:inputType="textNoSuggestions"
+        android:textSize="@dimen/textsize_login_usernamepassword" />
 
-<TextView android:id="@+id/textview_login_password"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="@string/login_password"
-    android:textSize="@dimen/textsize_login_usernamepassword"
-    android:textColor="@color/colorBlack"
-    android:layout_marginTop="@dimen/margintop_login_underFields"/>
+    <TextView android:id="@+id/textview_login_password"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/login_password"
+        android:textSize="@dimen/textsize_login_usernamepassword"
+        android:textColor="@color/colorBlack"
+        android:layout_marginTop="@dimen/margintop_login_underFields"/>
 
-<EditText android:id="@+id/edittext_login_password"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:hint="@string/login_passwordhint"
-    android:inputType="textPassword"
-    android:textSize="@dimen/textsize_login_usernamepassword"
-    android:layout_marginBottom="@dimen/margin_login_belowButtons"/>
+    <EditText android:id="@+id/edittext_login_password"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/login_passwordhint"
+        android:inputType="textPassword"
+        android:textSize="@dimen/textsize_login_usernamepassword"
+        android:layout_marginBottom="@dimen/margin_login_belowButtons"/>
 
-<LinearLayout
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:layout_gravity="center_horizontal">
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_gravity="center_horizontal">
 
 
-    <Button
-        android:id="@+id/loginMenuLoginBtn"
-        android:layout_width="220dp"
-        android:layout_height="83dp"
+        <Button
+            android:id="@+id/loginMenuLoginBtn"
+            android:layout_width="220dp"
+            android:layout_height="83dp"
+            android:layout_gravity="center"
+            android:background="@drawable/btn_login"
+            android:onClick="login" />
+
+        <Button
+            android:id="@+id/loginMenuRegisterBtn"
+            android:layout_width="180dp"
+            android:layout_height="63dp"
+            android:layout_gravity="center"
+            android:background="@drawable/btn_reg_hover"
+            android:onClick="register" />
+
+    </LinearLayout>
+
+    <TextView android:id="@+id/textview_login_warning"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:background="@drawable/btn_login"
-        android:onClick="login" />
-
-    <Button
-        android:id="@+id/loginMenuRegisterBtn"
-        android:layout_width="180dp"
-        android:layout_height="63dp"
-        android:layout_gravity="center"
-        android:background="@drawable/btn_reg_hover"
-        android:onClick="register" />
-
-</LinearLayout>
-
-<TextView android:id="@+id/textview_login_warning"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_gravity="center"
-    android:textSize="18sp"
-    android:textColor="@color/color_red"/>
+        android:textSize="18sp"
+        android:textColor="@color/color_red"/>
 </LinearLayout>

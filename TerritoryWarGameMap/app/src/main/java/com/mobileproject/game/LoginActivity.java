@@ -13,7 +13,6 @@ import android.widget.TextView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.mobileproject.game.R;
 
 public class LoginActivity extends AppCompatActivity implements AsyncResponse {
     public static final String EDITTEXT_USERNAME = "USERNAME";

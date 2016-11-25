@@ -43,7 +43,7 @@
                 android:paddingBottom="20dp"
                 android:textStyle="bold"
                 android:textSize="30sp"
-                android:text="Made with \u2764 by:"/>
+                android:text="@string/made_with_love_by"/>
 
             <TextView
                 android:id="@+id/txtCreditsName1"

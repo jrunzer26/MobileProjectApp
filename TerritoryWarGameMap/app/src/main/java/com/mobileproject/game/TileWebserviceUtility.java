@@ -1,8 +1,6 @@
 package com.mobileproject.game;
 
 import android.content.Context;
-import android.content.res.Resources;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -33,6 +31,7 @@ public class TileWebserviceUtility {
         }
 
         ServerControl capture = new ServerControl(callback);
+        System.out.println("capturing tile!");
         capture.execute(context.getString(R.string.server) + "tiles/capture",
                 ServerControl.POST, jsonObject.toString(), auth.toString(), "1");
     }

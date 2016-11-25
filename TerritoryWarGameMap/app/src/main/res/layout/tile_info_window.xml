@@ -20,7 +20,7 @@
             android:paddingStart="45dp"
             android:paddingTop="10dp"
             android:textStyle="bold"
-            android:text="Territory Property"/>
+            android:text="@string/territory_property"/>
     </FrameLayout>
 
 

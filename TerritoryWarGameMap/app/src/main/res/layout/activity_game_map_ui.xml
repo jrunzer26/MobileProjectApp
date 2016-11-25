@@ -31,10 +31,7 @@
         android:scaleType="centerCrop"
         android:layout_gravity="center|bottom" />
 
-
-
     <include layout="@layout/resource_bar_layout"/>
-
 
     <ImageButton
         android:id="@+id/btnBackLocation"
@@ -91,12 +88,8 @@
         android:text="Username"
         android:layout_gravity="bottom|center" />
 
-
-
     <include layout="@layout/explosion_animation_layout"/>
 
-
     <include layout="@layout/statistics_board_layout"/>
-
 
 </FrameLayout>

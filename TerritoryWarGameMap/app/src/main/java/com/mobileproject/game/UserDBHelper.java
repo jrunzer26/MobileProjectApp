@@ -6,7 +6,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import java.util.ArrayList;
 
 /**
  * Created by 100520993 on 11/13/2016.
@@ -119,12 +118,8 @@ public class UserDBHelper extends SQLiteOpenHelper {
             String groupBy = "";
             String groupArgs = "";
             String orderBy = "";
-
-
             Cursor cursor = db.query("Users", columns, where, whereArgs,
                     groupBy, groupArgs, orderBy);
-
-
             if (cursor.getCount() > 0) {
                 cursor.moveToFirst();
                 User user = new User(username,

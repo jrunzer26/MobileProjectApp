@@ -50,6 +50,7 @@
     <string name="gameUI_goldChanged">You gained %1$d gold!</string>
     <string name="gameUI_foodChanged">You gained %1$d food!</string>
     <string name="gameUI_soldiersChanged">You lost %1$d soldiers!</string>
+    <string name="gameUI_soldiersAdded">You bought %1$d soldiers!</string>
     <string name="gameUI_tilesChanged">You lost %1$d tile(s)!</string>
     <string name="gameUI_owner">Owner: %1$s</string>
     <string name="gameUI_food">Food: %1$d</string>
@@ -57,5 +58,14 @@
     <string name="gameUI_soldiers">Soldiers: %1$d</string>
     <string name="gameUI_territoryProperty">== Territory Property ==</string>
 
-
+    <!-- battle strings -->
+    <string name="gameUI_wonBattle">You won the battle! Go capture it!</string>
+    <string name="gameUI_defeatedBattle">Defeated! Put soldiers on your territory to protect it again!</string>
+    <string name="gameUI_territoryName">The owner of this territory is %1$s</string>
+    <string name="gameUI_Unoccupied">This territory is unoccupied!! Go capture it!</string>
+    <string name="gameUI_tilesCaptured">You captured a tile!</string>
+    <string name="gameUI_tileGenFail">Tiles Generation failed!</string>
+    <string name="gameUI_noLocation">No Location Detected</string>
+    <string name="territory_property">Territory Property</string>
+    <string name="made_with_love_by">Made with ❤ by:</string>
 </resources>
