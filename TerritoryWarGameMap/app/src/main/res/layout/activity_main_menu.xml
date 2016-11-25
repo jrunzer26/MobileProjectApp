@@ -48,7 +48,7 @@
             android:layout_marginRight="30dp"
             android:layout_marginTop="@dimen/menu_itmes_margin_gap"
             android:layout_gravity="center"
-            android:background="@drawable/btn_options"
+            android:background="@drawable/btn_info"
             android:onClick="process"
             android:textColor="@color/colorBlack" />
 

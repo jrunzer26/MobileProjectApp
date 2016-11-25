@@ -7,7 +7,9 @@ package com.mobileproject.game;
 import android.app.Activity;
 import android.content.Context;
 import android.media.MediaPlayer;
+import android.os.AsyncTask;
 import android.os.Handler;
+import android.text.Html;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -19,6 +21,9 @@ import com.google.android.gms.maps.model.LatLng;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 
 
@@ -172,4 +177,9 @@ class Typewriter extends TextView {
         mDelay = millis;
     }
 }
+
+
+
+
+
 

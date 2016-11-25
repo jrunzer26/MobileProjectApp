@@ -6,14 +6,14 @@
     <!-- Dimensions related to LoginActivity -->
     <dimen name="marginbottom_login_underlogintitle">40dp</dimen>
     <dimen name="margintop_login_underFields">40dp</dimen>
-    <dimen name="textsize_login_usernamepassword">25sp</dimen>
+    <dimen name="textsize_login_usernamepassword">22sp</dimen>
     <dimen name="textsize_login_title">40sp</dimen>
-    <dimen name="textsize_login_loginbutton">24sp</dimen>
+    <dimen name="textsize_login_loginbutton">22sp</dimen>
     <dimen name="margin_login_buttons">24dp</dimen>
     <dimen name="margin_login_belowButtons">40dp</dimen>
 
     <!-- Dimensions related to RegisterActivity -->
-    <dimen name="textsize_register_usernamepassword">25sp</dimen>
+    <dimen name="textsize_register_usernamepassword">22sp</dimen>
     <dimen name="margin_register_belowButtons">8dp</dimen>
 
     <!-- Dimensions related to GameMapUIActivity -->

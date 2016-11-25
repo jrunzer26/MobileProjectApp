@@ -92,4 +92,8 @@
 
     <include layout="@layout/statistics_board_layout"/>
 
+    <include layout="@layout/tutorial_layout"/>
+
+    <include layout="@layout/loading_animation_layout"/>
+
 </FrameLayout>
