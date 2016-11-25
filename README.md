@@ -14,3 +14,11 @@ Made with :heart: by:
 Created with node.js express along with a postgresql database.
 Hosted with DigitalOcean.
 The webservice is used to strictly query the database.
+
+## Special Instructions
+1. Try registering an account!
+2. Start initially at UOIT: Lat:<> Lng:<>
+3. This is an area in the game that has multiple users and tiles that you can take over!
+4. Don't update your location too far at one time. This game is meant to be played on a phone and a user cannot teleport.
+5. Login to this account at UOIT username: jason password: password to see another user's perspective of the world.
+6. Resources are gained every hour! Come back later if you have captured tiles after each hour of the day to see your resources change.
