@@ -118,6 +118,39 @@
         android:textSize="40sp"
         android:text="0"/>
 
+    <ImageView
+        android:id="@+id/iconTilesTaken"
+        android:layout_width="140dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|start"
+        android:paddingStart="100dp"
+        android:paddingEnd="0dp"
+        android:paddingTop="380dp"
+        android:src="@drawable/soldier"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|start"
+        android:paddingStart="150dp"
+        android:paddingEnd="0dp"
+        android:paddingTop="380dp"
+        android:textSize="40sp"
+        android:text="X"/>
+
+
+    <TextView
+        android:id="@+id/txtStatTilesTaken"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|start"
+        android:paddingStart="180dp"
+        android:paddingEnd="0dp"
+        android:paddingTop="378dp"
+        android:textColor="@color/colorBlack"
+        android:textSize="40sp"
+        android:text="0"/>
+
 
     <Button
         android:id="@+id/btnStatClose"

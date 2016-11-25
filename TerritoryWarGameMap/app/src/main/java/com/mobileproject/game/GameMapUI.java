@@ -162,15 +162,6 @@ public class GameMapUI extends FragmentActivity implements
         MenuListenerInit();
     }
 
-    /**
-     * Updates the HUB with the users resources
-     * @param user - the user's resources to update the HUD with
-     */
-    private void updateHUD(User user) {
-        show("saved gold: " + user.getGold() + " food: " + user.getFood() + " soldiers available: "
-                    + user.getSoldiersAvailable() + " totalSoldiers: " + user.getTotalSoldiers());
-        System.out.println("update HUD");
-    }
 
     /**
      * Shows what the user has gained/lost when logging in again
@@ -180,8 +171,8 @@ public class GameMapUI extends FragmentActivity implements
     private void showResourcesChanged(User user, User serverUser) {
         int addedFood = serverUser.getFood() - user.getFood();
         int addedGold = serverUser.getGold() - user.getGold();
-        int changedTiles = user.getTiles() - serverUser.getTiles();
-        int changedSoldiers = user.getTotalSoldiers() - serverUser.getTotalSoldiers();
+        int changedTiles = serverUser.getTiles() - user.getTiles();
+        int changedSoldiers = serverUser.getTotalSoldiers() - user.getTotalSoldiers();
 
         StringBuilder updateString = new StringBuilder();
         if (addedFood > 0) {
@@ -195,13 +186,19 @@ public class GameMapUI extends FragmentActivity implements
         if (changedSoldiers < 0) {
             updateString.append(getString(R.string.gameUI_soldiersChanged, -1 * changedSoldiers));
             updateString.append(" ");
+        } else if (changedSoldiers > 0) {
+            updateString.append(getString(R.string.gameUI_soldiersAdded, changedSoldiers));
+            updateString.append(" ");
         }
         if (changedTiles < 0) {
-            updateString.append(getString(R.string.gameUI_tilesChanged, -1 * changedTiles));
+            updateString.append(getString(R.string.gameUI_tilesChanged, changedTiles));
+            updateString.append(" ");
+        } else if (changedTiles > 0) {
+            updateString.append(getString(R.string.gameUI_tilesCaptured));
             updateString.append(" ");
         }
         if (updateString.length() > 0)
-            updateNotification(updateString.toString(), 50, 5000);
+            updateNotification(updateString.toString(), 50, 9000);
         this.user = serverUser;
     }
 
@@ -346,6 +343,10 @@ public class GameMapUI extends FragmentActivity implements
         // set the current LatID and LngID to the users position
         currentLatID = id.getLatID();
         currentLngID = id.getLngID();
+        // Drawing the titles: line length in KMs
+        // update the map every 30 seconds
+        taskThread = new UpdateMapThread(this, this);
+        taskThread.start();
         // the vertical lines that are drawn on the screen
         parallelLines = new ArrayList<LatLngLines>();
         verticalLines = new ArrayList<LatLngLines>();
@@ -358,12 +359,13 @@ public class GameMapUI extends FragmentActivity implements
         TileWebserviceUtility.collectResources(LoginActivity.username, LoginActivity.password, this, this);
         TileWebserviceUtility.getUser(LoginActivity.username, LoginActivity.password, this, this);
         DrawTiles(mMap);
-        // Drawing the titles: line length in KMs
-        // update the map every 30 seconds
-        taskThread = new UpdateMapThread(this, this);
-        taskThread.start();
-        updateHUD(user);
         setResourceBar(user);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                attemptCaptureTile();
+            }
+        }, 5000);
     }
 
     class UpdateMapThread extends Thread {
@@ -439,8 +441,6 @@ public class GameMapUI extends FragmentActivity implements
                 return null;
             }
         });
-
-
 
         mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
             @Override
@@ -650,7 +650,7 @@ public class GameMapUI extends FragmentActivity implements
             }
             h_flag = true;
         } else {
-            show("Tiles Generation failed!");
+            show(getString(R.string.gameUI_tileGenFail));
         }
         if (populateVerticalLines()) {
             Iterator<LatLngLines> iterator = verticalLines.iterator();
@@ -660,7 +660,7 @@ public class GameMapUI extends FragmentActivity implements
             }
             v_flag = true;
         } else {
-            show("Tiles Generation failed!");
+            show(getString(R.string.gameUI_tileGenFail));
         }
         return (h_flag && v_flag);
     }
@@ -763,7 +763,7 @@ public class GameMapUI extends FragmentActivity implements
             mMap.animateCamera(cameraUpdate);
             setMapViewBounds(latlng);
         } else {
-            show("No Location Detected");
+            show(getString(R.string.gameUI_noLocation));
         }
     }
 
@@ -786,6 +786,7 @@ public class GameMapUI extends FragmentActivity implements
      */
     @Override
     public void onLocationChanged(Location location) {
+
         // added to ensure that the map is animated
         if (listener != null) {
             currentLoc = location;
@@ -799,21 +800,24 @@ public class GameMapUI extends FragmentActivity implements
         mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
         setMapViewBounds(latLng);
 
-
         Tile.TileID tileID = new Tile.TileID(latLng);
         if (currentLatID != tileID.getLatID() || currentLngID != tileID.getLngID()) {
             currentLatID = tileID.getLatID();
             currentLngID = tileID.getLngID();
-            Tile t;
-            if ((t = tiles.get(new Tile.TileID(currentLatID, currentLngID))) != null) {
-                if (t.getUsername() == null) {
-                    // capture the tile if it is unoccupied - has a chance to turn red if another person requests first
-                    Utilities.updateTile(colors.green, currentLatID, currentLngID, LoginActivity.username, mMap, tiles, 0, 0, 0);
-                    TileWebserviceUtility.captureTile(currentLatID, currentLngID, LoginActivity.username, LoginActivity.password, this, getApplicationContext());
-                }
-            }
+            attemptCaptureTile();
         }
 
+    }
+
+    private void attemptCaptureTile() {
+        Tile t = tiles.get(new Tile.TileID(currentLatID, currentLngID));
+        if (t != null) {
+            if (t.getUsername() == null) {
+                // capture the tile if it is unoccupied - has a chance to turn red if another person requests first
+                //Utilities.updateTile(colors.green, currentLatID, currentLngID, LoginActivity.username, mMap, tiles, 0, 0, 0);
+                TileWebserviceUtility.captureTile(currentLatID, currentLngID, LoginActivity.username, LoginActivity.password, this, getApplicationContext());
+            }
+        }
     }
 
     @Override
@@ -870,6 +874,7 @@ public class GameMapUI extends FragmentActivity implements
             if (serverResult[0].equals("1")) {
                 handleIncomingTile(jsonObject);
             } else if (serverResult[0].equals("2")) {
+                // pending feature!
                 String goldObtained = jsonObject.getString("goldObtained");
                 String foodObtained = jsonObject.getString("foodObtained");
             } else if (serverResult[0].equals("3")) {
@@ -882,17 +887,21 @@ public class GameMapUI extends FragmentActivity implements
                 } else {
                     TileWebserviceUtility.getUser(LoginActivity.username, LoginActivity.password, this, this);
                     handleIncomingTile(jsonObject);
+                    int tileLatID = jsonObject.getInt("tileLatID");
+                    int tileLngID = jsonObject.getInt("tileLngID");
+                    Tile.TileID tileID= new Tile.TileID(tileLatID, tileLngID);
+                    addTileInfoWindow(tileID.getLatLng());
                 }
             } else if (serverResult[0].equals("5")) {
-                System.out.println("battle results");
-                System.out.println(serverResult[1]);
                 JSONArray tileArray = jsonObject.getJSONArray("tiles");
                 JSONObject tile1 = tileArray.getJSONObject(0);
                 JSONObject tile2 = tileArray.getJSONObject(1);
+                addTileInfoWindow(new Tile.TileID(tile2.getInt("tileLatID"),
+                        tile2.getInt("tileLngID")).getLatLng());
                 if (tile2.getString("username").equals("null")) {
-                    updateNotification("You won the battle! Go capture it!", 50, 1000);
+                    updateNotification(getString(R.string.gameUI_wonBattle), 50, 1000);
                 } else {
-                    updateNotification("Defeated! Put soldiers on your territory to protect it again!", 50, 1000);
+                    updateNotification(getString(R.string.gameUI_defeatedBattle), 50, 1000);
                 }
                 handleIncomingTile(tile1);
                 handleIncomingTile(tile2);
@@ -941,8 +950,6 @@ public class GameMapUI extends FragmentActivity implements
         System.out.println("tile username: " + tileUsername + " username " + LoginActivity.username);
         Tile t;
         if (tileUsername.equals("null")) {
-            if (currentLngID == tileLngID && currentLatID == tileLatID)
-                TileWebserviceUtility.captureTile(tileLatID, tileLngID, LoginActivity.username, LoginActivity.password, this, getApplicationContext());
             Utilities.updateTile(colors.gray, tileLatID, tileLngID, null, mMap, tiles, soldiers, gold, food);
         } else if (tileUsername.equalsIgnoreCase(LoginActivity.username)) {
             System.out.println("updating soldiers: " + soldiers);
@@ -1039,9 +1046,9 @@ public class GameMapUI extends FragmentActivity implements
                         setBuySoliderPopsout(null, false);
                     }
                     if(name!=null){
-                        updateNotification("The owner of this territory is "+name,50,1000);
+                        updateNotification(getString(R.string.gameUI_territoryName, name),50,1000);
                     } else {
-                        updateNotification("Congratulation! This territory is Unoccupied!!",50,1000);
+                        updateNotification(getString(R.string.gameUI_Unoccupied),50,1000);
                     }
                 } else {
                     // tile was already selected, unselect it
@@ -1203,15 +1210,18 @@ public class GameMapUI extends FragmentActivity implements
         TextView soliderStat = (TextView)findViewById(R.id.txtStatSoldier);
         TextView goldStat = (TextView)findViewById(R.id.txtStatGold);
         TextView foodStat = (TextView)findViewById(R.id.txtStatFood);
+        TextView tilesTakenStat = (TextView) findViewById(R.id.txtStatTilesTaken);
 
         // get the user's stats
         int soldier = this.user.getTotalSoldiers();
         int gold = this.user.getTotalGoldObtained();
         int food = this.user.getTotalFoodObtained();
+        int tilesTaken = this.user.getTilesTaken();
 
         soliderStat.setText(String.valueOf(soldier));
         goldStat.setText(String.valueOf(gold));
         foodStat.setText(String.valueOf(food));
+        tilesTakenStat.setText(String.valueOf(tilesTaken));
 
         if(mode==0){
             statPanel.setVisibility(View.VISIBLE);

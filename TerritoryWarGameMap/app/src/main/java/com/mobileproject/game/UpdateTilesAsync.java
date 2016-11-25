@@ -166,18 +166,14 @@ class UpdateTilesAsync extends Thread implements AsyncResponse {
             final int food = jsonObject.getInt("food");
             System.out.println("tile username: " + tileUsername + " username " + LoginActivity.username);
             Tile t;
+            // post to the main UI thread to update the tile
             Handler handler = new Handler(Looper.getMainLooper());
             handler.post(new Runnable() {
                 @Override
                 public void run() {
                     if(tileUsername.equals("null")) {
-                        if (GameMapUI.currentLngID == tileLngID && GameMapUI.currentLatID == tileLatID) {
-                            Utilities.updateTile(colors.green, tileLatID, tileLngID, LoginActivity.username ,mMap, tiles, soldiers, gold, food);
-                        } else {
-                            Utilities.updateTile(colors.gray, tileLatID, tileLngID, null, mMap, tiles, soldiers, gold, food);
-                        }
-                    }
-                    else if (tileUsername.equalsIgnoreCase(LoginActivity.username)) {
+                        Utilities.updateTile(colors.gray, tileLatID, tileLngID, null, mMap, tiles, soldiers, gold, food);
+                    } else if (tileUsername.equalsIgnoreCase(LoginActivity.username)) {
                         Utilities.updateTile(colors.green, tileLatID, tileLngID, tileUsername, mMap, tiles, soldiers, gold, food);
                     } else {
                         Utilities.updateTile(colors.red, tileLatID, tileLngID, tileUsername, mMap, tiles, soldiers, gold, food);
