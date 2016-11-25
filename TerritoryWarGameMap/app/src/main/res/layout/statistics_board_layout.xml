@@ -125,8 +125,8 @@
         android:layout_gravity="top|start"
         android:paddingStart="100dp"
         android:paddingEnd="0dp"
-        android:paddingTop="380dp"
-        android:src="@drawable/soldier"/>
+        android:paddingTop="40dp"
+        android:src="@drawable/map_icon"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -134,7 +134,7 @@
         android:layout_gravity="top|start"
         android:paddingStart="150dp"
         android:paddingEnd="0dp"
-        android:paddingTop="380dp"
+        android:paddingTop="390dp"
         android:textSize="40sp"
         android:text="X"/>
 
@@ -146,7 +146,7 @@
         android:layout_gravity="top|start"
         android:paddingStart="180dp"
         android:paddingEnd="0dp"
-        android:paddingTop="378dp"
+        android:paddingTop="388dp"
         android:textColor="@color/colorBlack"
         android:textSize="40sp"
         android:text="0"/>
