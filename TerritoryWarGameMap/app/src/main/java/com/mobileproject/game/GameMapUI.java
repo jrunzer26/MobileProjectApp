@@ -155,7 +155,7 @@ public class GameMapUI extends FragmentActivity implements
         if (user == null) {
             user = new User(LoginActivity.username);
         } else
-        setResourceBar(this.user);
+            setResourceBar(this.user);
         setUsername(user.getUsername());
         //create the new colour set to shade the tiles
         colors = new ColorSet();
@@ -165,7 +165,8 @@ public class GameMapUI extends FragmentActivity implements
 
     /**
      * Shows what the user has gained/lost when logging in again
-     * @param user the current user's resources
+     *
+     * @param user       the current user's resources
      * @param serverUser the same user but with updated resources from the server
      */
     private void showResourcesChanged(User user, User serverUser) {
@@ -201,7 +202,6 @@ public class GameMapUI extends FragmentActivity implements
             updateNotification(updateString.toString(), 50, 9000);
         this.user = serverUser;
     }
-
 
 
     @Override
@@ -240,20 +240,20 @@ public class GameMapUI extends FragmentActivity implements
     /**
      * Initialization for all Listener for the internal game menus
      */
-    private void MenuListenerInit(){
+    private void MenuListenerInit() {
         notificationON = true;
-        Switch debugMode = (Switch)findViewById(R.id.switchDebug);
-        Switch bgMuiscMode = (Switch)findViewById(R.id.switchBgMusic);
-        Switch notificationMode = (Switch)findViewById(R.id.switchNotification);
-        Switch nightMode = (Switch)findViewById(R.id.switchNightMode);
-        final TextView debugBar = (TextView)findViewById(R.id.debug);
-        final FrameLayout notification = (FrameLayout)findViewById(R.id.notificationSystem);
-        final ImageView bg = (ImageView)findViewById(R.id.imgBgg);
+        Switch debugMode = (Switch) findViewById(R.id.switchDebug);
+        Switch bgMuiscMode = (Switch) findViewById(R.id.switchBgMusic);
+        Switch notificationMode = (Switch) findViewById(R.id.switchNotification);
+        Switch nightMode = (Switch) findViewById(R.id.switchNightMode);
+        final TextView debugBar = (TextView) findViewById(R.id.debug);
+        final FrameLayout notification = (FrameLayout) findViewById(R.id.notificationSystem);
+        final ImageView bg = (ImageView) findViewById(R.id.imgBgg);
 
         debugMode.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked){
+                if (isChecked) {
                     debugBar.setVisibility(View.VISIBLE);
                 } else {
                     debugBar.setVisibility(View.GONE);
@@ -264,9 +264,9 @@ public class GameMapUI extends FragmentActivity implements
         bgMuiscMode.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked){
+                if (isChecked) {
                     bgMusic.start();
-                }else {
+                } else {
                     bgMusic.pause();
                 }
             }
@@ -275,7 +275,7 @@ public class GameMapUI extends FragmentActivity implements
         notificationMode.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked){
+                if (isChecked) {
                     notificationON = true;
                     notification.setVisibility(View.VISIBLE);
                 } else {
@@ -289,7 +289,7 @@ public class GameMapUI extends FragmentActivity implements
         nightMode.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-                if(isChecked){
+                if (isChecked) {
                     mMap.setMapStyle(createMapStyle("night"));
                     bg.setVisibility(View.GONE);
                 } else {
@@ -371,25 +371,26 @@ public class GameMapUI extends FragmentActivity implements
     class UpdateMapThread extends Thread {
         private AsyncResponse callback;
         private Context context;
+
         public UpdateMapThread(AsyncResponse callback, Context context) {
             this.callback = callback;
             this.context = context;
         }
+
         @Override
         public void run() {
-           while(!threadDone) {
-               UpdateTilesAsync updateTilesAsync = new UpdateTilesAsync(tiles, new LatLng(currentLatID * latTileUnit - latTileUnit / 2, currentLngID * lngTileUnit - lngTileUnit / 2), getApplicationContext(), mMap, colors);
-               TileWebserviceUtility.getUser(LoginActivity.username, LoginActivity.password, callback, context);
-               updateTilesAsync.start();
-               try {
-                   Thread.sleep(45000);
-               } catch (InterruptedException e) {
-                   e.printStackTrace();
-               }
-           }
+            while (!threadDone) {
+                UpdateTilesAsync updateTilesAsync = new UpdateTilesAsync(tiles, new LatLng(currentLatID * latTileUnit - latTileUnit / 2, currentLngID * lngTileUnit - lngTileUnit / 2), getApplicationContext(), mMap, colors);
+                TileWebserviceUtility.getUser(LoginActivity.username, LoginActivity.password, callback, context);
+                updateTilesAsync.start();
+                try {
+                    Thread.sleep(45000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
-
 
 
     /**
@@ -416,7 +417,7 @@ public class GameMapUI extends FragmentActivity implements
                 View info = getLayoutInflater().inflate(R.layout.tile_info_window, null);
                 info.setY(100);
 
-                FrameLayout parent = (FrameLayout)info.findViewById(R.id.viewTileInfoWindow);
+                FrameLayout parent = (FrameLayout) info.findViewById(R.id.viewTileInfoWindow);
 
                 TextView snippet = new TextView(getApplicationContext());
                 snippet.setGravity(Gravity.CENTER_HORIZONTAL);
@@ -426,7 +427,7 @@ public class GameMapUI extends FragmentActivity implements
 
                 LinearLayout content = new LinearLayout(getApplicationContext());
                 content.setOrientation(LinearLayout.VERTICAL);
-                content.setPadding(150,40,150,150);
+                content.setPadding(150, 40, 150, 150);
                 content.setGravity(Gravity.CENTER_HORIZONTAL);
 
 
@@ -474,7 +475,7 @@ public class GameMapUI extends FragmentActivity implements
         setOnPolygonClickable(mMap);
 
         // say something to welcome new player:
-        updateNotification(getString(R.string.welcome_banner),100,5000);
+        updateNotification(getString(R.string.welcome_banner), 100, 5000);
     }
 
 
@@ -517,20 +518,20 @@ public class GameMapUI extends FragmentActivity implements
     /**
      * Creates a button event handlers set
      */
-    public void process(View view){
+    public void process(View view) {
         // Play clicker sound
         buttonClick.start();
-        switch (view.getId()){
+        switch (view.getId()) {
             case R.id.menuIMButton:
-                RelativeLayout layout1 =(RelativeLayout)findViewById(R.id.internalMenu);
-                if(layout1.getVisibility()==View.VISIBLE){
+                RelativeLayout layout1 = (RelativeLayout) findViewById(R.id.internalMenu);
+                if (layout1.getVisibility() == View.VISIBLE) {
                     layout1.setVisibility(View.GONE);
                 } else {
                     layout1.setVisibility(View.VISIBLE);
                 }
                 break;
             case R.id.btnIMBack:
-                RelativeLayout layout2 =(RelativeLayout)findViewById(R.id.internalMenu);
+                RelativeLayout layout2 = (RelativeLayout) findViewById(R.id.internalMenu);
                 layout2.setVisibility(View.GONE);
                 break;
             case R.id.btnBackLocation:
@@ -550,15 +551,15 @@ public class GameMapUI extends FragmentActivity implements
 
     /**
      * Creates the style options for the map.
+     *
      * @param styleName - the type of style
      * @return the options for the map
      */
     private MapStyleOptions createMapStyle(String styleName) {
         MapStyleOptions style;
-        if (styleName == "retro"){
+        if (styleName == "retro") {
             style = MapStyleOptions.loadRawResourceStyle(this, R.raw.style_retro);
-        }
-        else if(styleName == "night"){
+        } else if (styleName == "night") {
             style = MapStyleOptions.loadRawResourceStyle(this, R.raw.night_mode);
         } else {
             style = MapStyleOptions.loadRawResourceStyle(this, R.raw.style_retro);
@@ -575,24 +576,24 @@ public class GameMapUI extends FragmentActivity implements
         double boundUnit = (bdUnit * latTileUnit) / 10;
 
         // set upper left corner and bottom right coordinates
-        LatLng northeast = Utilities.shifter(loc,+boundUnit,+boundUnit);
-        LatLng southwest = Utilities.shifter(loc,-boundUnit,-boundUnit);
+        LatLng northeast = Utilities.shifter(loc, +boundUnit, +boundUnit);
+        LatLng southwest = Utilities.shifter(loc, -boundUnit, -boundUnit);
 
-        showDebug("Bounds: NE-"+northeast.toString()+"  SW-"+southwest.toString());
+        showDebug("Bounds: NE-" + northeast.toString() + "  SW-" + southwest.toString());
 
         // finalize the bounds
-        bounds = new LatLngBounds(southwest,northeast);
+        bounds = new LatLngBounds(southwest, northeast);
         currentBounds = bounds;
         mMap.setLatLngBoundsForCameraTarget(bounds);
     }
 
 
-
     /**
      * Draws a line on the map
+     *
      * @param map the map
-     * @param A the starting point
-     * @param B the end point
+     * @param A   the starting point
+     * @param B   the end point
      */
     private void drawPolyline(GoogleMap map, LatLng A, LatLng B) {
         Polyline line = map.addPolyline((new PolylineOptions()
@@ -603,38 +604,35 @@ public class GameMapUI extends FragmentActivity implements
 
     /**
      * Populates the horizontal Lines to draw on the map.
+     *
      * @return true if successful
      */
     private boolean populateHorizontalLines() {
-        for (double s = SouthBoundLat; s < NorthBoundLat+latTileUnit; s += latTileUnit) {
+        for (double s = SouthBoundLat; s < NorthBoundLat + latTileUnit; s += latTileUnit) {
             LatLng A = new LatLng(s, WestBoundLng);
             LatLng B = new LatLng(s, EastBoundLng);
             parallelLines.add(new LatLngLines(A, B));
         }
-        if (parallelLines.isEmpty())
-            return false;
-        else
-            return true;
+        return !parallelLines.isEmpty();
     }
 
     /**
      * Populates the Vertical Lines to draw on the map.
+     *
      * @return true if successful
      */
     private boolean populateVerticalLines() {
-        for (double s = WestBoundLng; s < EastBoundLng+lngTileUnit; s += lngTileUnit) {
+        for (double s = WestBoundLng; s < EastBoundLng + lngTileUnit; s += lngTileUnit) {
             LatLng A = new LatLng(SouthBoundLat, s);
             LatLng B = new LatLng(NorthBoundLat, s);
             verticalLines.add(new LatLngLines(A, B));
         }
-        if (verticalLines.isEmpty())
-            return false;
-        else
-            return true;
+        return !verticalLines.isEmpty();
     }
 
     /**
      * Draws the tile grid on the map.
+     *
      * @param mMap the Google Map
      * @return true if successful
      */
@@ -666,13 +664,11 @@ public class GameMapUI extends FragmentActivity implements
     }
 
 
-
-
-
     /**
      * Result of requesting permissions.
-     * @param requestCode the request code
-     * @param permissions the permission
+     *
+     * @param requestCode  the request code
+     * @param permissions  the permission
      * @param grantResults the result
      */
     @Override
@@ -701,10 +697,9 @@ public class GameMapUI extends FragmentActivity implements
     }
 
 
-
-
     /**
      * Handler for the location button click.
+     *
      * @return
      */
     @Override
@@ -715,6 +710,7 @@ public class GameMapUI extends FragmentActivity implements
 
     /**
      * A wrapper to make a toast.
+     *
      * @param str the toast message
      */
     private void show(String str) {
@@ -725,9 +721,9 @@ public class GameMapUI extends FragmentActivity implements
     @Override
     protected void onStart() {
         //mGoogleApiClient.connect();
-        Switch bgMusicMode = (Switch)findViewById(R.id.switchBgMusic);
-        if(bgMusicMode.isChecked()){
-            bgMusic = MediaPlayer.create(this,R.raw.jocsnight);
+        Switch bgMusicMode = (Switch) findViewById(R.id.switchBgMusic);
+        if (bgMusicMode.isChecked()) {
+            bgMusic = MediaPlayer.create(this, R.raw.jocsnight);
             bgMusic.setLooping(true);
             bgMusic.start();
         }
@@ -747,6 +743,7 @@ public class GameMapUI extends FragmentActivity implements
 
     /**
      * When the user is connected to the google map this is called. It updates the last location.
+     *
      * @param bundle
      */
     @Override
@@ -758,7 +755,7 @@ public class GameMapUI extends FragmentActivity implements
         if (mLastLocation != null) {
             double lat = mLastLocation.getLatitude();
             double lng = mLastLocation.getLongitude();
-            LatLng latlng = new LatLng(lat,lng);
+            LatLng latlng = new LatLng(lat, lng);
             CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latlng, 17);
             mMap.animateCamera(cameraUpdate);
             setMapViewBounds(latlng);
@@ -782,6 +779,7 @@ public class GameMapUI extends FragmentActivity implements
 
     /**
      * Executed when the location of the user changed
+     *
      * @param location - the newest location of the user
      */
     @Override
@@ -837,6 +835,7 @@ public class GameMapUI extends FragmentActivity implements
 
     /**
      * Activate the location listener
+     *
      * @param onLocationChangedListener the location listener
      */
     @Override
@@ -851,7 +850,8 @@ public class GameMapUI extends FragmentActivity implements
 
     /**
      * Buys soldiers for the given tile.
-     * @param tileID - the tile to place the soldiers on
+     *
+     * @param tileID   - the tile to place the soldiers on
      * @param soldiers - the number of soldiers to buy
      */
     private void buySoldiers(Tile.TileID tileID, int soldiers) {
@@ -863,6 +863,7 @@ public class GameMapUI extends FragmentActivity implements
 
     /**
      * Processes the result from the server
+     *
      * @param result - the json from the server
      */
     @Override
@@ -889,7 +890,7 @@ public class GameMapUI extends FragmentActivity implements
                     handleIncomingTile(jsonObject);
                     int tileLatID = jsonObject.getInt("tileLatID");
                     int tileLngID = jsonObject.getInt("tileLngID");
-                    Tile.TileID tileID= new Tile.TileID(tileLatID, tileLngID);
+                    Tile.TileID tileID = new Tile.TileID(tileLatID, tileLngID);
                     addTileInfoWindow(tileID.getLatLng());
                 }
             } else if (serverResult[0].equals("5")) {
@@ -914,6 +915,7 @@ public class GameMapUI extends FragmentActivity implements
 
     /**
      * Handles incoming user data from the server on the UI thread
+     *
      * @param jsonObject the user json
      * @throws JSONException
      */
@@ -937,6 +939,7 @@ public class GameMapUI extends FragmentActivity implements
 
     /**
      * Handels an incoming tile and updates the map in the main UI thread.
+     *
      * @param jsonObject the tile from the server
      * @throws JSONException
      */
@@ -947,8 +950,6 @@ public class GameMapUI extends FragmentActivity implements
         int soldiers = jsonObject.getInt("soldiers");
         int food = jsonObject.getInt("food");
         int gold = jsonObject.getInt("gold");
-        System.out.println("tile username: " + tileUsername + " username " + LoginActivity.username);
-        Tile t;
         if (tileUsername.equals("null")) {
             Utilities.updateTile(colors.gray, tileLatID, tileLngID, null, mMap, tiles, soldiers, gold, food);
         } else if (tileUsername.equalsIgnoreCase(LoginActivity.username)) {
@@ -962,20 +963,22 @@ public class GameMapUI extends FragmentActivity implements
 
     /**
      * Showing the debugging information on the top of game.
+     *
      * @param msg the messages needed to be display
      */
     private void showDebug(String msg) {
-        TextView text = (TextView)findViewById(R.id.debug);
+        TextView text = (TextView) findViewById(R.id.debug);
         text.setText(msg);
     }
 
 
     /**
      * Showing the tile information in a pops-out floating window above the selected tile.
+     *
      * @param location where to show the window.
      */
-    private void addTileInfoWindow(LatLng location){
-        if(marker!=null) {
+    private void addTileInfoWindow(LatLng location) {
+        if (marker != null) {
             // if marker is there, just remove it.
             marker.remove();
         }
@@ -984,7 +987,7 @@ public class GameMapUI extends FragmentActivity implements
         Tile tile = tiles.get(tid);
 
         if (tile.getUsername() != null && tile.getUsername().equals(LoginActivity.username))
-            setBuySoliderPopsout(tid,true);
+            setBuySoliderPopsout(tid, true);
 
         StringBuilder snippetValue = new StringBuilder();
         snippetValue.append("\n");
@@ -994,79 +997,80 @@ public class GameMapUI extends FragmentActivity implements
         snippetValue.append("\n");
         snippetValue.append(getString(R.string.gameUI_soldiers, tile.getSoldiers()));
         marker = mMap.addMarker(new MarkerOptions()
-                .position(Utilities.shifter(location,0,0))
+                .position(Utilities.shifter(location, 0, 0))
                 .title(getString(R.string.gameUI_territoryProperty))
                 .snippet(snippetValue.toString())
-                .icon(BitmapDescriptorFactory.fromBitmap(resizeMapIcons("flag",150,150))));
+                .icon(BitmapDescriptorFactory.fromBitmap(resizeMapIcons("flag", 150, 150))));
 
         marker.showInfoWindow();
 
     }
 
 
-    public Bitmap resizeMapIcons(String iconName, int width, int height){
-        Bitmap imageBitmap = BitmapFactory.decodeResource(getResources(),getResources().getIdentifier(iconName, "drawable", getPackageName()));
+    public Bitmap resizeMapIcons(String iconName, int width, int height) {
+        Bitmap imageBitmap = BitmapFactory.decodeResource(getResources(), getResources().getIdentifier(iconName, "drawable", getPackageName()));
         return Bitmap.createScaledBitmap(imageBitmap, width, height, false);
     }
 
 
     /**
      * Add the On Polygon Listener to the Map.
+     *
      * @param map
      */
-    private void setOnPolygonClickable(final GoogleMap map){
+    private void setOnPolygonClickable(final GoogleMap map) {
         map.setOnPolygonClickListener(new GoogleMap.OnPolygonClickListener() {
-            @Override
-            public void onPolygonClick(Polygon polygon) {
-                LatLng point = polygon.getPoints().get(2); // Southeast Corner point !
-                point = Utilities.shifter(point,-latTileUnit/2,-lngTileUnit/2); // temporary fixed only works on Lat:0~90 Lng:-180~0
-                Tile.TileID tid = new Tile.TileID(point);
-                Tile t = tiles.get(tid);
-                String name = t.getUsername();
+                                          @Override
+                                          public void onPolygonClick(Polygon polygon) {
+                                              LatLng point = polygon.getPoints().get(2); // Southeast Corner point !
+                                              point = Utilities.shifter(point, -latTileUnit / 2, -lngTileUnit / 2); // temporary fixed only works on Lat:0~90 Lng:-180~0
+                                              Tile.TileID tid = new Tile.TileID(point);
+                                              Tile t = tiles.get(tid);
+                                              String name = t.getUsername();
 
 
-                if (t.select()) {
-                    // selected - get username etc..
-                    if (tilesSelected.size() == 2) {
-                        Tile.TileID removeTile = tilesSelected.get(1);
-                        Tile unselectedTile = tiles.get(removeTile);
-                        unselectedTile.select();
-                        unselectedTile.drawTile(mMap);
-                        tilesSelected.remove(1);
-                    }
-                    tilesSelected.push(tid);
-                    addTileInfoWindow(point);
-                    if (tilesSelected.size() == 2) {
-                        if(name!=null && name!=user.getUsername()) {
-                            attemptShowBattlePopout();
-                        } else {
-                            tilesSelected.remove(0);
-                            showDebug("not the case");
-                        }
-                        setBuySoliderPopsout(null, false);
-                    }
-                    if(name!=null){
-                        updateNotification(getString(R.string.gameUI_territoryName, name),50,1000);
-                    } else {
-                        updateNotification(getString(R.string.gameUI_Unoccupied),50,1000);
-                    }
-                } else {
-                    // tile was already selected, unselect it
-                    tilesSelected.remove(tid);
-                    // unselect the tile
-                    // remove the marker
-                    if(marker!=null) {
-                        // if marker is there, just remove it.
-                        marker.hideInfoWindow();
-                        marker.remove();
-                    }
-                    // remove the buy option
-                    setBuySoliderPopsout(null, false);
-                    makeBattlePopout(false);
-                }
-                t.drawTile(mMap);
-            }
-        }
+                                              if (t.select()) {
+                                                  // selected - get username etc..
+                                                  if (tilesSelected.size() == 2) {
+                                                      Tile.TileID removeTile = tilesSelected.get(1);
+                                                      Tile unselectedTile = tiles.get(removeTile);
+                                                      unselectedTile.select();
+                                                      unselectedTile.drawTile(mMap);
+                                                      tilesSelected.remove(1);
+                                                  }
+                                                  tilesSelected.push(tid);
+                                                  addTileInfoWindow(point);
+                                                  if (tilesSelected.size() == 2) {
+                                                      if (name != null && name != user.getUsername()) {
+                                                          attemptShowBattlePopout();
+                                                      } else {
+                                                          tilesSelected.remove(0);
+                                                          showDebug("not the case");
+                                                      }
+                                                      setBuySoliderPopsout(null, false);
+                                                  }
+                                                  if (name != null) {
+                                                      updateNotification(getString(R.string.gameUI_territoryName, name), 50, 1000);
+                                                  } else {
+                                                      updateNotification(getString(R.string.gameUI_Unoccupied), 50, 1000);
+                                                  }
+                                              } else {
+                                                  // tile was already selected, unselect it
+                                                  tilesSelected.remove(tid);
+                                                  // unselect the tile
+                                                  // remove the marker
+                                                  if (marker != null) {
+                                                      // if marker is there, just remove it.
+                                                      marker.hideInfoWindow();
+                                                      marker.remove();
+                                                  }
+                                                  // remove the buy option
+                                                  setBuySoliderPopsout(null, false);
+                                                  makeBattlePopout(false);
+                                              }
+                                              t.drawTile(mMap);
+                                          }
+                                      }
         );
     }
 
@@ -1088,14 +1092,15 @@ public class GameMapUI extends FragmentActivity implements
 
     /**
      * Shows or hides the battle popout
+     *
      * @param enable true if the battle popout should be visible
      */
     private void makeBattlePopout(boolean enable) {
-        final FrameLayout battlePanel = (FrameLayout)findViewById(R.id.layoutBattle);
+        final FrameLayout battlePanel = (FrameLayout) findViewById(R.id.layoutBattle);
         Button battleBtn = (Button) findViewById(R.id.battleNowBtn);
         final AsyncResponse callback = this;
-        final Context context  = this;
-        if(enable){
+        final Context context = this;
+        if (enable) {
             battlePanel.setVisibility(View.VISIBLE);
             battleBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -1103,7 +1108,7 @@ public class GameMapUI extends FragmentActivity implements
                     marker.hideInfoWindow();
                     setExplosionAnimation(5000);
                     battlePanel.setVisibility(View.GONE);
-                    TileWebserviceUtility.battle(LoginActivity.username, LoginActivity.password, tiles.get(tilesSelected.get(0)),tiles.get(tilesSelected.get(1)), callback, context);
+                    TileWebserviceUtility.battle(LoginActivity.username, LoginActivity.password, tiles.get(tilesSelected.get(0)), tiles.get(tilesSelected.get(1)), callback, context);
                 }
             });
         } else {
@@ -1114,11 +1119,12 @@ public class GameMapUI extends FragmentActivity implements
 
     /**
      * Update ingame notification system
-     * @param msg the content message need to display inside a bubble
-     * @param delay the delay of each character typing animation
+     *
+     * @param msg     the content message need to display inside a bubble
+     * @param delay   the delay of each character typing animation
      * @param dismiss the delay of dismiss of entire notification bubble, if is -1 then never dismiss
      */
-    private void updateNotification(String msg ,long delay, long dismiss) {
+    private void updateNotification(String msg, long delay, long dismiss) {
         if (notificationON) {
             final FrameLayout notification = (FrameLayout) findViewById(R.id.notificationSystem);
             Typewriter text = (Typewriter) findViewById(R.id.txtNotifiction);
@@ -1139,12 +1145,13 @@ public class GameMapUI extends FragmentActivity implements
 
     /**
      * Sets the resource bar information at the top of the screen.
+     *
      * @param u the user with the current resources
      */
-    private void setResourceBar(User u){
-        TextView solider = (TextView)findViewById(R.id.textResSolider);
-        TextView gold = (TextView)findViewById(R.id.textResGold);
-        TextView food = (TextView)findViewById(R.id.textResFood);
+    private void setResourceBar(User u) {
+        TextView solider = (TextView) findViewById(R.id.textResSolider);
+        TextView gold = (TextView) findViewById(R.id.textResGold);
+        TextView food = (TextView) findViewById(R.id.textResFood);
 
         solider.setText(String.valueOf(u.getTotalSoldiers()));
         gold.setText(String.valueOf(u.getGold()));
@@ -1153,31 +1160,33 @@ public class GameMapUI extends FragmentActivity implements
 
     /**
      * Sets the Username at the bottom of the screen
+     *
      * @param name the username to set
      */
-    private void setUsername(String name){
-        TextView username = (TextView)findViewById(R.id.textUsername);
+    private void setUsername(String name) {
+        TextView username = (TextView) findViewById(R.id.textUsername);
         username.setText(name);
     }
 
     /**
      * Shows or hides the buy soldier option.
-     * @param id the tile to select
+     *
+     * @param id      the tile to select
      * @param visible true to show the popout
      */
-    private void setBuySoliderPopsout(final Tile.TileID id, boolean visible){
-        final FrameLayout buySoliderPanel = (FrameLayout)findViewById(R.id.layout_BuySoldier);
-        final EditText buy_num = (EditText)findViewById(R.id.editBuySoliderNum);
+    private void setBuySoliderPopsout(final Tile.TileID id, boolean visible) {
+        final FrameLayout buySoliderPanel = (FrameLayout) findViewById(R.id.layout_BuySoldier);
+        final EditText buy_num = (EditText) findViewById(R.id.editBuySoliderNum);
         Button buyBtn = (Button) findViewById(R.id.buyNowBtn);
 
-        if(visible){
+        if (visible) {
             buySoliderPanel.setVisibility(View.VISIBLE);
             buyBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
 
-                    if(Integer.parseInt(buy_num.getText().toString())>0){
-                        buySoldiers(id,Integer.parseInt(buy_num.getText().toString()));
+                    if (Integer.parseInt(buy_num.getText().toString()) > 0) {
+                        buySoldiers(id, Integer.parseInt(buy_num.getText().toString()));
                     }
                     buySoliderPanel.setVisibility(View.GONE);
 
@@ -1188,28 +1197,29 @@ public class GameMapUI extends FragmentActivity implements
         }
     }
 
-    private int[] getScreenSize(){
+    private int[] getScreenSize() {
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
         int width = size.x;
         int height = size.y;
 
-        int res[] = {width,height};
+        int res[] = {width, height};
 
         return res;
     }
 
     /**
      * Shows the stat panel with the gold, food and soldiers.
+     *
      * @param mode 0 if visible
      */
-    private void showStatPanel(int mode){
-        FrameLayout statPanel = (FrameLayout)findViewById(R.id.layoutStat);
+    private void showStatPanel(int mode) {
+        FrameLayout statPanel = (FrameLayout) findViewById(R.id.layoutStat);
 
-        TextView soliderStat = (TextView)findViewById(R.id.txtStatSoldier);
-        TextView goldStat = (TextView)findViewById(R.id.txtStatGold);
-        TextView foodStat = (TextView)findViewById(R.id.txtStatFood);
+        TextView soliderStat = (TextView) findViewById(R.id.txtStatSoldier);
+        TextView goldStat = (TextView) findViewById(R.id.txtStatGold);
+        TextView foodStat = (TextView) findViewById(R.id.txtStatFood);
         TextView tilesTakenStat = (TextView) findViewById(R.id.txtStatTilesTaken);
 
         // get the user's stats
@@ -1223,27 +1233,28 @@ public class GameMapUI extends FragmentActivity implements
         foodStat.setText(String.valueOf(food));
         tilesTakenStat.setText(String.valueOf(tilesTaken));
 
-        if(mode==0){
+        if (mode == 0) {
             statPanel.setVisibility(View.VISIBLE);
-        }else {
+        } else {
             statPanel.setVisibility(View.GONE);
         }
     }
 
     /**
      * Shows the Explosion after battle
+     *
      * @param delay
      */
-    private void setExplosionAnimation(long delay){
-        final FrameLayout animLayout = (FrameLayout)findViewById(R.id.exp_anim_layout);
-        ImageView animationIV = (ImageView)findViewById(R.id.animationExp);
+    private void setExplosionAnimation(long delay) {
+        final FrameLayout animLayout = (FrameLayout) findViewById(R.id.exp_anim_layout);
+        ImageView animationIV = (ImageView) findViewById(R.id.animationExp);
         AnimationDrawable animationDrawable = (AnimationDrawable) animationIV.getDrawable();
 
-        if(animLayout.getVisibility()==View.GONE){
+        if (animLayout.getVisibility() == View.GONE) {
             animLayout.setVisibility(View.VISIBLE);
         }
 
-        if(delay>0){
+        if (delay > 0) {
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -1267,6 +1278,6 @@ class ColorSet {
         blue = Color.argb(100, 0, 0, 255);
         gray = Color.argb(100, 100, 100, 100);
         orange = Color.argb(100, 255, 165, 0);
-        yellow = Color.argb(200,255,255,0);
+        yellow = Color.argb(200, 255, 255, 0);
     }
 }

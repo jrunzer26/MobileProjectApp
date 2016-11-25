@@ -1,8 +1,6 @@
 package com.mobileproject.game;
 
 import android.content.Context;
-import android.content.res.Resources;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 

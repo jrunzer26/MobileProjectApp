@@ -66,4 +66,6 @@
     <string name="gameUI_tilesCaptured">You captured a tile!</string>
     <string name="gameUI_tileGenFail">Tiles Generation failed!</string>
     <string name="gameUI_noLocation">No Location Detected</string>
+    <string name="territory_property">Territory Property</string>
+    <string name="made_with_love_by">Made with ❤ by:</string>
 </resources>

@@ -1,12 +1,9 @@
 package com.mobileproject.game;
 
 import android.content.Context;
-import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Base64;
-
-import com.google.android.gms.games.Game;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 
@@ -22,8 +19,6 @@ import java.net.URL;
 import java.util.HashMap;
 
 import static com.mobileproject.game.GameMapUI.bdUnit;
-import static com.mobileproject.game.GameMapUI.mapLock;
-
 /**
  * Created by 100520993 on 11/10/2016.
  */
@@ -38,7 +33,7 @@ class UpdateTilesAsync extends Thread implements AsyncResponse {
     private ColorSet colors;
     private GoogleMap mMap;
 
-    public UpdateTilesAsync(HashMap<Tile.TileID, Tile> tiles, LatLng newLoc, Context context, GoogleMap mMap, ColorSet colors) {
+    UpdateTilesAsync(HashMap<Tile.TileID, Tile> tiles, LatLng newLoc, Context context, GoogleMap mMap, ColorSet colors) {
         this.tiles = tiles;
         this.newLoc = newLoc;
         this.context = context;

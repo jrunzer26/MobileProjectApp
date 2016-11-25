@@ -7,8 +7,6 @@ package com.mobileproject.game;
 /* Stores a user's resources */
 public class User {
 
-
-
     private String username;
     private int gold;
     private int food;
@@ -37,7 +35,7 @@ public class User {
         this.totalSoldiers = totalSoldiers;
     }
 
-    public User(String username) {
+    User(String username) {
         this.username = username;
         gold = 0;
         food = 0;
