@@ -3,6 +3,7 @@ package com.mobileproject.game;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -129,11 +130,33 @@ public class GameMapUI extends FragmentActivity implements
 
     private boolean notificationON;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game_map_ui);
+
+        setLoadingAnimation(4000);
+
+        SharedPreferences sharedPreferences = getSharedPreferences("USERINFO", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        if (sharedPreferences.contains("TUTORIAL_SHOWED")) {
+            boolean tutShowed = sharedPreferences.getBoolean("TUTORIAL_SHOWED",false);
+            if(!tutShowed){
+                setTutorial(25000);
+                editor.putBoolean("TUTORIAL_SHOWED",true);
+                editor.apply();
+            }
+
+        } else {
+            setTutorial(25000);
+            editor.putBoolean("TUTORIAL_SHOWED",true);
+            editor.apply();
+        }
+
+
+
 
         // Create an instance of GoogleAPIClient.
         if (mGoogleApiClient == null) {
@@ -1264,6 +1287,57 @@ public class GameMapUI extends FragmentActivity implements
         }
         animationDrawable.start();
     }
+
+
+    /**
+     * Shows the Loading Animation when the map is not ready.
+     *
+     * @param delay
+     */
+    private void setLoadingAnimation(long delay) {
+        final FrameLayout animLayout = (FrameLayout) findViewById(R.id.load_anim_layout);
+        ImageView animationIV = (ImageView) findViewById(R.id.animationLoading);
+        final AnimationDrawable animationDrawable = (AnimationDrawable) animationIV.getDrawable();
+
+        if (animLayout.getVisibility() == View.GONE) {
+            animLayout.setVisibility(View.VISIBLE);
+            animationDrawable.start();
+        }
+
+        if (delay > 0) {
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    animLayout.setVisibility(View.GONE);
+                    animationDrawable.stop();
+                }
+            }, delay);
+        }
+    }
+
+    /**
+     * Shows the Loading Animation when the map is not ready.
+     *
+     * @param delay
+     */
+    private void setTutorial(long delay) {
+        final FrameLayout tutLayout = (FrameLayout) findViewById(R.id.tutorial_layout);
+
+        if (tutLayout.getVisibility() == View.GONE) {
+            tutLayout.setVisibility(View.VISIBLE);
+        }
+
+        if (delay > 0) {
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    tutLayout.setVisibility(View.GONE);
+                }
+            }, delay);
+        }
+    }
+
+
 }
 
 /**
