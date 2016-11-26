@@ -1238,7 +1238,7 @@ public class GameMapUI extends FragmentActivity implements
      * @param mode 0 if visible
      */
     private void showStatPanel(int mode) {
-        FrameLayout statPanel = (FrameLayout) findViewById(R.id.layoutStat);
+        RelativeLayout statPanel = (RelativeLayout) findViewById(R.id.layoutStat);
 
         TextView soliderStat = (TextView) findViewById(R.id.txtStatSoldier);
         TextView goldStat = (TextView) findViewById(R.id.txtStatGold);

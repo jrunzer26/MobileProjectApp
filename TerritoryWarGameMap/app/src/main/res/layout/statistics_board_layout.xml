@@ -1,166 +1,180 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/layoutStat"
     android:background="@drawable/stat_bg"
-    android:visibility="gone"
+    android:visibility="visible"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
-        android:gravity="center_horizontal"
-        android:layout_marginTop="120dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/statistics_board"/>
-
     <ImageView
+        android:id="@+id/titleStat"
+        android:layout_alignParentTop="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:src="@drawable/title_statistics"/>
 
-    <ImageView
-        android:id="@+id/iconSoldier"
-        android:layout_width="140dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top|start"
-        android:paddingStart="100dp"
-        android:paddingEnd="0dp"
-        android:paddingTop="180dp"
-        android:src="@drawable/soldier"/>
-
     <TextView
-        android:layout_width="wrap_content"
+        android:id="@+id/textSB1"
+        android:gravity="center_horizontal"
+        android:layout_below="@id/titleStat"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="top|start"
-        android:paddingStart="150dp"
-        android:paddingEnd="0dp"
-        android:paddingTop="180dp"
-        android:textSize="40sp"
-        android:text="X"/>
-
-
-    <TextView
-        android:id="@+id/txtStatSoldier"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top|start"
-        android:paddingStart="180dp"
-        android:paddingEnd="0dp"
-        android:paddingTop="178dp"
-        android:textColor="@color/colorBlack"
-        android:textSize="40sp"
-        android:text="0"/>
+        android:text="@string/statistics_board"/>
 
 
 
+    <LinearLayout
+        android:id="@+id/layoutSB1"
+        android:layout_below="@id/textSB1"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-    <ImageView
-        android:id="@+id/iconGold"
-        android:layout_width="140dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top|start"
-        android:paddingStart="100dp"
-        android:paddingEnd="0dp"
-        android:paddingTop="151dp"
-        android:src="@drawable/icon_gold"/>
+        <ImageView
+            android:id="@+id/iconSoldier"
+            android:layout_marginStart="80dp"
+            android:src="@drawable/soldier"
+            android:scaleType="fitXY"
+            android:layout_width="70dp"
+            android:layout_height="70dp" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top|start"
-        android:paddingStart="150dp"
-        android:paddingEnd="0dp"
-        android:paddingTop="253dp"
-        android:textSize="40sp"
-        android:text="X"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="40sp"
+            android:layout_marginStart="20dp"
+            android:text="X"/>
 
-    <TextView
-        android:id="@+id/txtStatGold"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top|start"
-        android:paddingStart="180dp"
-        android:paddingEnd="0dp"
-        android:paddingTop="252dp"
-        android:textColor="@color/colorBlack"
-        android:textSize="40sp"
-        android:text="0"/>
-
-    <ImageView
-        android:id="@+id/iconFood"
-        android:layout_width="140dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top|start"
-        android:paddingStart="100dp"
-        android:paddingEnd="0dp"
-        android:paddingTop="300dp"
-        android:src="@drawable/icon_food"/>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top|start"
-        android:paddingStart="150dp"
-        android:paddingEnd="0dp"
-        android:paddingTop="322dp"
-        android:textSize="40sp"
-        android:text="X"/>
-
-    <TextView
-        android:id="@+id/txtStatFood"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top|start"
-        android:paddingStart="180dp"
-        android:paddingEnd="0dp"
-        android:paddingTop="321dp"
-        android:textColor="@color/colorBlack"
-        android:textSize="40sp"
-        android:text="0"/>
-
-    <ImageView
-        android:id="@+id/iconTilesTaken"
-        android:layout_width="140dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top|start"
-        android:paddingStart="100dp"
-        android:paddingEnd="0dp"
-        android:paddingTop="40dp"
-        android:src="@drawable/map_icon"/>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top|start"
-        android:paddingStart="150dp"
-        android:paddingEnd="0dp"
-        android:paddingTop="390dp"
-        android:textSize="40sp"
-        android:text="X"/>
+        <TextView
+            android:id="@+id/txtStatSoldier"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorBlack"
+            android:textSize="60sp"
+            android:text="0"/>
+    </LinearLayout>
 
 
-    <TextView
-        android:id="@+id/txtStatTilesTaken"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top|start"
-        android:paddingStart="180dp"
-        android:paddingEnd="0dp"
-        android:paddingTop="388dp"
-        android:textColor="@color/colorBlack"
-        android:textSize="40sp"
-        android:text="0"/>
+    <LinearLayout
+        android:id="@+id/layoutSB2"
+        android:layout_marginTop="20dp"
+        android:layout_below="@id/layoutSB1"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/iconGold"
+            android:layout_marginStart="80dp"
+            android:scaleType="fitXY"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:src="@drawable/icon_gold"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="40sp"
+            android:layout_marginStart="20dp"
+            android:text="X"/>
+
+        <TextView
+            android:id="@+id/txtStatGold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorBlack"
+            android:textSize="60sp"
+            android:text="0"/>
+
+    </LinearLayout>
+
+
+
+    <LinearLayout
+        android:id="@+id/layoutSB3"
+        android:layout_marginTop="20dp"
+        android:layout_below="@id/layoutSB2"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+
+        <ImageView
+            android:id="@+id/iconFood"
+            android:layout_marginStart="80dp"
+            android:layout_height="70dp"
+            android:src="@drawable/icon_food"
+            android:layout_width="70dp"
+            android:scaleType="fitXY" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="40sp"
+            android:layout_marginStart="20dp"
+            android:text="X"/>
+
+        <TextView
+            android:id="@+id/txtStatFood"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorBlack"
+            android:textSize="60sp"
+            android:text="0"/>
+    </LinearLayout>
+
+
+
+
+
+    <LinearLayout
+        android:id="@+id/layoutSB4"
+        android:layout_marginTop="20dp"
+        android:layout_below="@id/layoutSB3"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/iconTilesTaken"
+            android:layout_marginStart="90dp"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:src="@drawable/map_icon"
+            android:scaleType="fitXY" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:textSize="40sp"
+            android:text="X"/>
+
+
+        <TextView
+            android:id="@+id/txtStatTilesTaken"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorBlack"
+            android:textSize="60sp"
+            android:text="0"/>
+    </LinearLayout>
 
 
     <Button
         android:id="@+id/btnStatClose"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:layout_marginBottom="30dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
         android:layout_marginEnd="30dp"
-        android:layout_gravity="bottom|end"
+        android:layout_marginBottom="30dp"
         android:onClick="process"
         android:background="@drawable/close_btn"/>
 
 
-</FrameLayout>
+</RelativeLayout>
