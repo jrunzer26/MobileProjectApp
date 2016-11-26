@@ -24,5 +24,5 @@ The webservice is used to strictly query the database and update the user's reso
 6. An example of this is changing your longitude from -78.89**64** to -78.89**91**. Sometimes the provider does not notify that there is a change in location and sometimes it is not recognized. However, it works much better on an actual device.
 7. Try to buy soldiers on your green tiles! It cost 10 gold per soldier and make sure only one tile is clicked.
 8. Try to battle. The more soldiers you have against the other tile the more of a chance you have to beat them. It costs 10 food per soldier to battle. Select your tile and an opposing red tile, then click battle.
-9. Login to this account at UOIT's location with username: **jason** password: **password** to see another user's perspective of the world.
+9. Login to this account at UOIT's location with username: **jason** password: **password** or username: **test123** password: **password** to see another user's perspective of the world.
 10. Resources are gained every hour! Come back later if you have captured tiles after each hour of the day to see your resources change.
