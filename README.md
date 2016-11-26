@@ -1,4 +1,4 @@
-# Mobile Project App
+# Territory War Age: Alpha
 
 Made with :heart: by:
 - Jason Runzer - 100520993
